@@ -1,0 +1,14 @@
+﻿  compilation object save succeeded; see H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso
+  compilation object save succeeded; see H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso
+  pch.cpp
+  App.xaml.cpp
+  DeviceResources.cpp
+  Command_ComputerMain.cpp
+  DirectXPage.xaml.cpp
+  SampleFpsTextRenderer.cpp
+  Sample3DSceneRenderer.cpp
+  XamlTypeInfo.Impl.g.cpp
+  XamlTypeInfo.g.cpp
+     Creating library H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.lib and object H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exp
+  Command_Computer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe
+  Command_Computer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.pdb (Partial PDB)
