@@ -1,1 +1,1 @@
-H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Command_Computer.vcxproj;x86
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Command_Computer.vcxproj;x86

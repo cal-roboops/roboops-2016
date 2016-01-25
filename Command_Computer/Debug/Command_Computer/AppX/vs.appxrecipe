@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Machine>DESKTOP-A32PKAI</Machine>
-    <WindowsUser>PC</WindowsUser>
+    <Machine>DESKTOP-S10GDE4</Machine>
+    <WindowsUser>Laptop</WindowsUser>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetOsVersion>10.0</TargetOsVersion>
     <TargetOsDescription>Windows 10.0</TargetOsDescription>
     <SolutionConfiguration>Debug|Win32</SolutionConfiguration>
     <PackageArchitecture>x86</PackageArchitecture>
     <PackageIdentityName>c06eef10-4583-4500-9406-9ec7602f2101</PackageIdentityName>
-    <IntermediateOutputPath>H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Debug\</IntermediateOutputPath>
     <RegisteredManifestChecksum>7A368775D0D23BC1D1BFFACA55EF9218F0356051B058291094396C8321044C53</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>c06eef10-4583-4500-9406-9ec7602f2101_1.0.0.0_x86__6ekdg42zp5p5j</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>c06eef10-4583-4500-9406-9ec7602f2101_6ekdg42zp5p5j!App</RegisteredUserModeAppID>
@@ -19,66 +19,66 @@
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2016-01-17T20:17:51.664</Modified>
+      <Modified>2016-01-23T19:16:19.005</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe">
       <PackagePath>Command_Computer.exe</PackagePath>
-      <Modified>2016-01-17T20:17:50.571</Modified>
+      <Modified>2016-01-23T19:41:51.509</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.winmd">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.winmd">
       <PackagePath>Command_Computer.winmd</PackagePath>
-      <Modified>2016-01-17T20:17:49.060</Modified>
+      <Modified>2016-01-23T19:16:19.094</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.044</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.046</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.050</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.052</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.055</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.057</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-10-11T05:09:42.000</Modified>
+      <Modified>2016-01-23T19:16:18.059</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso">
       <PackagePath>SamplePixelShader.cso</PackagePath>
-      <Modified>2016-01-17T20:17:40.017</Modified>
+      <Modified>2016-01-23T19:41:30.456</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso">
       <PackagePath>SampleVertexShader.cso</PackagePath>
-      <Modified>2016-01-17T20:17:40.104</Modified>
+      <Modified>2016-01-23T19:41:30.535</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\resources.pri">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2016-01-17T20:17:51.454</Modified>
+      <Modified>2016-01-23T19:41:53.915</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

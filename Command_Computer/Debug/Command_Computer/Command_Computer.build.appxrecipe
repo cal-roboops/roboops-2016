@@ -1,63 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Machine>DESKTOP-A32PKAI</Machine>
-    <WindowsUser>PC</WindowsUser>
+    <Machine>DESKTOP-S10GDE4</Machine>
+    <WindowsUser>Laptop</WindowsUser>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetOsVersion>10.0</TargetOsVersion>
     <TargetOsDescription>Windows 10.0</TargetOsDescription>
     <SolutionConfiguration>Debug|Win32</SolutionConfiguration>
     <PackageArchitecture>x86</PackageArchitecture>
     <PackageIdentityName>c06eef10-4583-4500-9406-9ec7602f2101</PackageIdentityName>
-    <IntermediateOutputPath>H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe">
       <PackagePath>Command_Computer.exe</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.winmd">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.winmd">
       <PackagePath>Command_Computer.winmd</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Command_Computer\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Command_Computer\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso">
       <PackagePath>SamplePixelShader.cso</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso">
       <PackagePath>SampleVertexShader.cso</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\resources.pri">
+    <AppxPackagedFile Include="C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\resources.pri">
       <PackagePath>resources.pri</PackagePath>
     </AppxPackagedFile>
   </ItemGroup>

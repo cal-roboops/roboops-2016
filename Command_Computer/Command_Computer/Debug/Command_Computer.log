@@ -1,5 +1,5 @@
-﻿  compilation object save succeeded; see H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso
-  compilation object save succeeded; see H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso
+﻿  compilation object save succeeded; see C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SamplePixelShader.cso
+  compilation object save succeeded; see C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\SampleVertexShader.cso
   pch.cpp
   App.xaml.cpp
   DeviceResources.cpp
@@ -9,6 +9,7 @@
   Sample3DSceneRenderer.cpp
   XamlTypeInfo.Impl.g.cpp
   XamlTypeInfo.g.cpp
-     Creating library H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.lib and object H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exp
-  Command_Computer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe
-  Command_Computer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\Command_Computer\Debug\Command_Computer\Command_Computer.pdb (Partial PDB)
+  LINK : C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe not found or not built by the last incremental link; performing full link
+     Creating library C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.lib and object C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exp
+  Command_Computer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.exe
+  Command_Computer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer\Command_Computer.pdb (Partial PDB)
