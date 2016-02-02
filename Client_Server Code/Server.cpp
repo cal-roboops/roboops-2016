@@ -11,6 +11,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#define PORT "5000" // Port to be used
+#define BACKLOG 3   // Number of pending connections allowed in queue
+
 void server(){
     int status;
     struct addrinfo host_info;
@@ -22,7 +25,7 @@ void server(){
     host_info.ai_socktype = SOCK_STREAM;
     host_info.ai_flags = AI_PASSIVE;
     
-    status = getaddrinfo(NULL, "PORT_NUMBER", &host_info, &host_info_list);
+    status = getaddrinfo(NULL, PORT, &host_info, &host_info_list);
     
     if (status != 0) {
         perror("getaddrinfo error");
@@ -34,6 +37,8 @@ void server(){
     if (socketfd == -1) {
         perror("Socket error");
         exit(1);
+    } else {
+        printf("Created socket %d\n",socketfd);
     }
     
     int yes = 1;
@@ -44,13 +49,13 @@ void server(){
         exit(1);
     }
     
-    int backlog = 3;
-    status = listen(socketfd, backlog);
+    status = listen(socketfd, BACKLOG);
     
     if (status == -1) {
         perror("Listen error");
         exit(1);
     }
+    printf("Awaiting connection...\n");
     int new_sockfd;
     struct sockaddr_storage their_addr;
     socklen_t addr_size = sizeof(their_addr);
@@ -60,19 +65,23 @@ void server(){
         perror("Listen error");
         exit(1);
     } else {
-        std::cout << "Connection successful." <<std:: endl;
+        printf("Connection successful!\n");
     }
     
-    std::cout<< "Waiting to receive data..." <<std:: endl;
+    printf("Waiting to receive data...\n");
     ssize_t bytes_recieved;
     char incoming_data_buffer[1000];
     bytes_recieved = recv(new_sockfd, incoming_data_buffer, 1000, 0);
-    if (bytes_recieved == 0) std::cout << "Host closed." << std::endl;
+    if (bytes_recieved == 0) {
+        perror("Host closed.");
+        exit(1);
+    }
     if (bytes_recieved == -1) {
         perror("Receive error");
         exit(1);
     }
-    std::cout << "Bytes recieved : " << bytes_recieved << std:: endl;
+    printf("Bytes recieved : %zd\n", bytes_recieved);
+    std::cout << incoming_data_buffer << std::endl;
     incoming_data_buffer[bytes_recieved] = '\0';
     
     freeaddrinfo(host_info_list);
