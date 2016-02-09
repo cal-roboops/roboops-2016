@@ -9,120 +9,127 @@
 //
 //
 
-#include <iostream>
-#include <cstring>
-#include <winsock.h>
-//#include <windows.h>
+using namespace std;
 
-// Server Class
-class Server {
- 	private:
- 		// Private Variables
- 		int port;
- 		int ip;
- 		int st;
- 		SOCKET serverSock;
- 		sockaddr_in sockAddr;
- 		int connect(SOCKET s, const struct sockaddr *name, int namelen);
- 		int send(SOCKET s, const char *buf, int len, int flags);
- 		int recv(SOCKET s, char *buf, int len, int flags);
- 		int listen(SOCKET s, int backlog);
- 		int closesocket(SOCKET s);
- 		SOCKET socket(int af, int type, int protocol);
- 		int WSAStartup(WORD wVersionRequested, LPWSADATA lpWSAData);
-		int WSACleanup();
- 		int bind(SOCKET s, const struct sockaddr *name, int namelen);
- 		SOCKET accept(SOCKET s, struct sockaddr *addr, int *addrlen);
-
- 		// Private Methods
- 		int start_socket(char ip, int port);
- 		int connect();
-
- 	public:
- 		// Public Variables
- 		// Public Methods
- 		Server(char ip, int port);
- 		~Server();
- 		int send(char message);
-};
+#include "Server.h"
 
 // Server Constructor
-Server::Server(char ip, int port) {
-	std::cout<<"Setting up socket..."<<std::endl;
-	st = start_socket(ip, port);
-	if (st == -1) {
+Server::Server() {
+	printf("Setting up socket...\n");
+	st = startSocket();
+	if (st == 1) {
 		exit(1);
 	}
-	std::cout<<"Setup Success! Connecting..."<<std::endl;
-	st = connect();
-	if (st == -1) {
+	
+	printf("Setup Success!\n");
+	printf("Connecting...\n");
+	st = serverConnect();
+	if (st == 1) {
 		exit(1);
 	}
-	std::cout<<"Connection Success!"<<std::endl;
-	std::cout<<"Setup Complete!"<<std::endl;
+	printf("Connection Success!\n");
+	printf("Setup Complete!\n");
 }
 
 // Server Destructor
 Server::~Server() {
-	closesocket(serverSock);
-}
-
-int Server::start_socket(char ip, int port) {
-	WSADATA wsaData;
-	int iReqWinsockVer = 2;
-	if (WSAStartup(MAKEWORD(iReqWinsockVer,0), &wsaData)==0) {
-	    // Check if major version is at least iReqWinsockVer
-	    if (LOBYTE(wsaData.wVersion) >= iReqWinsockVer) {
-	        serverSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-			if (serverSock==INVALID_SOCKET) {
-			    std::cout << "Invalid Socket" << std::endl;
-			    return -1;
-			}
-			// Setup Socket Address
-			sockAddr.sin_family = AF_INET;
-			sockAddr.sin_port = htons(port);
-			sockAddr.sin_addr.S_un.S_addr = inet_addr((const char*) &ip);
-			return 1;
-	    } else {
-	        std::cout << "Required socket version not available" << std::endl;
-	        return -1;
-	    }
-	    // Cleanup winsock
-	    if (WSACleanup()!=0) {
-	        // cleanup failed
-	    }
-	} else {
-		std::cout << "Socket Startup Failed" << std::endl;
-		return -1;
-	}
-	return -1;
-}
-
-int Server::connect() {
-	// Connect to client
-	if (connect(serverSock, (sockaddr*)(&sockAddr), sizeof(sockAddr))!=0) {
-		std::cout << "Connection Failed." << std::endl;
-	    return -1;
-	}
-	return 1;
-}
-
-int Server::send(char message) {
-	if (send(serverSock, (const char*) &message, sizeof(message), 0)==SOCKET_ERROR)
-    {
-        // error handling code
+	iResult = shutdown(ClientSocket, SD_SEND);
+    if (iResult == SOCKET_ERROR) {
+        printf("shutdown failed with error: %d\n", WSAGetLastError());
+        closesocket(ClientSocket);
+        WSACleanup();
     }
+
+    // cleanup
+    closesocket(ClientSocket);
+    WSACleanup();
+
+}
+
+// Socket Initializer
+int Server::startSocket() {
+	iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (iResult != 0) {
+        printf("WSAStartup failed with error: %d\n", iResult);
+        return 1;
+    }
+
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = AI_PASSIVE;
+
+    // Resolve the server address and port
+    iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
+    if ( iResult != 0 ) {
+        printf("getaddrinfo failed with error: %d\n", iResult);
+        WSACleanup();
+        return 1;
+    }
+
+    return 0;
+}
+
+// Connect client and server ports
+int Server::serverConnect() {
+    // Create a SOCKET for connecting to server
+    ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    if (ListenSocket == INVALID_SOCKET) {
+        printf("socket failed with error: %ld\n", WSAGetLastError());
+        freeaddrinfo(result);
+        WSACleanup();
+        return 1;
+    }
+
+    // Accept a client socket
+    ClientSocket = accept(ListenSocket, NULL, NULL);
+    if (ClientSocket == INVALID_SOCKET) {
+        printf("accept failed with error: %d\n", WSAGetLastError());
+        closesocket(ListenSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    // No longer need server socket
+    closesocket(ListenSocket);
+
+    return 0;
+}
+
+// Send messages
+int Server::serverSend(const char* message) {
+	iSendResult = send(ClientSocket, message, sendbuflen, 0 );
+    if (iSendResult == SOCKET_ERROR) {
+        printf("send failed with error: %d\n", WSAGetLastError());
+        closesocket(ClientSocket);
+        WSACleanup();
+        return 1;
+    }
+    printf("Bytes sent: %d\n", iSendResult);
+    
+
+    return 0;
+}
+
+// Recieve messages
+int Server::serverReceive() {
+	iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
+	if (iResult == 0)
+        printf("Connection closing...\n");
+    else  {
+        printf("recv failed with error: %d\n", WSAGetLastError());
+        closesocket(ClientSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    return 0;
 }
 
 // Main Method for Command Line
 // Sets up intial config and begins 
 // ouputing to the terminal
 int main() {
-	char ip;
-	int port;
-	std::cout << "Destination IP Address:" << std::endl;
-	std::cin>>ip;
-	std::cout << "Destination Port: " << std::endl;
-	std::cin>>port;
-	Server server(ip, port);
+	return 0;
 }
