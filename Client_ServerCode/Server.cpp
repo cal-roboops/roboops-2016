@@ -69,8 +69,8 @@ int Server::sConnect() {
 	printf("Connecting...\n");
 
 	// Prepare and bind socket for connection
-    int yes = 1;
-    iResult = setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+    int reuse = 1;
+    iResult = setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     iResult = bind(ServerSocket, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1){
         perror("Bind error.");
@@ -86,8 +86,8 @@ int Server::sConnect() {
 
     // Accept Connection
     addr_size = sizeof(client_addr);
-    iResult = accept(ServerSocket, (struct sockaddr*) &client_addr, &addr_size);
-    if (iResult == -1) {
+    ServerSocket = accept(ServerSocket, (struct sockaddr*) &client_addr, &addr_size);
+    if (ServerSocket == -1) {
         perror("Accept error");
         return 1;
     }
