@@ -6,13 +6,12 @@
 // 
 // Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
-//
+// Written for Windows
 
 #undef UNICODE
 
 #define WIN32_LEAN_AND_MEAN
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27015"
 #define _WIN32_WINNT 0x501
 
 #include <windows.h>
@@ -25,6 +24,9 @@
 class Client {
  	private:
  		// Private Variables
+ 		char* server_ip;
+ 		char* server_port;
+
 		int status;
 		int iResult;
  		WSADATA wsaData;
@@ -35,23 +37,23 @@ class Client {
 
     	struct addrinfo *result = NULL,
                     *ptr = NULL,
-                    hints;
+                    host_info;
 
+        int iSendResult;
+ 		int iReceiveResult;
 	    char recvbuf[DEFAULT_BUFLEN];
 	    static const int recvbuflen = DEFAULT_BUFLEN;
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
  		// Private Methods
- 		int cSocket(char* ip);
+ 		int cConnect();
 
  	public:
  		// Public Variables
- 		int iSendResult;
- 		int iReceiveResult;
 
  		// Public Methods
- 		Client(char* ip);
+ 		Client(char* ip, char* port);
  		~Client();
  		int cReceive();
- 		int cSend(const char* message);
+ 		int cSend(const char* msg);
 };

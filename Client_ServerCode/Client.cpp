@@ -7,17 +7,22 @@
 // 
 // Copyright © 2016 Andrew Pau. All rights reserved.
 //
-//
+// Written for Windows
 
 #include "Client.h"
 
 // Client Constructor
-Client::Client(char* ip) {
+Client::Client(char* ip, char* port) {
+    server_ip = ip;
+    server_port = port;
+
     printf("Starting Setup...\n");
-	status = cSocket(ip);
+
+	status = cConnect();
 	if (status == 1) {
 		exit(1);
 	}
+
     printf("Setup Complete!\n");
 }
 
@@ -25,19 +30,19 @@ Client::Client(char* ip) {
 Client::~Client() {
 	iResult = shutdown(ClientSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
+        printf("Shutdown failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
     }
 
-    // cleanup
+    // Cleanup
     closesocket(ClientSocket);
     WSACleanup();
 
 }
 
-// Socket Initializer
-int Client::cSocket(char* ip) {
+// Connection Initializer
+int Client::cConnect() {
     printf("Setting up socket...\n");
 
 	// Initialize Winsock
@@ -47,13 +52,13 @@ int Client::cSocket(char* ip) {
         return 1;
     }
 
-    ZeroMemory( &hints, sizeof(hints) );
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
+    ZeroMemory( &host_info, sizeof(host_info) );
+    host_info.ai_family = AF_UNSPEC;
+    host_info.ai_socktype = SOCK_STREAM;
+    host_info.ai_protocol = IPPROTO_TCP;
 
     // Resolve the Server address and port
-    iResult = getaddrinfo(ip, DEFAULT_PORT, &hints, &result);
+    iResult = getaddrinfo(server_ip, server_port, &host_info, &result);
     if ( iResult != 0 ) {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
@@ -63,19 +68,18 @@ int Client::cSocket(char* ip) {
     printf("Socket Success!\n");
     printf("Connecting...\n");
 
-    // Attempt to Client to an address until one succeeds
+    // Attempt to connect to an address until one succeeds
     for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
 
-        // Create a SOCKET for Clienting to server
-        ClientSocket = socket(ptr->ai_family, ptr->ai_socktype, 
-            ptr->ai_protocol);
+        // Create a SOCKET for connecting to server
+        ClientSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
         if (ClientSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %d\n", WSAGetLastError());
+            printf("Socket failed with error: %d\n", WSAGetLastError());
             WSACleanup();
             return 1;
         }
 
-        // Client to server.
+        // Connect to server.
         iResult = connect(ClientSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
         if (iResult == SOCKET_ERROR) {
             closesocket(ClientSocket);
@@ -94,21 +98,20 @@ int Client::cSocket(char* ip) {
     }
 
     printf("Connection Success!\n");
-
     return 0;
 }
 
 // Send messages
-int Client::cSend(const char* message) {
-	iSendResult = send(ClientSocket, message, (int) strlen(message), 0 );
+int Client::cSend(const char* msg) {
+	iSendResult = send(ClientSocket, msg, (int) strlen(msg), 0 );
     if (iSendResult == SOCKET_ERROR) {
-        printf("send failed with error: %d\n", WSAGetLastError());
+        printf("Send failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
         return 1;
     }
-    printf("Bytes sent: %d\n", iSendResult);
 
+    printf("Bytes sent: %d\n", iSendResult);
     return 0;
 }
 
@@ -117,8 +120,7 @@ int Client::cReceive() {
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
         printf("Bytes received: %d\n", iReceiveResult);
-    }
-    else  {
+    } else {
         printf("recv failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
@@ -133,17 +135,18 @@ int Client::cReceive() {
 // ouputing to the terminal
 int main(int argc, char **argv) {
     // Validate the parameters
-    if (argc != 2) {
+    if (argc != 3) {
         printf("usage: %s server-name\n", argv[0]);
         return 1;
     }
 
-    Client* c = new Client(argv[1]);
+    Client* c = new Client(argv[1], argv[2]);
 
     const char* test = "This is a test message.";
     do {
         c->cSend(test);
         c->cReceive();
     } while (true);
+
 	return 0;
 }

@@ -25,7 +25,6 @@ void server(){
     host_info.ai_flags = AI_PASSIVE;
     
     status = getaddrinfo(NULL, PORT, &host_info, &host_info_list);
-    
     if (status != 0) {
         perror("getaddrinfo error");
         exit(1);
