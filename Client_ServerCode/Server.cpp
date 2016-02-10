@@ -4,10 +4,11 @@
 //
 // Created by Andrew Pau on 1/14/2016
 // Modified by Mitchell Oleson on 2/8/2016
-// 
+//
 // Copyright © 2016 Andrew Pau. All rights reserved.
 //
 // Written for Debian Linux
+//
 
 #include "Server.h"
 
@@ -33,13 +34,12 @@ Server::Server(char* port) {
 // Server Destroyer
 Server::~Server() {
 
-	// Cleanup
-    close(socketfd);
-    close(ServerSocket)
+    // Cleanup
+    close(ServerSocket);
 }
 
 // Socket Initializer
-Server::sSocket() {
+int Server::sSocket() {
 	printf("Setting up socket...\n");
 
 	memset(&host_info, 0, sizeof(host_info));
@@ -69,14 +69,14 @@ int Server::sConnect() {
 	printf("Connecting...\n");
 
 	// Prepare and bind socket for connection
-	int yes = 1;
-	iResult = setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+    int yes = 1;
+    iResult = setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
     iResult = bind(ServerSocket, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1){
         perror("Bind error.");
         return 1;
     }
-    
+
     // Waiting for Connection
     iResult = listen(ServerSocket, BACKLOG);
     if (iResult == -1) {
@@ -86,12 +86,12 @@ int Server::sConnect() {
 
     // Accept Connection
     addr_size = sizeof(client_addr);
-    iResult = accept(socketfd, (struct sockaddr*) &client_addr, &addr_size);
+    iResult = accept(ServerSocket, (struct sockaddr*) &client_addr, &addr_size);
     if (iResult == -1) {
         perror("Accept error");
         return 1;
     }
-    
+
     freeaddrinfo(host_info_list);
 
     printf("Connection Success!\n");
@@ -99,9 +99,9 @@ int Server::sConnect() {
 }
 
 // Send Messages
-Server::sSend(const char* msg) {
+int Server::sSend(const char* msg) {
 
-	iSendResult = send(ServerSocket, msg, (int) strlen(msg), 0);
+    iSendResult = send(ServerSocket, msg, (int) strlen(msg), 0);
     if (iSendResult == -1){
         perror("Sending error");
         return 1;
@@ -112,9 +112,9 @@ Server::sSend(const char* msg) {
 }
 
 // Receive Messages
-Server::sReceive() {
-	iReceivedResults = recv(ServerSocket, recvbuf, recvbuflen, 0);
-	if (iReceivedResults == 0) {
+int Server::sReceive() {
+    iReceivedResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
+    if (iReceivedResults == 0) {
         perror("Host closed.");
         return 1;
     } else if (iReceivedResults == -1) {
@@ -122,5 +122,13 @@ Server::sReceive() {
         return 1;
     }
 
-    printf("Bytes Received: %d\n", iReceivedResults);
+   printf("Bytes Received: %d\n", iReceivedResults);
+   return 0;
 }
+
+// Main Method for Command Line
+// Sets up initial config and begins
+// outputting to the terminal
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        printf(
