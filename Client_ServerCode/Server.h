@@ -13,6 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27015"
+#define _WIN32_WINNT 0x501
 
 #include <windows.h>
 #include <winsock2.h>
@@ -20,16 +21,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#pragma comment (lib, "Ws2_32.lib")
-
 // Server Class
 class Server {
  	private:
  		// Private Variables
- 		WSADATA wsaData;
-		int iReqWinsockVer = 2;
+		int status;
 		int iResult;
-		int st;
+ 		WSADATA wsaData;
+		static const int iReqWinsockVer = 2;
 
     	SOCKET ListenSocket = INVALID_SOCKET;
     	SOCKET ClientSocket = INVALID_SOCKET;
@@ -37,21 +36,22 @@ class Server {
     	struct addrinfo *result = NULL;
 	    struct addrinfo hints;
 
-	    int iSendResult;
-	    int sendbuflen = DEFAULT_BUFLEN;
-
 	    char recvbuf[DEFAULT_BUFLEN];
-	    int recvbuflen = DEFAULT_BUFLEN;
+	    static const int recvbuflen = DEFAULT_BUFLEN;
+	    static const int sendbuflen = DEFAULT_BUFLEN;
 
  		// Private Methods
- 		int startSocket();
- 		int serverConnect();
- 		int serverReceive();
+ 		int sSocket();
+ 		int sConnect();
 
  	public:
  		// Public Variables
+ 		int iSendResult;
+ 		int iReceiveResult;
+
  		// Public Methods
  		Server();
  		~Server();
- 		int serverSend(const char* message);
+ 		int sReceive();
+ 		int sSend(const char* message);
 };
