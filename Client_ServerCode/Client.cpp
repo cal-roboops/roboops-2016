@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
     do {
         c->cSend(test);
         c->cReceive();
-    } while (true);
+    } while (false);
 
 	return 0;
 }
