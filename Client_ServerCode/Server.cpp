@@ -113,16 +113,16 @@ int Server::sSend(const char* msg) {
 
 // Receive Messages
 int Server::sReceive() {
-    iReceivedResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
-    if (iReceivedResults == 0) {
+    iReceiveResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
+    if (iReceiveResult == 0) {
         perror("Host closed.");
         return 1;
-    } else if (iReceivedResults == -1) {
+    } else if (iReceiveResult == -1) {
         perror("Receive error");
         return 1;
     }
 
-   printf("Bytes Received: %d\n", iReceivedResults);
+   printf("Bytes Received: %d\n", iReceiveResult);
    return 0;
 }
 
@@ -135,12 +135,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    Server s = new Server(argv[1]);
+    Server* s = new Server(argv[1]);
 
     const char* test = "This is a test message.";
     do {
-    	c->cReceive();
-    	c->cSend(test);
+    	s->sReceive();
+    	s->sSend(test);
     } while (true);
 
     return 0;

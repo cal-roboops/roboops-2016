@@ -13,9 +13,10 @@
 #define DEFAULT_BUFLEN 512
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <netdb.h>
-#include <unist.d>
+#include <unistd.h>
 #include <sys/socket.h>
 
 // Server Class
