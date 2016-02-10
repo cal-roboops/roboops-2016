@@ -1,0 +1,5 @@
+all: Client.exe
+	g++ -Wall -Wno-long-long -o Client.exe Client.cpp
+
+clean:
+  $(RM) Server

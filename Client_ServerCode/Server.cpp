@@ -131,4 +131,17 @@ int Server::sReceive() {
 // outputting to the terminal
 int main(int argc, char** argv) {
     if (argc != 2) {
-        printf(
+        printf("Usage: %s <port-number>\n", argv[0]);
+        return 1;
+    }
+
+    Server s = new Server(argv[1]);
+
+    const char* test = "This is a test message.";
+    do {
+    	c->cReceive();
+    	c->cSend(test);
+    } while (true);
+
+    return 0;
+}

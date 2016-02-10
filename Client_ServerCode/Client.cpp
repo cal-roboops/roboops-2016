@@ -136,7 +136,7 @@ int Client::cReceive() {
 int main(int argc, char **argv) {
     // Validate the parameters
     if (argc != 3) {
-        printf("usage: %s server-name\n", argv[0]);
+        printf("Usage: %s <server-name> <port-number>\n", argv[0]);
         return 1;
     }
 
