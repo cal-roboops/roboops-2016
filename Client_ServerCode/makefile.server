@@ -1,5 +1,5 @@
 all: Server.cpp
-	g++ -Wall -Wno-long-long -o Server.exe Server.cpp -lws2_32 -lwsock32
+	g++ -Wall -Wno-long-long -o Server.exe Server.cpp
 
-clean: 
-	$(RM) Server
+clean:
+  $(RM) Server
