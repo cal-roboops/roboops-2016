@@ -1,15 +1,15 @@
 #include <wiringPi.h>
 
 int main (void) {
-	int pos;
+    int pos;
     wiringPiSetup () ;
-    pinMode(16, OUTPUT) ;
+    pinMode(15, OUTPUT) ;
     for (pos = 0; pos <= 180; pos++) {
-    	digitalWrite(16, 1);
+    	digitalWrite(15, 1);
     	delay(15);
     }
     for (pos = 180; pos >= 0; pos--) {
-    	digitalWrite(16, -1);
+    	digitalWrite(15, -1);
     	delay(15);
     }
     return 0;
