@@ -113,6 +113,7 @@ int Server::sSend(const char* msg) {
 
 // Receive Messages
 int Server::sReceive() {
+    memset(recvbuf, 0, sizeof(recvbuf));
     iReceiveResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult == 0) {
         perror("Host closed.");
@@ -139,10 +140,12 @@ int main(int argc, char** argv) {
     Server* s = new Server(argv[1]);
     printf("Server Success!\n\n\n");
 
+    const char* confirmation = "All is good";
     do {
     	s->sReceive();
-        printf("Message Recieved: \"%s\"\n\n", s->recvbuf);
-    	s->sSend((const char *) s->rs_status);
+        printf("Message Recieved: \"%s\"\n", s->recvbuf);
+    	s->sSend(confirmation);
+        printf("\n");
     } while (true);
 
     return 0;

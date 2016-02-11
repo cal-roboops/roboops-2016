@@ -44,9 +44,8 @@ class Server {
 
 	public:
 	    // Public Variables
-	    char rs_status[15] = "All is good";
 	    char recvbuf[DEFAULT_BUFLEN];
-	    
+
 	    // Public Methods
 	    Server(char* port);
 	    ~Server();
