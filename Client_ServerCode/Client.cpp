@@ -8,6 +8,7 @@
 // Copyright © 2016 Andrew Pau. All rights reserved.
 //
 // Written for Windows
+//
 
 #include "Client.h"
 
@@ -117,6 +118,7 @@ int Client::cSend(const char* msg) {
 
 // Recieve messages
 int Client::cReceive() {
+    ZeroMemory(recvbuf, sizeof(recvbuf));
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
         printf("Bytes Received: %d\n", iReceiveResult);

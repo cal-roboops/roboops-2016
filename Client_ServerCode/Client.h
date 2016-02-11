@@ -7,6 +7,7 @@
 // Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
 // Written for Windows
+//
 
 #undef UNICODE
 
