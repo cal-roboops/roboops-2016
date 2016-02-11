@@ -35,7 +35,6 @@ class Server {
 
 	    int iSendResult;
  	    int iReceiveResult;
-	    char recvbuf[DEFAULT_BUFLEN];
 	    static const int recvbuflen = DEFAULT_BUFLEN;
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
@@ -45,6 +44,9 @@ class Server {
 
 	public:
 	    // Public Variables
+	    char* rs_status[10] = "All is good";
+	    char recvbuf[DEFAULT_BUFLEN];
+	    
 	    // Public Methods
 	    Server(char* port);
 	    ~Server();

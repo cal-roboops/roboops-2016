@@ -135,12 +135,14 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    printf("Making server...\n");
     Server* s = new Server(argv[1]);
+    printf("Server Success!\n\n\n");
 
-    const char* test = "This is a test message.";
     do {
     	s->sReceive();
-    	s->sSend(test);
+        printf("Message Recieved: \"%s\"\n\n", s->recvbuf);
+    	s->sSend((const char *) s->rs_status);
     } while (true);
 
     return 0;

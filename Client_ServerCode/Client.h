@@ -35,13 +35,12 @@ class Client {
     	SOCKET ListenSocket = INVALID_SOCKET;
     	SOCKET ClientSocket = INVALID_SOCKET;
 
-    	struct addrinfo *result = NULL,
-                    *ptr = NULL,
-                    host_info;
+    	struct addrinfo *result = NULL;
+        struct addrinfo *ptr = NULL;
+        struct addrinfo host_info;
 
         int iSendResult;
  		int iReceiveResult;
-	    char recvbuf[DEFAULT_BUFLEN];
 	    static const int recvbuflen = DEFAULT_BUFLEN;
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
@@ -50,6 +49,7 @@ class Client {
 
  	public:
  		// Public Variables
+ 		char recvbuf[DEFAULT_BUFLEN];
 
  		// Public Methods
  		Client(char* ip, char* port);

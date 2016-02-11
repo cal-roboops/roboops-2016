@@ -119,7 +119,7 @@ int Client::cSend(const char* msg) {
 int Client::cReceive() {
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
-        printf("Bytes received: %d\n", iReceiveResult);
+        printf("Bytes Received: %d\n", iReceiveResult);
     } else {
         printf("recv failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
@@ -140,13 +140,22 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    Client* c = new Client(argv[1], argv[2]);
+    // No print buffering
+    setvbuf (stdout, NULL, _IONBF, 0);
 
-    const char* test = "This is a test message.";
+    printf("Making client...\n");
+    Client* c = new Client(argv[1], argv[2]);
+    printf("Client Success!\n\n\n");
+
+    // Messafe holder
+    char msg[DEFAULT_BUFLEN];
     do {
-        c->cSend(test);
+        printf("Enter message: ");
+        scanf("%s", msg);
+        c->cSend((const char *) &msg);
         c->cReceive();
-    } while (false);
+        printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
+    } while (true);
 
 	return 0;
 }
