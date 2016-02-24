@@ -140,7 +140,10 @@ int main(int argc, char** argv) {
     Server* s = new Server(argv[1]);
     printf("Server Success!\n\n\n");
 
+    // Response
     const char* confirmation = "All is good";
+
+    // Send/Receive Loop
     do {
     	s->sReceive();
         printf("Message Recieved: \"%s\"\n", s->recvbuf);
