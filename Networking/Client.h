@@ -46,7 +46,7 @@ class Client {
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
  		// Private Methods
- 		int cConnect();
+ 		int connect();
 
  	public:
  		// Public Variables
@@ -55,6 +55,6 @@ class Client {
  		// Public Methods
  		Client(char* ip, char* port);
  		~Client();
- 		int cReceive();
- 		int cSend(const char* msg);
+ 		int receive();
+ 		int send(const char* msg);
 };

@@ -17,14 +17,14 @@ Client::Client(char* ip, char* port) {
     server_ip = ip;
     server_port = port;
 
-    printf("Starting Setup...\n");
+    printf("Starting Client Setup...\n");
 
-	status = cConnect();
+	status = connect();
 	if (status == 1) {
 		exit(1);
 	}
 
-    printf("Setup Complete!\n");
+    printf("Client Setup Complete!\n");
 }
 
 // Client Destructor
@@ -43,8 +43,8 @@ Client::~Client() {
 }
 
 // Connection Initializer
-int Client::cConnect() {
-    printf("Setting up socket...\n");
+int Client::connect() {
+    printf("Setting up client socket...\n");
 
 	// Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -66,8 +66,8 @@ int Client::cConnect() {
         return 1;
     }
 
-    printf("Socket Success!\n");
-    printf("Connecting...\n");
+    printf("Client Socket Success!\n");
+    printf("Client Connecting...\n");
 
     // Attempt to connect to an address until one succeeds
     for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
@@ -98,12 +98,12 @@ int Client::cConnect() {
         return 1;
     }
 
-    printf("Connection Success!\n");
+    printf("Client Connection Success!\n");
     return 0;
 }
 
 // Send messages
-int Client::cSend(const char* msg) {
+int Client::send(const char* msg) {
 	iSendResult = send(ClientSocket, msg, (int) strlen(msg), 0 );
     if (iSendResult == SOCKET_ERROR) {
         printf("Send failed with error: %d\n", WSAGetLastError());
@@ -117,7 +117,7 @@ int Client::cSend(const char* msg) {
 }
 
 // Recieve messages
-int Client::cReceive() {
+int Client::receive() {
     ZeroMemory(recvbuf, sizeof(recvbuf));
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
@@ -156,8 +156,8 @@ int main(int argc, char **argv) {
     do {
         printf("Enter message: ");
         scanf("%s", msg);
-        c->cSend((const char *) &msg);
-        c->cReceive();
+        c->send((const char *) &msg);
+        c->receive();
         printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
     } while (true);
 

@@ -39,8 +39,8 @@ class Server {
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
 	    // Private Methods
-	    int sSocket();
-	    int sConnect();
+	    int server_socket();
+	    int connect();
 
 	public:
 	    // Public Variables
@@ -49,6 +49,6 @@ class Server {
 	    // Public Methods
 	    Server(char* port);
 	    ~Server();
-	    int sReceive();
-	    int sSend(const char* msg);
+	    int receive();
+	    int send(const char* msg);
 };

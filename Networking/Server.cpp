@@ -16,19 +16,19 @@
 Server::Server(char* port) {
 	listening_port = port;
 
-	printf("Starting Setup...");
+	printf("Starting Server Setup...");
 
-	status = sSocket();
+	status = server_socket();
 	if (status == 1) {
 		exit(1);
 	}
 
-	status = sConnect();
+	status = connect();
 	if (status == 1) {
 		exit(1);
 	}
 
-	printf("Setup Complete!\n");
+	printf("Server Setup Complete!\n");
 }
 
 // Server Destroyer
@@ -39,8 +39,8 @@ Server::~Server() {
 }
 
 // Socket Initializer
-int Server::sSocket() {
-	printf("Setting up socket...\n");
+int Server::server_socket() {
+	printf("Setting up server socket...\n");
 
 	memset(&host_info, 0, sizeof(host_info));
     host_info.ai_family = AF_UNSPEC;
@@ -60,13 +60,13 @@ int Server::sSocket() {
         return 1;
     }
 
-    printf("Socket Success!\n");
+    printf("Server Socket Success!\n");
     return 0;
 }
 
 // Connection Initializer
-int Server::sConnect() {
-	printf("Connecting...\n");
+int Server::connect() {
+	printf("Server Connecting...\n");
 
 	// Prepare and bind socket for connection
     int reuse = 1;
@@ -94,12 +94,12 @@ int Server::sConnect() {
 
     freeaddrinfo(host_info_list);
 
-    printf("Connection Success!\n");
+    printf("Server Connection Success!\n");
     return 0;
 }
 
 // Send Messages
-int Server::sSend(const char* msg) {
+int Server::send(const char* msg) {
 
     iSendResult = send(ServerSocket, msg, (int) strlen(msg), 0);
     if (iSendResult == -1){
@@ -112,7 +112,7 @@ int Server::sSend(const char* msg) {
 }
 
 // Receive Messages
-int Server::sReceive() {
+int Server::receive() {
     memset(recvbuf, 0, sizeof(recvbuf));
     iReceiveResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult == 0) {
@@ -145,9 +145,9 @@ int main(int argc, char** argv) {
 
     // Send/Receive Loop
     do {
-    	s->sReceive();
+    	s->receive();
         printf("Message Recieved: \"%s\"\n", s->recvbuf);
-    	s->sSend(confirmation);
+    	s->send(confirmation);
         printf("\n");
     } while (true);
 
