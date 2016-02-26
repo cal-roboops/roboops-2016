@@ -14,8 +14,10 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 												// Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+BOOL                InitInstance1(HINSTANCE, int);
 BOOL				InitInstance2(HINSTANCE, int);
+BOOL                InitInstance3(HINSTANCE, int);
+BOOL                InitInstance4(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -35,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow))
+	if (!InitInstance1(hInstance, nCmdShow))
 	{
 		return FALSE;
 	}
@@ -44,6 +46,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		return FALSE;
 	}
+
+	if (!InitInstance3(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
+
+	if (!InitInstance4(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
+
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_COMMAND_COMPUTER));
 
@@ -100,7 +113,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance1(HINSTANCE hInstance, int nCmdShow)
 {
 	hInst = hInstance; // Store instance handle in our global variable
 
@@ -113,6 +126,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	ShowWindow(hWnd1, nCmdShow);
+	MoveWindow(hWnd1, 0, 0, 645, 350, true);
 	UpdateWindow(hWnd1);
 
 	return TRUE;
@@ -128,11 +142,50 @@ BOOL InitInstance2(HINSTANCE hInstance, int nCmdShow)
 
 	if (!hWnd2)
 	{
-		return FALSE;
+		return FALSE;  
 	}
 
 	ShowWindow(hWnd2, nCmdShow);
+	MoveWindow(hWnd2, 635, 0, 645, 350, true);
 	UpdateWindow(hWnd2);
+
+	return TRUE;
+}
+
+BOOL InitInstance3(HINSTANCE hInstance, int nCmdShow)
+{
+	hInst = hInstance; // Store instance handle in our global variable
+
+	HWND hWnd3 = CreateWindowW(szWindowClass, L"CAMERA 1", WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+	if (!hWnd3)
+	{
+		return FALSE;
+	}
+
+	ShowWindow(hWnd3, nCmdShow);
+	MoveWindow(hWnd3, 0, 350, 645, 350, true);
+	UpdateWindow(hWnd3);
+
+	return TRUE;
+}
+
+BOOL InitInstance4(HINSTANCE hInstance, int nCmdShow)
+{
+	hInst = hInstance; // Store instance handle in our global variable
+
+	HWND hWnd4 = CreateWindowW(szWindowClass, L"CAMERA 2", WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+	if (!hWnd4)
+	{
+		return FALSE;
+	}
+
+	ShowWindow(hWnd4, nCmdShow);
+	MoveWindow(hWnd4, 635, 350, 645, 350, true);
+	UpdateWindow(hWnd4);
 
 	return TRUE;
 }
@@ -204,3 +257,14 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return (INT_PTR)FALSE;
 }
+
+//BOOL MoveWindow(HWND hWnd, int X, int Y, int nWidth, int nHeight, BOOL bRepaint)
+//
+//In_ HWND hWnd1,
+//In_ int X;
+//In_ int Y;
+//In_ int nWidth;
+//In_ int nHeight;
+//In_ BOOL bRepaint;
+//eturn true;
+//}
