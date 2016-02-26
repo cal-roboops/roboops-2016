@@ -1,0 +1,5 @@
+all: Server.cpp
+	g++ -Wall -Wno-long-long -o Server.exe Server.cpp
+
+clean:
+  $(RM) Server
