@@ -40,7 +40,7 @@ class Server {
 
 	    // Private Methods
 	    int server_socket();
-	    int connect();
+	    int server_connect();
 
 	public:
 	    // Public Variables
@@ -49,6 +49,6 @@ class Server {
 	    // Public Methods
 	    Server(char* port);
 	    ~Server();
-	    int receive();
-	    int send(const char* msg);
+	    int server_receive();
+	    int server_send(const char* msg);
 };

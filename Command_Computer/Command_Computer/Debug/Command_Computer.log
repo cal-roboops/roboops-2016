@@ -1,2 +1,4 @@
-﻿  Command_Computer.cpp
-  Command_Computer.vcxproj -> C:\Users\Scott\Documents\Roboops\Command_Computer\Debug\Command_Computer.exe
+﻿  stdafx.cpp
+  Command_Computer.cpp
+  LINK : C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer.exe not found or not built by the last incremental link; performing full link
+  Command_Computer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Command_Computer\Debug\Command_Computer.exe

@@ -19,12 +19,12 @@ Server::Server(char* port) {
 	printf("Starting Server Setup...");
 
 	status = server_socket();
-	if (status == 1) {
+	if (status == -1) {
 		exit(1);
 	}
 
-	status = connect();
-	if (status == 1) {
+	status = server_connect();
+	if (status == -1) {
 		exit(1);
 	}
 
@@ -33,7 +33,6 @@ Server::Server(char* port) {
 
 // Server Destroyer
 Server::~Server() {
-
     // Cleanup
     close(ServerSocket);
 }
@@ -51,13 +50,13 @@ int Server::server_socket() {
     iResult = getaddrinfo(NULL, listening_port, &host_info, &host_info_list);
     if (status != 0) {
         perror("getaddrinfo error.");
-        return 1;
+        return -1;
     }
 
     ServerSocket = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
     if (ServerSocket == -1) {
         perror("Socket error.");
-        return 1;
+        return -1;
     }
 
     printf("Server Socket Success!\n");
@@ -65,7 +64,7 @@ int Server::server_socket() {
 }
 
 // Connection Initializer
-int Server::connect() {
+int Server::server_connect() {
 	printf("Server Connecting...\n");
 
 	// Prepare and bind socket for connection
@@ -74,14 +73,14 @@ int Server::connect() {
     iResult = bind(ServerSocket, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1){
         perror("Bind error.");
-        return 1;
+        return -1;
     }
 
     // Waiting for Connection
     iResult = listen(ServerSocket, BACKLOG);
     if (iResult == -1) {
         perror("Listen error");
-        return 1;
+        return -1;
     }
 
     // Accept Connection
@@ -89,7 +88,7 @@ int Server::connect() {
     ServerSocket = accept(ServerSocket, (struct sockaddr*) &client_addr, &addr_size);
     if (ServerSocket == -1) {
         perror("Accept error");
-        return 1;
+        return -1;
     }
 
     freeaddrinfo(host_info_list);
@@ -99,12 +98,11 @@ int Server::connect() {
 }
 
 // Send Messages
-int Server::send(const char* msg) {
-
+int Server::server_send(const char* msg) {
     iSendResult = send(ServerSocket, msg, (int) strlen(msg), 0);
     if (iSendResult == -1){
         perror("Sending error");
-        return 1;
+        return -1;
     }
 
     printf("Bytes sent: %d\n", iSendResult);
@@ -112,15 +110,15 @@ int Server::send(const char* msg) {
 }
 
 // Receive Messages
-int Server::receive() {
+int Server::server_receive() {
     memset(recvbuf, 0, sizeof(recvbuf));
     iReceiveResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult == 0) {
         perror("Host closed.");
-        return 1;
+        return -1;
     } else if (iReceiveResult == -1) {
         perror("Receive error");
-        return 1;
+        return -1;
     }
 
    printf("Bytes Received: %d\n", iReceiveResult);
@@ -133,7 +131,7 @@ int Server::receive() {
 int main(int argc, char** argv) {
     if (argc != 2) {
         printf("Usage: %s <port-number>\n", argv[0]);
-        return 1;
+        return -1;
     }
 
     printf("Making server...\n");
@@ -145,9 +143,9 @@ int main(int argc, char** argv) {
 
     // Send/Receive Loop
     do {
-    	s->receive();
+    	s->server_receive();
         printf("Message Recieved: \"%s\"\n", s->recvbuf);
-    	s->send(confirmation);
+    	s->server_send(confirmation);
         printf("\n");
     } while (true);
 

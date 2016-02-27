@@ -19,8 +19,8 @@ Client::Client(char* ip, char* port) {
 
     printf("Starting Client Setup...\n");
 
-	status = connect();
-	if (status == 1) {
+	status = client_connect();
+	if (status == -1) {
 		exit(1);
 	}
 
@@ -39,18 +39,17 @@ Client::~Client() {
     // Cleanup
     closesocket(ClientSocket);
     WSACleanup();
-
 }
 
 // Connection Initializer
-int Client::connect() {
+int Client::client_connect() {
     printf("Setting up client socket...\n");
 
 	// Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
         printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
+        return -1;
     }
 
     ZeroMemory( &host_info, sizeof(host_info) );
@@ -63,7 +62,7 @@ int Client::connect() {
     if ( iResult != 0 ) {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     printf("Client Socket Success!\n");
@@ -77,7 +76,7 @@ int Client::connect() {
         if (ClientSocket == INVALID_SOCKET) {
             printf("Socket failed with error: %d\n", WSAGetLastError());
             WSACleanup();
-            return 1;
+            return -1;
         }
 
         // Connect to server.
@@ -95,7 +94,7 @@ int Client::connect() {
     if (ClientSocket == INVALID_SOCKET) {
         printf("Unable to connect to server!\n");
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     printf("Client Connection Success!\n");
@@ -103,13 +102,13 @@ int Client::connect() {
 }
 
 // Send messages
-int Client::send(const char* msg) {
+int Client::client_send(const char* msg) {
 	iSendResult = send(ClientSocket, msg, (int) strlen(msg), 0 );
     if (iSendResult == SOCKET_ERROR) {
         printf("Send failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     printf("Bytes sent: %d\n", iSendResult);
@@ -117,7 +116,7 @@ int Client::send(const char* msg) {
 }
 
 // Recieve messages
-int Client::receive() {
+int Client::client_receive() {
     ZeroMemory(recvbuf, sizeof(recvbuf));
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
@@ -126,7 +125,7 @@ int Client::receive() {
         printf("recv failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     return 0;
@@ -139,7 +138,7 @@ int main(int argc, char **argv) {
     // Validate the parameters
     if (argc != 3) {
         printf("Usage: %s <server-name> <port-number>\n", argv[0]);
-        return 1;
+        return -1;
     }
 
     // No print buffering
@@ -156,8 +155,8 @@ int main(int argc, char **argv) {
     do {
         printf("Enter message: ");
         scanf("%s", msg);
-        c->send((const char *) &msg);
-        c->receive();
+        c->client_send((const char *) &msg);
+        c->client_receive();
         printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
     } while (true);
 
