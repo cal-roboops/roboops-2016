@@ -11,8 +11,16 @@
 
 #include "Encoder_RaspPi.h"
 
-Encoder_RaspPi::Encoder_RaspPi() {
-	;
+Encoder_RaspPi::Encoder_RaspPi(int pin) {
+	printf("Creating PWM...\n");
+
+	// Setup pin
+	encoder_pin = pin;
+
+	// Create channel on pin
+	pinMode(pin, INPUT);
+
+	printf("PMW Creation Successful!\n");
 }
 
 Encoder_RaspPi::~Encoder_RaspPi() {
@@ -20,6 +28,6 @@ Encoder_RaspPi::~Encoder_RaspPi() {
 }
 
 int Encoder_RaspPi::value() {
-	curr_value = read();
+	curr_value = digitalRead(encoder_pin);
 	return curr_value;
 }

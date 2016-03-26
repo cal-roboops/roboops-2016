@@ -15,8 +15,7 @@
 Servo_RaspPi::Servo_RaspPi(int pin, int range) {
 	printf("Creating PWM...\n");
 
-	// Setup wiring pi and pin
-	wiringPiSetup();
+	// Setup pin
 	servo_pin = pin;
 	servo_range = range;
 	curr_spin = 0;
@@ -41,13 +40,13 @@ Servo_RaspPi::spin() {
 }
 
 // Update the servo spin by X
-Servo_RaspPi::update(int x) {
+void Servo_RaspPi::update(int x) {
 	curr_spin += x;
 	spin();
 }
 
 // Set servo spin to X
-Servo_RaspPi::set(int x) {
+void Servo_RaspPi::set(int x) {
 	curr_spin = x;
 	spin();
 }

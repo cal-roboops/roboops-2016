@@ -31,6 +31,6 @@ class Servo_RaspPi {
 		// Public Methods
 		Servo_RaspPi::Servo_RaspPi(int pin, int range);
 		Servo_RaspPi::~Servo_RaspPi();
-		set(int x);
-		update(int x);
+		void set(int x);
+		void update(int x);
 };
