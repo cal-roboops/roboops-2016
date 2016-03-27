@@ -12,7 +12,7 @@
 #include "Encoder_RaspPi.h"
 
 Encoder_RaspPi::Encoder_RaspPi(int pin) {
-	printf("Creating PWM...\n");
+	printf("Creating Encoder...\n");
 
 	// Setup pin
 	encoder_pin = pin;
@@ -20,7 +20,7 @@ Encoder_RaspPi::Encoder_RaspPi(int pin) {
 	// Create channel on pin
 	pinMode(pin, INPUT);
 
-	printf("PMW Creation Successful!\n");
+	printf("Encoder Creation Successful!\n");
 }
 
 Encoder_RaspPi::~Encoder_RaspPi() {

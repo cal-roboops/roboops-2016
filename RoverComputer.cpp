@@ -9,14 +9,14 @@
 // Made for Debian
 //
 
-#define TXD_UART 14
-#define RXD_UART 15
-
-#include <WiringPi.h>
-#include "../Client_ServerCode/Server.h"
+#include "RoverComputer.h"
 
 int act(int action) {
-	;
+    int res = UART->send(action);
+    if (res == -1) {
+        return action;
+    }
+	return 0;
 }
 
 int main(int argc, char **argv) {
@@ -29,20 +29,34 @@ int main(int argc, char **argv) {
     wiringPiSetup();
     printf("Wiring Pi Success!\n");
 
+    printf("Setting up UART, Motors, Encoders and Defaults...\n");
+    mode = 0;
+    printf("Setup Success!\n")
+
     printf("Making server...\n");
-    Server* rp = new Server(argv[1]);
+    Server* raspPi = new Server(argv[1]);
     printf("Server Success!\n\n\n");
-
-
-    // Response
-    const char* confirmation = "All is good";
     
     // Command Loop
     do {
-    	rp->sReceive();
-        printf("Message Recieved: \"%s\"\n", s->recvbuf);
-        rp->act(stoi(recvbuf, nullptr, 16));
-    	rp->sSend(confirmation);
+    	raspPi->server_receive();
+        printf("Message Recieved: \"%s\"\n", raspPi->recvbuf);
+        if (strcmp(raspPi->recvbuf, endMsg) == 0) {
+            break;
+        }
+        mode = strtol(raspPi->recvbuf, &command, 10);
+        while (command != NULL) {
+            res = act(strtol(command, &command, 16));
+            if (res != 0) {
+                raspPi->server_send(bad);
+                memset(raspPi->msgbuf, 0, sizeof(raspPi->msgbuf));
+                itoa(res, raspPi->msgbuf, 16);
+                raspPi->server_send((const char*) &(raspPi->msgbuf));
+            } else {
+                raspPi->server_send(good);
+            }
+        }
+    	raspPi->server_send(endMsg);
         printf("\n");
     } while (true);
 

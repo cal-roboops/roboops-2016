@@ -13,7 +13,7 @@
 
 // Servo Constructor
 Servo_RaspPi::Servo_RaspPi(int pin, int range) {
-	printf("Creating PWM...\n");
+	printf("Creating Servo...\n");
 
 	// Setup pin
 	servo_pin = pin;
@@ -26,7 +26,7 @@ Servo_RaspPi::Servo_RaspPi(int pin, int range) {
 		perror("Error creating software PWM.");
 	}
 
-	printf("PMW Creation Successful!\n");
+	printf("Servo Creation Successful!\n");
 }
 
 // Servo Destructor

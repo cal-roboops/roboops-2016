@@ -51,6 +51,7 @@ class Client {
  	public:
  		// Public Variables
  		char recvbuf[DEFAULT_BUFLEN];
+        char msgbuf[DEFAULT_BUFLEN];
 
  		// Public Methods
  		Client(char* ip, char* port);

@@ -45,6 +45,7 @@ class Server {
 	public:
 	    // Public Variables
 	    char recvbuf[DEFAULT_BUFLEN];
+	    char msgbuf[DEFAULT_BUFLEN];
 
 	    // Public Methods
 	    Server(char* port);

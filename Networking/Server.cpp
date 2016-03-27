@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
     // Send/Receive Loop
     do {
     	s->server_receive();
-        printf("Message Recieved: \"%s\"\n", s->recvbuf);
+        printf("Message Received: \"%s\"\n", s->recvbuf);
     	s->server_send(confirmation);
         printf("\n");
     } while (true);

@@ -148,14 +148,11 @@ int main(int argc, char **argv) {
     Client* c = new Client(argv[1], argv[2]);
     printf("Client Success!\n\n\n");
 
-    // Message holder
-    char msg[DEFAULT_BUFLEN];
-
     // Send/Receive Loop
     do {
         printf("Enter message: ");
-        scanf("%s", msg);
-        c->client_send((const char *) &msg);
+        scanf("%s", c->msgbuf);
+        c->client_send((const char *) &(c->msgbuf));
         c->client_receive();
         printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
     } while (true);

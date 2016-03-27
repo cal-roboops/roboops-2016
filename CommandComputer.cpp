@@ -22,19 +22,19 @@ int main(int argc, char **argv) {
     setvbuf (stdout, NULL, _IONBF, 0);
 
     printf("Making client...\n");
-    Client* cc = new Client(argv[1], argv[2]);
+    Client* winC = new Client(argv[1], argv[2]);
     printf("Client Success!\n\n\n");
-
-    // Message holder
-    char msg[DEFAULT_BUFLEN];
 
 	// Command Loop
 	do {
-        printf("Enter message: ");
-        scanf("%s", msg);
-        cc->cSend((const char *) &msg);
-        cc->cReceive();
-        printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
+        printf("Enter mode followed by a list of comma separated commands:\n");
+        scanf("%s", winC->msgbuf);
+        winC->client_send((const char *) &(winC->msgbuf));
+        winC->client_receive();
+        while(strcmp(winC->recvbuf, endMsg) != 0) {
+            printf("Message Recieved: \"%s\"\n\n", winC->recvbuf);
+            winC->client_receive();
+        }
     } while (true);
 
 	return 0;
