@@ -1,5 +1,5 @@
 //
-// RaspPi.cpp
+// RoverComputer.cpp
 // CPP Project
 //
 // Made for mid-project review code performance test
@@ -9,7 +9,21 @@
 // Made for Debian
 //
 
-#include "RoverComputer.h"
+#define TXD_UART 14
+#define RXD_UART 15
+#define MOTOR1 0x80
+#define MOTOR2 0x81
+#define MOTOR3 0x82
+#define MOTOR4 0x83
+#define FR MOTOR1
+#define BR MOTOR2
+#define FL MOTOR3
+#define BL MOTOR4
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+#include "Networking/Server.h"
 
 // Takes in the action and acts accordingly
 int act(int action) {
@@ -48,7 +62,14 @@ int main(int argc, char **argv) {
 
     // Connect to the rover components
     printf("Setting up UART, Motors, Encoders and Defaults...\n");
-    mode = 0;
+    // Default modes
+    int mode = 0;
+    int prev_mode = 0;
+    // Default Messages
+    const char* endMsg = "Done!";
+    const char* complete = "Finished running commands.";
+    const char* good = "All is good.";
+    const char* bad = "Something isn't right: ";
     printf("Setup Success!\n");
 
     // Create rover server and connect to command computer
@@ -68,12 +89,13 @@ int main(int argc, char **argv) {
         }
 
         // Set mode to first value
+        prev_mode = mode;
         mode = strtol(raspPi->recvbuf, &command, 10);
 
         // Parse space seperated command list
         while (command != NULL) {
             // Act on each hexadecimal command
-            res = act(strtol(command, &command, 0));
+            int res = act(strtol(command, &command, 0));
 
             // Check for successful completion of command
             if (res != 0) {

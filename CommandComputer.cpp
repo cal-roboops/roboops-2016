@@ -1,5 +1,5 @@
 //
-// Comm.cpp
+// CommandComputer.cpp
 // CPP Project
 //
 // Made for mid-project review code performance test
@@ -9,7 +9,11 @@
 // Made for Windows
 //
 
-#include "../Client_ServerCode/Client.h"
+#define DEFAULT_BUFLEN 512
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "Networking/Client.h"
 
 int main(int argc, char **argv) {
 	// Validate the parameters
@@ -23,6 +27,9 @@ int main(int argc, char **argv) {
 
     // Connect to the command computer components
     printf("Setting up Controller, Windows and Defaults...");
+    // Default Messages
+    // const char* endMsg = "Done!";
+    const char* complete = "Finished running commands.";
     printf("Setup Success!");
 
     // Create command client and connect to Rover Server

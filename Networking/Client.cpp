@@ -132,9 +132,9 @@ int Client::client_receive() {
 }
 
 // Main Method for Command Line
-// Sets up intial config and begins 
-// ouputing to the terminal
-int main(int argc, char **argv) {
+// Sets up intial config and begins ouputing to the terminal
+// Rename to main if only compiling this file
+int main_client(int argc, char **argv) {
     // Validate the parameters
     if (argc != 3) {
         printf("Usage: %s <server-name> <port-number>\n", argv[0]);
