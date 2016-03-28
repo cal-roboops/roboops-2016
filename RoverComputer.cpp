@@ -3,7 +3,7 @@
 // CPP Project
 //
 // Made for mid-project review code performance test
-// 
+//
 // Created by Mitchell Oleson on 2/11/2016
 //
 // Made for Debian
@@ -25,16 +25,6 @@
 #include <wiringPi.h>
 #include "Networking/Server.h"
 
-// Takes in the action and acts accordingly
-int act(int action) {
-    switch (mode) {
-        case 0: ret = car(action); // Drive using car mode
-        case 1: ret = tank(action); // Drive using tank mode
-        case 2: ret = arm(action); // Move the arm
-    }
-    return ret;
-}
-
 int car(int action) {
     return action;
 }
@@ -44,6 +34,16 @@ int tank(int action) {
 }
 
 int arm(int action) {
+    return action;
+}
+
+// Takes in the action and acts accordingly
+int act(int action, int mode) {
+    switch (mode) {
+        case 0: return car(action); // Drive using car mode
+        case 1: return tank(action); // Drive using tank mode
+        case 2: return arm(action); // Move the arm
+    }
     return action;
 }
 
@@ -69,14 +69,14 @@ int main(int argc, char **argv) {
     const char* endMsg = "Done!";
     const char* complete = "Finished running commands.";
     const char* good = "All is good.";
-    const char* bad = "Something isn't right: ";
+    char* command;
     printf("Setup Success!\n");
 
     // Create rover server and connect to command computer
     printf("Making server...\n");
     Server* raspPi = new Server(argv[1]);
     printf("Server Success!\n\n\n");
-    
+
     // Command Loop
     do {
         // Receive commands from the main computer (Space seperated list)
@@ -90,24 +90,29 @@ int main(int argc, char **argv) {
 
         // Set mode to first value
         prev_mode = mode;
-        mode = strtol(raspPi->recvbuf, &command, 10);
+        mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
 
-        // Parse space seperated command list
+        if (mode != prev_mode) {
+            ;
+        }
+
+        // Parse comma seperated command list
+        command = strtok(NULL, ",");
         while (command != NULL) {
             // Act on each hexadecimal command
-            int res = act(strtol(command, &command, 0));
+            int res = act(strtol(command, NULL, 16), mode);
 
             // Check for successful completion of command
             if (res != 0) {
                 // Send bad status and corresponding hex command for failures
-                raspPi->server_send(bad);
-                memset(raspPi->msgbuf, 0, sizeof(raspPi->msgbuf));
-                itoa(res, raspPi->msgbuf, 16);
-                raspPi->server_send((const char*) &(raspPi->msgbuf));
+                strcpy(raspPi->msgbuf, "Something isn't right: ");
+                strcat(raspPi->msgbuf, command);
+                raspPi->server_send(raspPi->msgbuf);
             } else {
                 // Send confirmation for each successful command
                 raspPi->server_send(good);
             }
+            command = strtok(NULL, ",");
         }
 
         // Send command completion message
