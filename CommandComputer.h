@@ -17,6 +17,7 @@
 private:
 	// Private Variables
 	const char* endMsg = "Done!";
+	const char* complete = "Finished running commands.";
 	// Private Methods
 
 public:

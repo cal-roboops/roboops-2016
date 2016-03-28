@@ -33,11 +33,15 @@ private:
 
     // Rover Responses
     const char* endMsg = "Done!";
+    const char* complete = "Finished running commands.";
     const char* good = "All is good.";
     const char* bad = "Something isn't right: ";
 
 	// Private Methods
-	int act(int* action);
+	int act(int action);
+	int car(int action);
+	int tank(int action);
+	int arm(int action);
 
 public:
 	// Public Variables
