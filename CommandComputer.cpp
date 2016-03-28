@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
         winC->client_send((const char *) &(winC->msgbuf));
 
         // Receive running status of commands
-        winC->client_receive();
-        while (strcmp(winC->recvbuf, complete) != 0) {
-            printf("Message Recieved: \"%s\"\n\n", winC->recvbuf);
+        memset(winC->recvbuf, 0, sizeof(winC->recvbuf));
+        while (strstr(winC->recvbuf, complete) == NULL) {
             winC->client_receive();
+            printf("Message Recieved: \"%s\"\n\n", winC->recvbuf);
         }
     } while (true);
 
