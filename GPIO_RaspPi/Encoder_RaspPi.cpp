@@ -3,8 +3,6 @@
 // CPP Project
 //
 // Created by Mitchell Oleson on 2/26/2016
-// 
-// Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
 // Written for Debian Linux
 //
@@ -12,7 +10,7 @@
 #include "Encoder_RaspPi.h"
 
 Encoder_RaspPi::Encoder_RaspPi(int pin) {
-	printf("Creating Encoder...\n");
+	//printf("Creating Encoder...\n");
 
 	// Setup pin
 	encoder_pin = pin;
@@ -20,7 +18,7 @@ Encoder_RaspPi::Encoder_RaspPi(int pin) {
 	// Create channel on pin
 	pinMode(pin, INPUT);
 
-	printf("Encoder Creation Successful!\n");
+	//printf("Encoder Creation Successful!\n");
 }
 
 Encoder_RaspPi::~Encoder_RaspPi() {

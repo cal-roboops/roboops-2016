@@ -4,8 +4,6 @@
 //
 // Created by Mitchell Oleson on 2/8/2016
 //
-// Copyright © 2016 Andrew Pau. All rights reserved.
-//
 // Written for Debian Linux
 //
 

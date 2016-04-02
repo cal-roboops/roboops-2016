@@ -3,8 +3,6 @@
 // CPP Project
 //
 // Created by Mitchell Oleson on 2/23/2016
-// 
-// Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
 // Written for Debian Linux
 //

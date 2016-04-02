@@ -2,49 +2,44 @@
 // RoverComputer.cpp
 // CPP Project
 //
-// Made for mid-project review code performance test
-//
 // Created by Mitchell Oleson on 2/11/2016
 //
 // Made for Debian
 //
 
-#define TXD_UART 14
-#define RXD_UART 15
-#define MOTOR1 0x80
-#define MOTOR2 0x81
-#define MOTOR3 0x82
-#define MOTOR4 0x83
-#define FR MOTOR1
-#define BR MOTOR2
-#define FL MOTOR3
-#define BL MOTOR4
+#include "RoverComputer.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <wiringPi.h>
-#include "Networking/Server.h"
-
-int car(int action) {
-    return action;
+// Command Transmission form (car):
+// RightRoboClaw, LeftRoboClaw, Servo1, Servo2, Servo3, Servo4, CameraServo
+int car(int[] action) {
+    return action[0];
 }
 
-int tank(int action) {
-    return action;
+// Command Transmission form (tank):
+// RightRoboClaw, LeftRoboClaw, Servo1, Servo2, Servo3, Servo4, CameraServo
+int tank(int[] action) {
+    return action[0];
 }
 
-int arm(int action) {
-    return action;
+// Command Transmission form (arm):
+// BaseSwivel, 
+int arm(int[] action) {
+    return action[0];
 }
 
 // Takes in the action and acts accordingly
-int act(int action, int mode) {
+int act(int[] action, int mode) {
     switch (mode) {
         case 0: return car(action); // Drive using car mode
         case 1: return tank(action); // Drive using tank mode
         case 2: return arm(action); // Move the arm
     }
-    return action;
+    return mode;
+}
+
+// Initialize and setup the rover from its folded state
+int initialize() {
+    return 0;
 }
 
 // Main control function for the Rover
@@ -55,27 +50,70 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    printf("Begin Rover Setup...\n");
+
     // Setup the wiring pi interface
-    printf("Setting up WiringPi...\n");
+    printf("Setting up WiringPi... ");
     wiringPiSetup();
-    printf("Wiring Pi Success!\n");
+    printf("Done!\n");
 
     // Connect to the rover components
-    printf("Setting up UART, Motors, Encoders and Defaults...\n");
+    printf("Setting up UART, Motors, Encoders, Servos and Defaults... ");
     // Default modes
     int mode = 0;
     int prev_mode = 0;
+
     // Default Messages
     const char* endMsg = "Done!";
     const char* complete = "Finished running commands.";
     const char* good = "All is good.";
+
+    // Command list for different modes
     char* command;
-    printf("Setup Success!\n");
+    int command_list[10];
+
+    // Indexing variable
+    int i;
+
+    // Status variable
+    int status;
+
+    // Motors
+    RoboClaw_Raspi roboclaws[2];
+    roboclaws[0] = new RoboClaw_Raspi(ROBOCLAW0);
+    roboclaws[1] = new RoboClaw_Raspi(ROBOCLAW1)
+
+    // Servos
+    Servo_Raspi servos[4];
+    servos[0] = new Servo_Raspi(SERVO0PIN, DEFAULTRANGE);
+    servos[1] = new Servo_Raspi(SERVO1PIN, DEFAULTRANGE);
+    servos[2] = new Servo_Raspi(SERVO2PIN, DEFAULTRANGE);
+    servos[3] = new Servo_Raspi(SERVO3PIN, DEFAULTRANGE);
+
+    // Encoders
+    Encoder_Raspi encoders[4];
+    encoders[0] = new Encoder_Raspi(ENCODER0PIN);
+    encoders[1] = new Encoder_Raspi(ENCODER1PIN);
+    encoders[2] = new Encoder_Raspi(ENCODER2PIN);
+    encoders[3] = new Encoder_Raspi(ENCODER3PIN);
+
+    printf("Done!\n");
 
     // Create rover server and connect to command computer
-    printf("Making server...\n");
+    printf("Setting up connection... ");
     Server* raspPi = new Server(argv[1]);
-    printf("Server Success!\n\n\n");
+    printf("Done!\n");
+
+    // Initialize the rover
+    printf("Setting up physical Rover... ");
+    status = initialize();
+    if (status != 0) {
+        printf("Could not initialize rover.\n");
+        return 1;
+    }
+    printf("Done!\n");
+
+    printf("Rover Setup Complete!\n\n\n");
 
     // Command Loop
     do {
@@ -96,23 +134,30 @@ int main(int argc, char **argv) {
             ;
         }
 
-        // Parse comma seperated command list
+        // Reset index
+        i = 0;
+        // Parse the comma seperated command list
         command = strtok(NULL, ",");
         while (command != NULL) {
-            // Act on each hexadecimal command
-            int res = act(strtol(command, NULL, 16), mode);
-
-            // Check for successful completion of command
-            if (res != 0) {
-                // Send bad status and corresponding hex command for failures
-                strcpy(raspPi->msgbuf, "Something isn't right: ");
-                strcat(raspPi->msgbuf, command);
-                raspPi->server_send(raspPi->msgbuf);
-            } else {
-                // Send confirmation for each successful command
-                raspPi->server_send(good);
-            }
+            // Translate command to int and store in command list
+            command_list[i] = strtol(command, NULL, 16);
+            // Get next command
             command = strtok(NULL, ",");
+            i++;
+        }
+        
+        // Act on the list of hexadecimal command
+        char* res = act(command_list, mode);
+
+        // Check for successful completion of command
+        if (res != 0) {
+            // Send bad status and corresponding hex command for failures
+            strcpy(raspPi->msgbuf, "Something isn't right: ");
+            strcat(raspPi->msgbuf, res);
+            raspPi->server_send(raspPi->msgbuf);
+        } else {
+            // Send confirmation for each successful command
+            raspPi->server_send(good);
         }
 
         // Send command completion message

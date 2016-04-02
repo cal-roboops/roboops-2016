@@ -1,19 +1,13 @@
 //
 // CommandComputer.cpp
 // CPP Project
-//
-// Made for mid-project review code performance test
 // 
 // Created by Mitchell Oleson on 2/11/2016
 //
 // Made for Windows
 //
 
-#define DEFAULT_BUFLEN 512
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "Networking/Client.h"
+#include "CommandComputer.h"
 
 int main(int argc, char **argv) {
 	// Validate the parameters
@@ -55,5 +49,4 @@ int main(int argc, char **argv) {
     } while (true);
 
 	return 0;
-
 }

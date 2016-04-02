@@ -3,8 +3,6 @@
 // CPP Project
 //
 // Created by Mitchell Oleson on 2/26/2016
-// 
-// Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
 // Written for Debian Linux
 //
@@ -13,7 +11,7 @@
 
 // Servo Constructor
 Servo_RaspPi::Servo_RaspPi(int pin, int range) {
-	printf("Creating Servo...\n");
+	//printf("Creating Servo...\n");
 
 	// Setup pin
 	servo_pin = pin;
@@ -26,7 +24,7 @@ Servo_RaspPi::Servo_RaspPi(int pin, int range) {
 		perror("Error creating software PWM.");
 	}
 
-	printf("Servo Creation Successful!\n");
+	//printf("Servo Creation Successful!\n");
 }
 
 // Servo Destructor

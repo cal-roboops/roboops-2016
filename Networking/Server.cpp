@@ -5,8 +5,6 @@
 // Created by Andrew Pau on 1/14/2016
 // Modified by Mitchell Oleson on 2/8/2016
 //
-// Copyright © 2016 Andrew Pau. All rights reserved.
-//
 // Written for Debian Linux
 //
 
@@ -16,7 +14,7 @@
 Server::Server(char* port) {
 	listening_port = port;
 
-	printf("Starting Server Setup...");
+	//printf("Starting Server Setup...\n");
 
 	status = server_socket();
 	if (status == -1) {
@@ -28,7 +26,7 @@ Server::Server(char* port) {
 		exit(1);
 	}
 
-	printf("Server Setup Complete!\n");
+	//printf("Server Setup Complete!\n");
 }
 
 // Server Destroyer
@@ -39,7 +37,7 @@ Server::~Server() {
 
 // Socket Initializer
 int Server::server_socket() {
-	printf("Setting up server socket...\n");
+	//printf("Setting up server socket...\n");
 
 	memset(&host_info, 0, sizeof(host_info));
     host_info.ai_family = AF_UNSPEC;
@@ -59,13 +57,13 @@ int Server::server_socket() {
         return -1;
     }
 
-    printf("Server Socket Success!\n");
+    //printf("Server Socket Success!\n");
     return 0;
 }
 
 // Connection Initializer
 int Server::server_connect() {
-	printf("Server Connecting...\n");
+	//printf("Server Connecting...\n");
 
 	// Prepare and bind socket for connection
     int reuse = 1;
@@ -93,7 +91,7 @@ int Server::server_connect() {
 
     freeaddrinfo(host_info_list);
 
-    printf("Server Connection Success!\n");
+    //printf("Server Connection Success!\n");
     return 0;
 }
 
@@ -134,9 +132,9 @@ int main_server(int argc, char** argv) {
         return -1;
     }
 
-    printf("Making server...\n");
+    printf("Making server... ");
     Server* s = new Server(argv[1]);
-    printf("Server Success!\n\n\n");
+    printf("Done!\n\n\n");
 
     // Response
     const char* confirmation = "All is good";

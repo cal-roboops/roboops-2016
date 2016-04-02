@@ -4,8 +4,6 @@
 //
 // Created by Andrew Pau on 1/14/2016
 // Modified by Mitchell Oleson on 2/8/2016
-// 
-// Copyright © 2016 Andrew Pau. All rights reserved.
 //
 // Written for Windows
 //
@@ -17,14 +15,14 @@ Client::Client(char* ip, char* port) {
     server_ip = ip;
     server_port = port;
 
-    printf("Starting Client Setup...\n");
+    //printf("Starting Client Setup...\n");
 
 	status = client_connect();
 	if (status == -1) {
 		exit(1);
 	}
 
-    printf("Client Setup Complete!\n");
+    //printf("Client Setup Complete!\n");
 }
 
 // Client Destructor
@@ -43,7 +41,7 @@ Client::~Client() {
 
 // Connection Initializer
 int Client::client_connect() {
-    printf("Setting up client socket...\n");
+    //printf("Setting up client socket...\n");
 
 	// Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -65,8 +63,8 @@ int Client::client_connect() {
         return -1;
     }
 
-    printf("Client Socket Success!\n");
-    printf("Client Connecting...\n");
+    //printf("Client Socket Success!\n");
+    //printf("Client Connecting...\n");
 
     // Attempt to connect to an address until one succeeds
     for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
@@ -97,7 +95,7 @@ int Client::client_connect() {
         return -1;
     }
 
-    printf("Client Connection Success!\n");
+    //printf("Client Connection Success!\n");
     return 0;
 }
 
@@ -144,9 +142,9 @@ int main_client(int argc, char **argv) {
     // No print buffering
     setvbuf (stdout, NULL, _IONBF, 0);
 
-    printf("Making client...\n");
+    printf("Making client... ");
     Client* c = new Client(argv[1], argv[2]);
-    printf("Client Success!\n\n\n");
+    printf("Done!\n\n\n");
 
     // Send/Receive Loop
     do {
