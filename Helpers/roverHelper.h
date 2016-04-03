@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "sharedDefinitions.h"
 
 // ---------- INITIALIZE -----------
 int initialize();
