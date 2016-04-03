@@ -1,5 +1,5 @@
 //
-// Encoder_RaspPi.cpp
+// Encoder.cpp
 // CPP Project
 //
 // Created by Mitchell Oleson on 2/26/2016
@@ -7,9 +7,9 @@
 // Written for Debian Linux
 //
 
-#include "Encoder_RaspPi.h"
+#include "Encoder.h"
 
-Encoder_RaspPi::Encoder_RaspPi(int pin) {
+Encoder::Encoder(int pin) {
 	//printf("Creating Encoder...\n");
 
 	// Setup pin
@@ -21,11 +21,11 @@ Encoder_RaspPi::Encoder_RaspPi(int pin) {
 	//printf("Encoder Creation Successful!\n");
 }
 
-Encoder_RaspPi::~Encoder_RaspPi() {
+Encoder::~Encoder() {
 	;
 }
 
-int Encoder_RaspPi::value() {
+int Encoder::value() {
 	return digitalRead(encoder_pin);
 }
 
@@ -34,14 +34,14 @@ int Encoder_RaspPi::value() {
 // Rename to main if compiling only this file
 int main_encoder(int argc, char **argv) {
 	// Validte parameters
-	if (argc != 2) {
+    if (argc != 2) {
         printf("Usage: %s <pin>\n", argv[0]);
         return -1;
     }
 
     // Create Encoder object
     printf("Making Encoder... ");
-    Encoder_RaspPi e = new Encoder_RaspPi(argv[1]);
+    Encoder* e = new Encoder(strtol(argv[1], NULL, 10));
     printf("Done!\n");
 
     // Output value to terminal once per second

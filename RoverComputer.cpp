@@ -45,21 +45,21 @@ int main(int argc, char **argv) {
 
     // Indexing & result variables
     int i;
-    char* res;
+    int res;
 
     // Motors
-    RoboClaw* roboclaw = new RoboClaw(ROBOCLAWDEVICE);
+    RoboClaw* roboclaw = new RoboClaw(ROBOCLAWDEVICE, BAUDRATE);
 
     // Servos (use softServoWrite(pin, value) to control)
     softServoSetup(CHASSISSERVOPINFL, CHASSISSERVOPINBL, CHASSISSERVOPINFR, 
         CHASSISSERVOPINBR, 0, 0, 0, 0);
 
     // Encoders
-    Encoder_Raspi encoders[4];
-    encoders[0] = new Encoder_Raspi(ENCODERPIN0);
-    encoders[1] = new Encoder_Raspi(ENCODERPIN1);
-    encoders[2] = new Encoder_Raspi(ENCODERPIN2);
-    encoders[3] = new Encoder_Raspi(ENCODERPIN3);
+    Encoder* encoders[4];
+    encoders[0] = new Encoder(ENCODERPIN0);
+    encoders[1] = new Encoder(ENCODERPIN1);
+    encoders[2] = new Encoder(ENCODERPIN2);
+    encoders[3] = new Encoder(ENCODERPIN3);
 
     printf("Done!\n");
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
             command = strtok(NULL, ",");
             i++;
         }
-        
+
         // Act on the list of hexadecimal command
         res = act(command_list, mode);
 

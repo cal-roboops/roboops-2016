@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/wiringSerial.h"
 
@@ -25,7 +27,7 @@ class RoboClaw {
 	public:
 		// Public Variables
 		// Public Methods
-		RoboClaw(char* dev);
+		RoboClaw(char* dev, int baud);
 		~RoboClaw();
 		void transmit(char* command);
 		void clear();

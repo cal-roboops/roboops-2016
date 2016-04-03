@@ -8,11 +8,11 @@
 //
 
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include "../wiringPi/wiringPi/wiringPi.h"
 
 // Encoder_RaspPi class
-class Encoder_RaspPi {
+class Encoder {
 	private:
 		// Private Variables
 		int encoder_pin;
@@ -21,9 +21,9 @@ class Encoder_RaspPi {
 
 	public:
 		// Public Variables
-		
+
 		// Public Methods
-		Encoder_RaspPi::Encoder_RaspPi();
-		Encoder_RaspPi::~Encoder_RaspPi();
+		Encoder(int pin);
+		~Encoder();
 		int value();
 };
