@@ -11,6 +11,7 @@
 #define ROBOCLAWDEVICE "/dev/ttyAMA0"
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "Networking/Server.h"
 #include "GPIO_RaspPi/Encoder.h"
@@ -18,3 +19,7 @@
 #include "Helpers/sharedDefinitions.h"
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/softServo.h"
+
+RoboClaw* roboclaw;
+Server* raspPi;
+Encoder* encoders[4];

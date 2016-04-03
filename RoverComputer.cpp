@@ -9,18 +9,6 @@
 
 #include "RoverComputer.h"
 
-
-
-//
-// roverHelper.cpp
-// CPP Project
-//
-// Created by Mitchell Oleson on 4/2/2016
-//
-// Made for Debian
-//
-
-
 // ---------- INITIALIZE -----------
 
 // Initialize and setup the rover from its folded state
@@ -148,14 +136,13 @@ int main(int argc, char **argv) {
     int res;
 
     // Motors
-    RoboClaw* roboclaw = new RoboClaw(ROBOCLAWDEVICE, BAUDRATE);
+    roboclaw = new RoboClaw(ROBOCLAWDEVICE, BAUDRATE);
 
     // Servos (use softServoWrite(pin, value) to control)
     softServoSetup(CHASSISSERVOPINFL, CHASSISSERVOPINBL, CHASSISSERVOPINFR, 
         CHASSISSERVOPINBR, 0, 0, 0, 0);
 
     // Encoders
-    Encoder* encoders[4];
     encoders[0] = new Encoder(ENCODERPIN0);
     encoders[1] = new Encoder(ENCODERPIN1);
     encoders[2] = new Encoder(ENCODERPIN2);
@@ -165,7 +152,7 @@ int main(int argc, char **argv) {
 
     // Create rover server and connect to command computer
     printf("Setting up connection... ");
-    Server* raspPi = new Server(argv[1]);
+    raspPi = new Server(argv[1]);
     printf("Done!\n");
 
     // Initialize the rover
