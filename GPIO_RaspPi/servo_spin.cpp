@@ -2,8 +2,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include <drogon/wiringpi/wiringPi/wiringPi.h>
-#include <drogon/wiringpi/wiringPi/softServo.h>
+#include "../wiringPi/wiringPi/wiringPi.h"
+#include "../wiringPi/wiringPi/softServo.h"
 
 int main () {
     if (wiringPiSetup () == -1) {
@@ -11,7 +11,7 @@ int main () {
     return 1 ;
     }
 
-    softServoSetup(0) ;
+    softServoSetup(0, 1, 2, 3, 4, 5, 6, 7);
 
     softServoWrite (0,  500) ;
 /*
@@ -24,15 +24,13 @@ int main () {
     softServoWrite (7, 2200) ;
 */
     // Hold variables
-    int mode;
     int value;
 
     // Servo Control Loop
     while (true) {
         printf("Set value to: ");
-        scanf("%d", value);
+        scanf("%d", &value);
         softServoWrite(0, value);
-        delay(1000);
     }
 
 }

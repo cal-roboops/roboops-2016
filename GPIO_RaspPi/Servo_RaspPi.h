@@ -7,10 +7,10 @@
 // Written for Debian Linux
 //
 
-#include <wiringPi.h>
-#include <softServo.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "../wiringPi/wiringPi/wiringPi.h"
+#include "../wiringPi/wiringPi/softServo.h"
 
 // Servo_RaspPi Class
 class Servo_RaspPi {
