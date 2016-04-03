@@ -205,7 +205,7 @@ int softServoSetup (int p0, int p1, int p2, int p3, int p4, int p5, int p6, int 
   pinMap [7] = p7 ;
 
   for (servo = 0 ; servo < MAX_SERVOS ; ++servo)
-    pulseWidth [servo] = 1500 ;		// Mid point
-  
+    pulseWidth [servo] = 2000 ;		// Mid point
+
   return piThreadCreate (softServoThread) ;
 }
