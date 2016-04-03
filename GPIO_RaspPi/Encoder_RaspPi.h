@@ -7,6 +7,7 @@
 // Written for Debian Linux
 //
 
+#include <wiringPi.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -15,7 +16,6 @@ class Encoder_RaspPi {
 	private:
 		// Private Variables
 		int encoder_pin;
-		int curr_value;
 
 		// Private Methods
 

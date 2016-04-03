@@ -26,6 +26,29 @@ Encoder_RaspPi::~Encoder_RaspPi() {
 }
 
 int Encoder_RaspPi::value() {
-	curr_value = digitalRead(encoder_pin);
-	return curr_value;
+	return digitalRead(encoder_pin);
+}
+
+// Main method for Encoder testing
+// Sets up basic encoder config and outputs data terminal
+// Rename to main if compiling only this file
+int main(int argc, char **argv) {
+	// Validte parameters
+	if (argc != 2) {
+        printf("Usage: %s <pin>\n", argv[0]);
+        return -1;
+    }
+
+    // Create Encoder object
+    printf("Making Encoder... ");
+    Encoder_RaspPi e = new Encoder_RaspPi(argv[1]);
+    printf("Done!\n");
+
+    // Output value to terminal once per second
+    while (true) {
+    	printf("%d\n", e->value());
+    	delay(1000);
+    }
+
+	return 0;
 }

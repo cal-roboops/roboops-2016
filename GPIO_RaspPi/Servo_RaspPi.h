@@ -7,6 +7,7 @@
 // Written for Debian Linux
 //
 
+#include <wiringPi.h>
 #include <softPwm.h>
 #include <stdio.h>
 #include <unistd.h>

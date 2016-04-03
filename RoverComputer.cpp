@@ -22,9 +22,14 @@ int tank(int[] action) {
 }
 
 // Command Transmission form (arm):
-// BaseSwivel, 
+// BaseSwivel, Base
 int arm(int[] action) {
     return action[0];
+}
+
+// Stops actions/movements of the previous mode
+int stop(int mode) {
+    return 0;
 }
 
 // Takes in the action and acts accordingly
@@ -33,8 +38,8 @@ int act(int[] action, int mode) {
         case 0: return car(action); // Drive using car mode
         case 1: return tank(action); // Drive using tank mode
         case 2: return arm(action); // Move the arm
+        default: return mode;
     }
-    return mode;
 }
 
 // Initialize and setup the rover from its folded state
@@ -54,7 +59,10 @@ int main(int argc, char **argv) {
 
     // Setup the wiring pi interface
     printf("Setting up WiringPi... ");
-    wiringPiSetup();
+    if (wiringPiSetup() == -1) {
+        printf("WiringPi failed to start.\n");
+        exit(1);
+    }
     printf("Done!\n");
 
     // Connect to the rover components
@@ -72,11 +80,9 @@ int main(int argc, char **argv) {
     char* command;
     int command_list[10];
 
-    // Indexing variable
+    // Indexing & result variables
     int i;
-
-    // Status variable
-    int status;
+    int res;
 
     // Motors
     RoboClaw_Raspi roboclaws[2];
@@ -106,10 +112,9 @@ int main(int argc, char **argv) {
 
     // Initialize the rover
     printf("Setting up physical Rover... ");
-    status = initialize();
-    if (status != 0) {
+    if (initialize() != 0) {
         printf("Could not initialize rover.\n");
-        return 1;
+        exit(1);
     }
     printf("Done!\n");
 
@@ -130,8 +135,12 @@ int main(int argc, char **argv) {
         prev_mode = mode;
         mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
 
+        // Stop the previous modes commands
         if (mode != prev_mode) {
-            ;
+            if (stop(prev_mode) != 0) {
+                printf("Couldn't stop previous mode.\n");
+                exit(1);
+            }
         }
 
         // Reset index
@@ -141,13 +150,13 @@ int main(int argc, char **argv) {
         while (command != NULL) {
             // Translate command to int and store in command list
             command_list[i] = strtol(command, NULL, 16);
-            // Get next command
+            // Get next command and incrememnt i
             command = strtok(NULL, ",");
             i++;
         }
         
         // Act on the list of hexadecimal command
-        char* res = act(command_list, mode);
+        res = act(command_list, mode);
 
         // Check for successful completion of command
         if (res != 0) {

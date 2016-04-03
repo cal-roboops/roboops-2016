@@ -129,9 +129,9 @@ int Client::client_receive() {
     return 0;
 }
 
-// Main Method for Command Line
+// Main method for Client testing
 // Sets up intial config and begins ouputing to the terminal
-// Rename to main if only compiling this file
+// Rename to main if compiling only this file
 int main_client(int argc, char **argv) {
     // Validate the parameters
     if (argc != 3) {
@@ -142,6 +142,7 @@ int main_client(int argc, char **argv) {
     // No print buffering
     setvbuf (stdout, NULL, _IONBF, 0);
 
+    // Create Client object
     printf("Making client... ");
     Client* c = new Client(argv[1], argv[2]);
     printf("Done!\n\n\n");
