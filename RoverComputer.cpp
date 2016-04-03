@@ -47,19 +47,17 @@ int main(int argc, char **argv) {
     int res;
 
     // Motors
-    RoboClaw_Raspi roboclaws[2];
-    roboclaws[0] = new RoboClaw_Raspi(ROBOCLAW0);
-    roboclaws[1] = new RoboClaw_Raspi(ROBOCLAW1)
+    RoboClaw roboclaw = new RoboClaw(ROBOCLAWPINTX, ROBOCLAWPINRX);
 
     // Servos (use softServoWrite(pin, value) to control)
-    softServoSetup(SERVOPIN0, SERVOPIN1, SERVOPIN2, SERVOPIN3)
+    softServoSetup(SERVOPIN0, SERVOPIN1, SERVOPIN2, SERVOPIN3, 0, 0, 0, 0);
 
     // Encoders
     Encoder_Raspi encoders[4];
-    encoders[0] = new Encoder_Raspi(ENCODER0PIN);
-    encoders[1] = new Encoder_Raspi(ENCODER1PIN);
-    encoders[2] = new Encoder_Raspi(ENCODER2PIN);
-    encoders[3] = new Encoder_Raspi(ENCODER3PIN);
+    encoders[0] = new Encoder_Raspi(ENCODERPIN0);
+    encoders[1] = new Encoder_Raspi(ENCODERPIN1);
+    encoders[2] = new Encoder_Raspi(ENCODERPIN2);
+    encoders[3] = new Encoder_Raspi(ENCODERPIN3);
 
     printf("Done!\n");
 

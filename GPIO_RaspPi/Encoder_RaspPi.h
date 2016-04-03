@@ -7,9 +7,9 @@
 // Written for Debian Linux
 //
 
-#include "../wiringPi/wiringPi/wiringPi.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "../wiringPi/wiringPi/wiringPi.h"
 
 // Encoder_RaspPi class
 class Encoder_RaspPi {
