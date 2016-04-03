@@ -9,3 +9,6 @@ Client:
 
 Server:
 	g++ -Wall -Wno-long-long -o Server.exe Server.cpp
+
+PiSSH:
+	ssh pi@2601:644:102:7600::fa89

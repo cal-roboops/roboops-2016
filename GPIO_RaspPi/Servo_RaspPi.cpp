@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     	scanf("%d", mode);
     	printf("To value: ");
     	scanf("%d", value);
-    	switch (value) {
+    	switch (mode) {
     		case 1: s->set(value);
     		case 2: s->update(value);
     		case 3: return 0;

@@ -23,8 +23,16 @@ int main () {
     softServoWrite (6, 1500) ;
     softServoWrite (7, 2200) ;
 */
+    // Hold variables
+    int mode;
+    int value;
 
-    for (;;)
-    delay (10) ;
+    // Servo Control Loop
+    while (true) {
+        printf("Set value to: ");
+        scanf("%d", value);
+        softServoWrite(0, value);
+        delay(1000);
+    }
 
 }
