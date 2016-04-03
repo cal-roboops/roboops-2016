@@ -1,5 +1,5 @@
 RoverComputer:
-	g++ -Wall -Wno-long-long Networking/Server.cpp RoverComputer.cpp -o RoverComputer.exe -lwiringPi
+	g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c Networking/Server.cpp RoverComputer.cpp -o RoverComputer.exe -lwiringPi
 	
 CommandComputer:
 	g++ -Wall -Wno-long-long Networking/Client.cpp CommandComputer.cpp -o CommandComputer.exe -lws2_32 -lwsock32

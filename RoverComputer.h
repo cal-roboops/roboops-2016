@@ -9,8 +9,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <wiringPi.h>
-#include <softServo.h>
 #include "Networking/Server.h"
 #include "Helpers/roverHelper.h"
 #include "Helpers/sharedDefinitions.h"
+#include "../wiringPi/wiringPi/wiringPi.h"
+#include "../wiringPi/wiringPi/softServo.h"

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/softServo.h"
 

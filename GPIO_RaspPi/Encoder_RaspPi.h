@@ -7,7 +7,7 @@
 // Written for Debian Linux
 //
 
-#include <wiringPi.h>
+#include "../wiringPi/wiringPi/wiringPi.h"
 #include <stdio.h>
 #include <unistd.h>
 
