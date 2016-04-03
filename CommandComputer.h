@@ -9,5 +9,5 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Definitions.h"
 #include "Networking/Client.h"
+#include "Helpers/sharedDefinitions.h"

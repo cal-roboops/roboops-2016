@@ -18,8 +18,8 @@ Servo_RaspPi::Servo_RaspPi(int pin, int range) {
 	servo_range = range;
 	curr_spin = 0;
 
-	// Create PWM channel on pin
-	int status = softPwmCreate(pin, 0, range);
+	// Create Software Servo channel on pin
+	int status = softServoSetup(pin);
 	if (status != 0) {
 		perror("Error creating software PWM.");
 	}
@@ -34,7 +34,7 @@ Servo_RaspPi::~Servo_RaspPi() {
 
 // Spin servo to the value of curr_spin
 Servo_RaspPi::spin() {
-	softPwmWrite(servo_pin, curr_spin);
+	softServoWrite(servo_pin, curr_spin);
 }
 
 // Update the servo spin by X

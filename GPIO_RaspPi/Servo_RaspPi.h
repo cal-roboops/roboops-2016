@@ -8,7 +8,7 @@
 //
 
 #include <wiringPi.h>
-#include <softPwm.h>
+#include <softServo.h>
 #include <stdio.h>
 #include <unistd.h>
 

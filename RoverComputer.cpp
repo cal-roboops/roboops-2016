@@ -9,44 +9,6 @@
 
 #include "RoverComputer.h"
 
-// Command Transmission form (car):
-// RightRoboClaw, LeftRoboClaw, Servo1, Servo2, Servo3, Servo4, CameraServo
-int car(int[] action) {
-    return action[0];
-}
-
-// Command Transmission form (tank):
-// RightRoboClaw, LeftRoboClaw, Servo1, Servo2, Servo3, Servo4, CameraServo
-int tank(int[] action) {
-    return action[0];
-}
-
-// Command Transmission form (arm):
-// BaseSwivel, Base
-int arm(int[] action) {
-    return action[0];
-}
-
-// Stops actions/movements of the previous mode
-int stop(int mode) {
-    return 0;
-}
-
-// Takes in the action and acts accordingly
-int act(int[] action, int mode) {
-    switch (mode) {
-        case 0: return car(action); // Drive using car mode
-        case 1: return tank(action); // Drive using tank mode
-        case 2: return arm(action); // Move the arm
-        default: return mode;
-    }
-}
-
-// Initialize and setup the rover from its folded state
-int initialize() {
-    return 0;
-}
-
 // Main control function for the Rover
 int main(int argc, char **argv) {
     // Check command line arguments
@@ -89,12 +51,8 @@ int main(int argc, char **argv) {
     roboclaws[0] = new RoboClaw_Raspi(ROBOCLAW0);
     roboclaws[1] = new RoboClaw_Raspi(ROBOCLAW1)
 
-    // Servos
-    Servo_Raspi servos[4];
-    servos[0] = new Servo_Raspi(SERVO0PIN, DEFAULTRANGE);
-    servos[1] = new Servo_Raspi(SERVO1PIN, DEFAULTRANGE);
-    servos[2] = new Servo_Raspi(SERVO2PIN, DEFAULTRANGE);
-    servos[3] = new Servo_Raspi(SERVO3PIN, DEFAULTRANGE);
+    // Servos (use softServoWrite(pin, value) to control)
+    softServoSetup(SERVOPIN0, SERVOPIN1, SERVOPIN2, SERVOPIN3)
 
     // Encoders
     Encoder_Raspi encoders[4];
