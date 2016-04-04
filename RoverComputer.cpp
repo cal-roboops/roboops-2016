@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     // Command list for different modes
     char* command;
-    char* command_list[10];
+    char* command_list[25];
 
     // Indexing & result variables
     int i;
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
         if (mode != prev_mode) {
             if (stop(prev_mode) != 0) {
                 printf("Couldn't stop previous mode.\n");
-                exit(1);
+                //exit(1);
             }
         }
 
