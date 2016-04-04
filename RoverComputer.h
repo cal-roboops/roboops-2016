@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Networking/Server.h"
-#include "Helpers/roverHelper.h"
 #include "GPIO_RaspPi/Encoder.h"
 #include "GPIO_RaspPi/RoboClaw.h"
 #include "Helpers/sharedDefinitions.h"

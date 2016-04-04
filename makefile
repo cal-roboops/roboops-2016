@@ -1,6 +1,6 @@
 RoverComputer:
 	g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c Networking/Server.cpp RoverComputer.cpp -o RoverComputer.exe -lwiringPi
-        g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c Helpers/roverHelper.cpp GPIO_RaspPi/RoboClaw.cpp GPIO_RaspPi/Encoder.cpp Networking/Server.cpp Helpers/sharedDefinitions.h RoverComputer.cpp -o RoverComputer.exe -lwiringPi
+    g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c Helpers/roverHelper.cpp GPIO_RaspPi/RoboClaw.cpp GPIO_RaspPi/Encoder.cpp Networking/Server.cpp Helpers/sharedDefinitions.h RoverComputer.cpp -o RoverComputer.exe -lwiringPi
 	
 CommandComputer:
 	g++ -Wall -Wno-long-long Networking/Client.cpp CommandComputer.cpp -o CommandComputer.exe -lws2_32 -lwsock32
