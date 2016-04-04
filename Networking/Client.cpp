@@ -19,6 +19,7 @@ Client::Client(char* ip, char* port) {
 
 	status = client_connect();
 	if (status == -1) {
+        printf("Failed to connect.\n");
 		exit(1);
 	}
 

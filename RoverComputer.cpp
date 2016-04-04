@@ -34,23 +34,25 @@ int main(int argc, char **argv) {
     int prev_mode = 0;
 
     // Default Messages
-    const char* endMsg = "Done!";
-    const char* complete = "Finished running commands.";
-    const char* good = "All is good.";
+    const char* endMsg = "Done!\n";
+    const char* complete = "Finished running commands.\n";
+    const char* good = "All is good.\n";
+    const char* bad = "Something broke...\n";
 
     // Command list for different modes
     char* command;
-    int command_list[10];
+    char* command_list[10];
 
     // Indexing & result variables
     int i;
-    int res;
+    char* res;
 
     // Motors
-    RoboClaw roboclaw = new RoboClaw(ROBOCLAWPINTX, ROBOCLAWPINRX);
+    RoboClaw* roboclaw = new RoboClaw(ROBOCLAWDEVICE);
 
     // Servos (use softServoWrite(pin, value) to control)
-    softServoSetup(SERVOPIN0, SERVOPIN1, SERVOPIN2, SERVOPIN3, 0, 0, 0, 0);
+    softServoSetup(CHASSISSERVOPINFL, CHASSISSERVOPINBL, CHASSISSERVOPINFR, 
+        CHASSISSERVOPINBR, 0, 0, 0, 0);
 
     // Encoders
     Encoder_Raspi encoders[4];
@@ -84,7 +86,8 @@ int main(int argc, char **argv) {
 
         // End connection if received endMsg command
         if (strcmp(raspPi->recvbuf, endMsg) == 0) {
-            return 0;
+            stop(mode);
+            break;
         }
 
         // Set mode to first value
@@ -105,7 +108,7 @@ int main(int argc, char **argv) {
         command = strtok(NULL, ",");
         while (command != NULL) {
             // Translate command to int and store in command list
-            command_list[i] = strtol(command, NULL, 16);
+            command_list[i] = command;
             // Get next command and incrememnt i
             command = strtok(NULL, ",");
             i++;
@@ -115,13 +118,11 @@ int main(int argc, char **argv) {
         res = act(command_list, mode);
 
         // Check for successful completion of command
-        if (res != 0) {
-            // Send bad status and corresponding hex command for failures
-            strcpy(raspPi->msgbuf, "Something isn't right: ");
-            strcat(raspPi->msgbuf, res);
-            raspPi->server_send(raspPi->msgbuf);
-        } else {
+        if (res == -1) {
             // Send confirmation for each successful command
+            raspPi->server_send(bad);
+        } else {
+            // Send bad status and corresponding hex command for failures
             raspPi->server_send(good);
         }
 

@@ -32,7 +32,7 @@ int Encoder_RaspPi::value() {
 // Main method for Encoder testing
 // Sets up basic encoder config and outputs data terminal
 // Rename to main if compiling only this file
-int main(int argc, char **argv) {
+int main_encoder(int argc, char **argv) {
 	// Validte parameters
 	if (argc != 2) {
         printf("Usage: %s <pin>\n", argv[0]);

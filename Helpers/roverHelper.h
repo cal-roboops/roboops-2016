@@ -10,8 +10,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int car(int[] action);
-int tank(int[] action);
-int arm(int[] action);
-int act(int[] action, int mode);
+// ---------- INITIALIZE -----------
 int initialize();
+
+// ---------- ACTION SELECTOR -----------
+int act(char* action[], int mode);
+
+// ---------- ACTION MODES -----------
+int car(char* action[]);
+int tank(char* action[]);
+int arm(char* action[]);
+
+// ---------- ZERO SELECTOR -----------
+int stop(int mode);
+
+// ---------- ZERO MODES -----------
+int zero_car();
+int zero_tank();
+int zero_arm();

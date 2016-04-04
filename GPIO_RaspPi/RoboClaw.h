@@ -16,14 +16,17 @@
 class RoboClaw {
 	private:
 		// Private Variables
-		int TX_pin;
-		int RX_pin;
+		int fd; // File descriptor
+		int baudrate;
+		char* deviceAddress;
+
 		// Private Methods
 
 	public:
 		// Public Variables
 		// Public Methods
-		int RoboClaw(int tx, int rx);
-		int ~RoboClaw();
-		int transmit(int command);
+		RoboClaw(char* dev);
+		~RoboClaw();
+		void transmit(char* command);
+		void clear();
 };

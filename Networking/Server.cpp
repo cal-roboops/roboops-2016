@@ -18,11 +18,13 @@ Server::Server(char* port) {
 
 	status = server_socket();
 	if (status == -1) {
+        printf("Failed to start server socket.\n");
 		exit(1);
 	}
 
 	status = server_connect();
 	if (status == -1) {
+        printf("Failed to connect to the client.\n");
 		exit(1);
 	}
 
@@ -47,13 +49,13 @@ int Server::server_socket() {
     // Resolve the listening address and port
     iResult = getaddrinfo(NULL, listening_port, &host_info, &host_info_list);
     if (status != 0) {
-        perror("getaddrinfo error.");
+        perror("getaddrinfo error.\n");
         return -1;
     }
 
     ServerSocket = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
     if (ServerSocket == -1) {
-        perror("Socket error.");
+        perror("Socket error.\n");
         return -1;
     }
 
@@ -70,14 +72,14 @@ int Server::server_connect() {
     iResult = setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     iResult = bind(ServerSocket, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1){
-        perror("Bind error.");
+        perror("Bind error.\n");
         return -1;
     }
 
     // Waiting for Connection
     iResult = listen(ServerSocket, BACKLOG);
     if (iResult == -1) {
-        perror("Listen error");
+        perror("Listen error.\n");
         return -1;
     }
 
@@ -85,7 +87,7 @@ int Server::server_connect() {
     addr_size = sizeof(client_addr);
     ServerSocket = accept(ServerSocket, (struct sockaddr*) &client_addr, &addr_size);
     if (ServerSocket == -1) {
-        perror("Accept error");
+        perror("Accept error.\n");
         return -1;
     }
 
@@ -99,7 +101,7 @@ int Server::server_connect() {
 int Server::server_send(const char* msg) {
     iSendResult = send(ServerSocket, msg, (int) strlen(msg), 0);
     if (iSendResult == -1){
-        perror("Sending error");
+        perror("Sending error.\n");
         return -1;
     }
 
@@ -112,10 +114,10 @@ int Server::server_receive() {
     memset(recvbuf, 0, sizeof(recvbuf));
     iReceiveResult = recv(ServerSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult == 0) {
-        perror("Host closed.");
+        perror("Host closed.\n");
         return -1;
     } else if (iReceiveResult == -1) {
-        perror("Receive error");
+        perror("Receive error.\n");
         return -1;
     }
 

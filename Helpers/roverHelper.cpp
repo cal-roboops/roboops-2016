@@ -20,24 +20,48 @@ int initialize() {
     return 0;
 }
 
-// ---------- DRIVE MODES -----------
+// ---------- ACTION SELECTOR -----------
+
+// Takes in the desired mode/actions and acts accordingly
+int act(char* action[], int mode) {
+    switch (mode) {
+        case 0: return car(action); // Drive using car mode
+        case 1: return tank(action); // Drive using tank mode
+        case 2: return arm(action); // Move the arm
+        default: return -1;
+    }
+}
+
+// ---------- ACTION MODES -----------
 
 // Command Transmission form (car):
-// RightRoboClaw, LeftRoboClaw, Servo0, Servo1, Servo2, Servo3, CameraServo
-int car(int[] action) {
-    return action[0];
+// RightRoboClaw, LeftRoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
+int car(char* action[]) {
+    roboclaw->transmit(action[0]);
+    roboclaw->transmit(action[1]);
+    softServoWrite(CHASSISSERVOPINFL, strtol(action[2], NULL, 10));
+    softServoWrite(CHASSISSERVOPINBL, strtol(action[3], NULL, 10));
+    softServoWrite(CHASSISSERVOPINFR, strtol(action[4], NULL, 10));
+    softServoWrite(CHASSISSERVOPINBR, strtol(action[5], NULL, 10));
+    return 0;
 }
 
 // Command Transmission form (tank):
-// RightRoboClaw, LeftRoboClaw, Servo0, Servo1, Servo2, Servo3, CameraServo
-int tank(int[] action) {
-    return action[0];
+// RightRoboClaw, LeftRoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
+int tank(char* action[]) {
+    roboclaw->transmit(action[0]);
+    roboclaw->transmit(action[1]);
+    softServoWrite(CHASSISSERVOPINFL, strtol(action[2], NULL, 10));
+    softServoWrite(CHASSISSERVOPINBL, strtol(action[3], NULL, 10));
+    softServoWrite(CHASSISSERVOPINFR, strtol(action[4], NULL, 10));
+    softServoWrite(CHASSISSERVOPINBR, strtol(action[5], NULL, 10));
+    return 0;
 }
 
 // Command Transmission form (arm):
-// BaseSwivel, Base
-int arm(int[] action) {
-    return action[0];
+// BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
+int arm(char* action[]) {
+    return 0;
 }
 
 // ---------- ZERO SELECTOR -----------
@@ -48,18 +72,23 @@ int stop(int mode) {
         case 0: return zero_car();
         case 1: return zero_tank();
         case 2: return zero_arm();
-        default: return 1;
+        default: return -1;
     }
 }
 
-// ---------- ACTION SELECTOR -----------
+// ---------- ZERO MODES -----------
 
-// Takes in the action and acts accordingly
-int act(int[] action, int mode) {
-    switch (mode) {
-        case 0: return car(action); // Drive using car mode
-        case 1: return tank(action); // Drive using tank mode
-        case 2: return arm(action); // Move the arm
-        default: return 1;
-    }
+// Zeros the car mode
+int zero_car() {
+    return 0;
+}
+
+// Zeros the tank mode
+int zero_tank() {
+    return 0;
+}
+
+// Zeros the arm mode
+int zero_arm() {
+    return 0;
 }

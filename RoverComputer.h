@@ -7,6 +7,9 @@
 // Made for Debian
 //
 
+#define BAUDRATE 38400 // Can also be set to 9600, 115200, 19200, 38400
+#define ROBOCLAWDEVICE "/dev/ttyAMA0"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "Networking/Server.h"
