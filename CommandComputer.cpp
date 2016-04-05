@@ -9,6 +9,9 @@
 
 #include "CommandComputer.h"
 
+// ---------- MAIN FUNCTION -----------
+
+// Main control function for Command Computer
 int main(int argc, char **argv) {
 	// Validate the parameters
     if (argc != 3) {
@@ -19,22 +22,30 @@ int main(int argc, char **argv) {
     // No print buffering
     setvbuf (stdout, NULL, _IONBF, 0);
 
+    printf("Begin Command Computer Setup...\n");
+
     // Connect to the command computer components
-    printf("Setting up Controller, Windows and Defaults...");
+    printf("Setting up Controller, Windows and Defaults... ");
     // Default Messages
     // const char* endMsg = "Done!";
     const char* complete = "Finished running commands.";
-    printf("Setup Success!");
+
+    // Controller
+    s_X52 = new Saitek_X52();
+
+    printf("Done!\n");
 
     // Create command client and connect to Rover Server
-    printf("Making client...\n");
+    printf("Making client... ");
     Client* winC = new Client(argv[1], argv[2]);
-    printf("Client Success!\n\n\n");
+    printf("Done!\n");
+
+    printf("Command Computer Setup Complete!\n\n\n");
 
 	// Command Loop
 	do {
-        // Enter command list and mode
-        printf("Enter rover mode followed by a list of space separated commands:\n");
+        // Setup command list and mode
+        printf("Enter rover mode followed by a list of comma separated commands:\n");
         scanf("%s", winC->msgbuf);
 
         // Send list of commands to the rover

@@ -94,7 +94,6 @@ int stop(int mode) {
     }
 }
 
-
 // ---------- MAIN FUNCTION -----------
 
 // Main control function for the Rover
