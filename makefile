@@ -12,4 +12,8 @@ Server:
 
 PiSSH:
 	ssh pi@2601:644:102:7600::fa89 (wifi)
-	ssh pi@192.168.137.204 (ethernet)
+	ssh pi@192.168.137.xxx (ethernet - last number changes)
+
+UART:
+        RPi 2: UART=>'ttyAMA0'
+        RPi 3: UART=>'ttyS0'
