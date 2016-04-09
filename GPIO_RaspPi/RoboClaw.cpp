@@ -28,10 +28,17 @@ RoboClaw::~RoboClaw() {
 }
 
 // Send Commands
-void RoboClaw::transmit(char* command) {
-	write(fd, command, sizeof(char)*strlen(command));
+void RoboClaw::transmit(int address, int command, int byteValue) {
+	write(fd, address, sizeof(int));
+	write(fd, command, sizeof(int));
+	write(fd, byteValue, sizeof(int));
+	write(fd, calculate_checksum(address, command, byteValue), sizeof(int));
 	// serialPuts(fd, command);
 	// serialPutChar(fd, command);
+}
+
+int calculate_checksum(int address, int command, int byteValue) {
+	return ((address+command+byteValue) & 0x7F);
 }
 
 // Clear the send/receive buffers

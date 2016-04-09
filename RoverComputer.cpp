@@ -9,41 +9,43 @@
 
 #include "RoverComputer.h"
 
+// ---------- HELPERS -----------
+
+// Stop Roboclaw
+void stop_roboclaws() {
+    roboclaw->transmit(STOP_ROBOCLAW1);
+    roboclaw->transmit(STOP_ROBOCLAW2); 
+}
+
+// Set Servos Straight
+void set_chassis_servos() {
+    softServoWrite(CHASSIS_SERVO_PINFL, 500);
+    softServoWrite(CHASSIS_SERVO_PINBL, 500);
+    softServoWrite(CHASSIS_SERVO_PINFR, 500);
+    softServoWrite(CHASSIS_SERVO_PINBR, 500);
+}
+
 // ---------- INITIALIZE -----------
 
 // Initialize and setup the rover from its folded state
 int initialize() {
     // Set wheel servos to straight
-    softServoWrite(CHASSISSERVOPINFL, 500);
-    softServoWrite(CHASSISSERVOPINBL, 500);
-    softServoWrite(CHASSISSERVOPINFR, 500);
-    softServoWrite(CHASSISSERVOPINBR, 500);
+    stop_roboclaws();
+    set_chassis_servos();
     return 0;
 }
 
 // ---------- ACTION MODES -----------
 
-// Command Transmission form (car):
-// RightRoboClaw, LeftRoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
-int car(char* action[]) {
-    roboclaw->transmit(action[0]);
-    roboclaw->transmit(action[1]);
-    softServoWrite(CHASSISSERVOPINFL, strtol(action[2], NULL, 10));
-    softServoWrite(CHASSISSERVOPINBL, strtol(action[3], NULL, 10));
-    softServoWrite(CHASSISSERVOPINFR, strtol(action[4], NULL, 10));
-    softServoWrite(CHASSISSERVOPINBR, strtol(action[5], NULL, 10));
-    return 0;
-}
-
-// Command Transmission form (tank):
-// RightRoboClaw, LeftRoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
-int tank(char* action[]) {
-    roboclaw->transmit(action[0]);
-    roboclaw->transmit(action[1]);
-    softServoWrite(CHASSISSERVOPINFL, strtol(action[2], NULL, 10));
-    softServoWrite(CHASSISSERVOPINBL, strtol(action[3], NULL, 10));
-    softServoWrite(CHASSISSERVOPINFR, strtol(action[4], NULL, 10));
-    softServoWrite(CHASSISSERVOPINBR, strtol(action[5], NULL, 10));
+// Command Transmission form (drive):
+// Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
+int drive(char* action[]) {
+    roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
+    roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
     return 0;
 }
 
@@ -58,22 +60,19 @@ int arm(char* action[]) {
 // Takes in the desired mode/actions and acts accordingly
 int act(char* action[], int mode) {
     switch (mode) {
-        case 0: return car(action); // Drive using car mode
-        case 1: return tank(action); // Drive using tank mode
-        case 2: return arm(action); // Move the arm
+        case 0: 
+        case 1: return drive(action); // Drive using car mode
+        case 1: return arm(action); // Move the arm
         default: return -1;
     }
 }
 
 // ---------- ZERO MODES -----------
 
-// Zeros the car mode
-int zero_car() {
-    return 0;
-}
-
-// Zeros the tank mode
-int zero_tank() {
+// Zeros the drive mode
+int zero_drive() {
+    stop_roboclaws();
+    set_chassis_servos();
     return 0;
 }
 
@@ -87,8 +86,8 @@ int zero_arm() {
 // Stops actions/movements of the previous mode
 int stop(int mode) {
     switch (mode) {
-        case 0: return zero_car();
-        case 1: return zero_tank();
+        case 0:
+        case 1: return zero_drive();
         case 2: return zero_arm();
         default: return -1;
     }
@@ -99,9 +98,11 @@ int stop(int mode) {
 // Main control function for the Rover
 int main(int argc, char **argv) {
     // Check command line arguments
+    char* port;
 	if (argc != 2) {
-        printf("Usage: %s <port-number>\n", argv[0]);
-        return 1;
+        port = DEFAULT_PORT;
+    } else {
+        port = argv[1];
     }
 
     printf("Begin Rover Setup...\n");
@@ -128,30 +129,30 @@ int main(int argc, char **argv) {
 
     // Command list for different modes
     char* command;
-    char* command_list[25];
+    char* command_list[DEFAULT_BUFLEN];
 
     // Indexing & result variables
     int i;
     int res;
 
     // Motors
-    roboclaw = new RoboClaw(ROBOCLAWDEVICEPI2, BAUDRATE);
+    roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
 
-    // Servos (use softServoWrite(pin, value) to control)
-    softServoSetup(CHASSISSERVOPINFL, CHASSISSERVOPINBL, CHASSISSERVOPINFR, 
-        CHASSISSERVOPINBR, 0, 0, 0, 0);
+    // Servos
+    softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL, 
+        CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR, 0, 0, 0, 0);
 
     // Encoders
-    encoders[0] = new Encoder(ENCODERPIN0);
-    encoders[1] = new Encoder(ENCODERPIN1);
-    encoders[2] = new Encoder(ENCODERPIN2);
-    encoders[3] = new Encoder(ENCODERPIN3);
+    encoders[0] = new Encoder(ENCODER_PIN0);
+    encoders[1] = new Encoder(ENCODER_PIN1);
+    encoders[2] = new Encoder(ENCODER_PIN2);
+    encoders[3] = new Encoder(ENCODER_PIN3);
 
     printf("Done!\n");
 
     // Create rover server and connect to command computer
     printf("Setting up connection... ");
-    raspPi = new Server(argv[1]);
+    raspPi = new Server(port);
     printf("Done!\n");
 
     // Initialize the rover

@@ -7,10 +7,12 @@
 // Made for Debian
 //
 
-// Baudrate set to 9600, 115200 (Default), 19200, 38400
-#define BAUDRATE 115200
-#define ROBOCLAWDEVICEPI2 "/dev/ttyAMA0"
-#define ROBOCLAWDEVICEPI3 "/dev/ttyS0"
+// Baudrate set to 2400, 9600, 19200, 38400 (for ROBOCLAW)
+#define BAUDRATE 38400
+#define STOP_ROBOCLAW1
+#define STOP_ROBOCLAW2
+#define ROBOCLAW_DEVICE_PI2 "/dev/ttyAMA0"
+#define ROBOCLAW_DEVICE_PI3 "/dev/ttyS0"
 
 #include <stdio.h>
 #include <string.h>

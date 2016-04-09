@@ -24,6 +24,7 @@ class RoboClaw {
 		char* deviceAddress;
 
 		// Private Methods
+		int calculate_checksum(int address, int command, int byteValue);
 
 	public:
 		// Public Variables

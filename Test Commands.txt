@@ -1,0 +1,2 @@
+Address, Command, ByteValue, Checksum
+address byte, command byte, data bytes and a checksum
