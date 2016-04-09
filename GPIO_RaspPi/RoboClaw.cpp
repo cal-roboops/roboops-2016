@@ -15,9 +15,9 @@ RoboClaw::RoboClaw(char* dev, int baud) {
 	baudrate = baud;
 
 	// Open and initialize serial port
-	fd = serialOpen((const char*) &dev, baudrate);
+	fd = serialOpen(deviceAddress, baudrate);
 	if (fd == -1) {
-		printf("Failed to open %s\n", deviceAddress);
+		printf("Failed to open %s\n", strerror(errno));
 		exit(1);
 	}
 }

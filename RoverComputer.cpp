@@ -121,10 +121,10 @@ int main(int argc, char **argv) {
     int prev_mode = 0;
 
     // Default Messages
-    const char* endMsg = "Done!\n";
-    const char* complete = "Finished running commands.\n";
-    const char* good = "All is good.\n";
-    const char* bad = "Something broke...\n";
+    const char* endMsg = "Done!";
+    const char* complete = "Finished running commands.";
+    const char* good = "All is good.";
+    const char* bad = "Something broke...";
 
     // Command list for different modes
     char* command;
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     int res;
 
     // Motors
-    roboclaw = new RoboClaw(ROBOCLAWDEVICE, BAUDRATE);
+    roboclaw = new RoboClaw(ROBOCLAWDEVICEPI2, BAUDRATE);
 
     // Servos (use softServoWrite(pin, value) to control)
     softServoSetup(CHASSISSERVOPINFL, CHASSISSERVOPINBL, CHASSISSERVOPINFR, 
