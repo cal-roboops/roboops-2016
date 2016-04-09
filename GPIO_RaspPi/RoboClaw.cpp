@@ -28,13 +28,24 @@ RoboClaw::~RoboClaw() {
 }
 
 // Send Commands
-void RoboClaw::transmit(int address, int command, int byteValue) {
+int RoboClaw::transmit(uint8_t command, uint8_t *data, size_t n_data) {
 	flush();
-	checksum = (address+command+byteValue) & 0x7F;
-	write(fd, address, sizeof(int));
-	write(fd, command, sizeof(int));
-	write(fd, byteValue, sizeof(int));
-	write(fd, checksum, sizeof(int));
+	uint8_t buff[data+3];
+	buf[0] = address;
+	buf[1] = command;
+
+	for (size_t i = 0; i < n_data; i++) {
+	    buf[i+2] = data[n_data - i - 1];
+	}
+
+	uint16_t sum = sumBytes(buf, n_data + 2);
+
+	buf[n_data + 2] = sum & 0x7F;
+
+	return write(fd, buf, n_data+3);
+//	write(fd, &command, sizeof(int));
+//	write(fd, &byteValue, sizeof(int));
+//	write(fd, &checksum, sizeof(int));
 	// serialPuts(fd, command);
 	// serialPutChar(fd, command);
 }
@@ -44,28 +55,45 @@ void RoboClaw::flush() {
 	serialFlush(fd);
 }
 
+int RoboClaw::sumBytes(uint8_t *buf, size_t n) {
+	uint16_t sum = 0;
+
+	for (size_t i = 0; i < n; i++) {
+	    sum += buf[i];
+	}
+
+	return sum;
+}
+
 // Main method for RoboClaw testing
 // Sets up initial config and begins outputting to the terminal
 // Rename to main if compiling only this file
-int int main() {
-	// Create RoboClaw object
+int main() {
+    // Create RoboClaw object
     printf("Making RoboClaw... ");
-    RoboClaw* rc = new RoboClaw(argv[1]);
+    RoboClaw* rc = new RoboClaw("/dev/ttyAMA0", 38400);
     printf("Done!\n\n\n");
 
     // Holder variables
     int add;
+    int add1 = 0x80;
+    int add2 = 0x81;
     int comm;
     int val;
 
     // Command Loop
     do {
-        printf("Enter address: ");
-        scanf("%d", add);
+        printf("Enter address (1 or 2): ");
+        scanf("%d", &add);
+        if (add == 1) {
+            add = add1;
+        } else {
+            add = add2;
+        }
         printf("Enter Command: ");
-        scanf("%d", comm);
+        scanf("%d", &comm);
         printf("Enter byteValue: ");
-        scanf("%d", val);
+        scanf("%d", &val);
         rc->transmit(add, comm, val);
     } while (true);
 
