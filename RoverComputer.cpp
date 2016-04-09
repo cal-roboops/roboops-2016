@@ -72,7 +72,7 @@ int act(char* action[], int mode) {
 // Zeros the drive mode
 int zero_drive() {
     stop_roboclaws();
-    set_chassis_servos();
+    reset_chassis_servos();
     return 0;
 }
 
@@ -140,7 +140,8 @@ int main(int argc, char **argv) {
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL, 
-        CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR, 0, 0, 0, 0);
+                    CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR, 
+                    0, 0, 0, 0);
 
     // Encoders
     encoders[0] = new Encoder(ENCODER_PIN0);

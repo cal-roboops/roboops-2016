@@ -32,5 +32,6 @@ class RoboClaw {
 		// Public Methods
 		RoboClaw(char* dev, int baud);
 		~RoboClaw();
-		void transmit(int address, int command, int byteValue);
+		void RoboClaw::transmit(uint8_t address, uint8_t command, 
+								uint8_t *data, size_t n_data)
 };

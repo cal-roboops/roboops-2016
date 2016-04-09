@@ -28,24 +28,26 @@ RoboClaw::~RoboClaw() {
 }
 
 // Send Commands
-int RoboClaw::transmit(uint8_t command, uint8_t *data, size_t n_data) {
+void RoboClaw::transmit(uint8_t address, uint8_t command, 
+						uint8_t *data, size_t n_data) {
 	flush();
-	uint8_t buff[data+3];
+	uint8_t buff[data + 3];
 	buf[0] = address;
 	buf[1] = command;
 
 	for (size_t i = 0; i < n_data; i++) {
-	    buf[i+2] = data[n_data - i - 1];
+	    buf[i + 2] = data[n_data - i - 1];
 	}
 
-	uint16_t sum = sumBytes(buf, n_data + 2);
+	uint16_t sum = 0;
+
+	for (size_t i = 0; i < n; i++) {
+	    sum += buf[i];
+	}
 
 	buf[n_data + 2] = sum & 0x7F;
 
-	return write(fd, buf, n_data+3);
-//	write(fd, &command, sizeof(int));
-//	write(fd, &byteValue, sizeof(int));
-//	write(fd, &checksum, sizeof(int));
+	write(fd, buf, n_data+3);
 	// serialPuts(fd, command);
 	// serialPutChar(fd, command);
 }
@@ -53,16 +55,6 @@ int RoboClaw::transmit(uint8_t command, uint8_t *data, size_t n_data) {
 // Clear the send/receive buffers
 void RoboClaw::flush() {
 	serialFlush(fd);
-}
-
-int RoboClaw::sumBytes(uint8_t *buf, size_t n) {
-	uint16_t sum = 0;
-
-	for (size_t i = 0; i < n; i++) {
-	    sum += buf[i];
-	}
-
-	return sum;
 }
 
 // Main method for RoboClaw testing
@@ -80,9 +72,11 @@ int main() {
     int add2 = 0x81;
     int comm;
     int val;
+    int sum;
 
     // Command Loop
     do {
+    	sum = 0;
         printf("Enter address (1 or 2): ");
         scanf("%d", &add);
         if (add == 1) {
@@ -94,7 +88,7 @@ int main() {
         scanf("%d", &comm);
         printf("Enter byteValue: ");
         scanf("%d", &val);
-        rc->transmit(add, comm, val);
+        rc->transmit(add, comm, &val, 1);
     } while (true);
 
 	return 0;
