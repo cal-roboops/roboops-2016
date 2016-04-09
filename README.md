@@ -10,4 +10,6 @@ Setup Notes:
 	1) Windows computers will need to have ION Motion installed if you want to test/debug the RoboClaws before use.
 	2) Need to have DirectX SDK Installed to compile software
 		- If you get error S1023 while installing DirectX you need to uninstall the Microsoft Visual C++ 2010 Redistributables and then install DirectX. After it's done you can reinstall the newest version of the Visual C++ 2010 Redistributable.
-	3) Use rpi-serial-console to setup the UART on the Rover's Raspberry Pi then use the wiringPi libraries to control the GPIO's via C++. Note: On Raspberry Pi 2 the UART is mapped to '/dev/ttyAMA0' and on the Pi 3 it is at '/dev/ttyS0' (the bluetooth is now at the old mapping). Alternatively, you can just use the Raspberry Pi's built in config editor by running 'sudo rasppi-config'.
+	3) Use rpi-serial-console to setup the UART on the Rover's Raspberry Pi then use the wiringPi libraries to control the GPIO's via C++. Note: On Raspberry Pi 2 the UART is mapped to '/dev/ttyAMA0' and on the Pi 3 it is at '/dev/ttyS0' (the bluetooth is now at the old mapping).
+		- To use the serial device follow guide at 'http://elinux.org/RPi_Serial_Connection'
+	console=serial0,115200
