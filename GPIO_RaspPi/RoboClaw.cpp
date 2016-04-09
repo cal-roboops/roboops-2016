@@ -28,10 +28,10 @@ RoboClaw::~RoboClaw() {
 }
 
 // Send Commands
-void RoboClaw::transmit(uint8_t address, uint8_t command, 
-						uint8_t *data, size_t n_data) {
+void RoboClaw::transmit(uint8_t address, uint8_t command,
+			uint8_t *data, size_t n_data) {
 	flush();
-	uint8_t buff[data + 3];
+	uint8_t buf[n_data + 3];
 	buf[0] = address;
 	buf[1] = command;
 
@@ -41,7 +41,7 @@ void RoboClaw::transmit(uint8_t address, uint8_t command,
 
 	uint16_t sum = 0;
 
-	for (size_t i = 0; i < n; i++) {
+	for (size_t i = 0; i < n_data; i++) {
 	    sum += buf[i];
 	}
 
@@ -72,11 +72,9 @@ int main() {
     int add2 = 0x81;
     int comm;
     int val;
-    int sum;
 
     // Command Loop
     do {
-    	sum = 0;
         printf("Enter address (1 or 2): ");
         scanf("%d", &add);
         if (add == 1) {
@@ -88,7 +86,7 @@ int main() {
         scanf("%d", &comm);
         printf("Enter byteValue: ");
         scanf("%d", &val);
-        rc->transmit(add, comm, &val, 1);
+        rc->transmit((uint8_t) add, (uint8_t) comm, (uint8_t *) &val, 1);
     } while (true);
 
 	return 0;

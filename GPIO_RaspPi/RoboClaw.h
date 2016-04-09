@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -32,6 +33,6 @@ class RoboClaw {
 		// Public Methods
 		RoboClaw(char* dev, int baud);
 		~RoboClaw();
-		void RoboClaw::transmit(uint8_t address, uint8_t command, 
-								uint8_t *data, size_t n_data)
+		void transmit(uint8_t address, uint8_t command,
+				uint8_t *data, size_t n_data);
 };
