@@ -21,16 +21,16 @@ class RoboClaw {
 		// Private Variables
 		int fd; // File descriptor
 		int baudrate;
+		int checksum;
 		char* deviceAddress;
 
 		// Private Methods
-		int calculate_checksum(int address, int command, int byteValue);
+		void flush();
 
 	public:
 		// Public Variables
 		// Public Methods
 		RoboClaw(char* dev, int baud);
 		~RoboClaw();
-		void transmit(char* command);
-		void clear();
+		void transmit(int address, int command, int byteValue);
 };

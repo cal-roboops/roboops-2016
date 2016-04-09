@@ -18,7 +18,7 @@ void stop_roboclaws() {
 }
 
 // Set Servos Straight
-void set_chassis_servos() {
+void reset_chassis_servos() {
     softServoWrite(CHASSIS_SERVO_PINFL, 500);
     softServoWrite(CHASSIS_SERVO_PINBL, 500);
     softServoWrite(CHASSIS_SERVO_PINFR, 500);
@@ -31,7 +31,7 @@ void set_chassis_servos() {
 int initialize() {
     // Set wheel servos to straight
     stop_roboclaws();
-    set_chassis_servos();
+    reset_chassis_servos();
     return 0;
 }
 
@@ -42,10 +42,10 @@ int initialize() {
 int drive(char* action[]) {
     roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
     roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[6], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[7], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[8], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[9], NULL, 10));
     return 0;
 }
 
