@@ -10,51 +10,109 @@
 #include "RoboClaw.h"
 
 // RoboClaw Constructor
-RoboClaw::RoboClaw(char* dev, int baud) {
-	deviceAddress = dev;
-	baudrate = baud;
+RoboClaw::RoboClaw(const char *dev) {
+	// Set constants
+	deviceName = dev;
 
 	// Open and initialize serial port
-	fd = serialOpen(deviceAddress, baudrate);
-	if (fd == -1) {
-		printf("Failed to open %s\n", strerror(errno));
+	uart = open(deviceName, O_RDWR | O_NOCTTY);
+	if (uart < 0) {
+		printf("Failed to open device: %s\n", strerror(errno));
+		exit(1);
+	}
+
+	int res = 0;
+	struct termios uart_config;
+	ret = tcgetattr(uart, &uart_config);
+	if (ret < 0) {
+		printf("failed to get attr.\n");
+		exit(1);
+	}
+
+	uart_config.c_oflag &= ~ONCLR;
+	ret = cfsetispeed(&uart_config, B38400);
+	if (ret < 0) {
+		printf("failed to set input speed.\n");
+		exit(1);
+	}
+
+	ret = cfsetospeed(&uart_config, B38400);
+	if (ret < 0) {
+		printf("failed to set output speed.\n");
+		exit(1);
+	}
+
+	ret = tcsetattr(_uart, TCSANOW, &uart_config);
+	if (ret < 0) {
+		printf("failed to set attr.\n");
 		exit(1);
 	}
 }
 
 // RoboClaw Destructor
 RoboClaw::~RoboClaw() {
-	serialClose(fd);
+	close(uart);
+}
+
+// Set Motor Speed
+int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
+	sum = 0;
+
+	// Bound
+	if (value > 1) {
+		value = 1;
+	} else if (value < 1) {
+		value = -1;
+	}
+
+	// Set speed
+	speed = fabs(value) * 127;
+
+	// Send the command
+	if (motor == 1) {
+		if (value > 0) {
+			return transmit(address, CMD_DRIVE_FWD_1, &speed, 1);
+		} else {
+			return transmit(address, CMD_DRIVE_REV_1, &speed, 1);
+		}
+	} else if (motor == 2) {
+		if (value > 0) {
+			return transmit(address, CMD_DRIVE_FWD_2, &speed, 1);
+		} else {
+			return transmit(address, CMD_DRIVE_REV_2, &speed, 1);
+		}
+	}
+
+	return -1;
 }
 
 // Send Commands
-void RoboClaw::transmit(uint8_t address, uint8_t command,
-			uint8_t *data, size_t n_data) {
-	flush();
+int RoboClaw::transmit(uint8_t address, uint8_t command,
+						uint8_t *data, size_t n_data) {
+	// Clear buffers of any pending data
+	tcflush(uart, TCIOFLUSH);
+
+	// Setup command list
 	uint8_t buf[n_data + 3];
 	buf[0] = address;
 	buf[1] = command;
 
+	// Create the transmission list
 	for (size_t i = 0; i < n_data; i++) {
 	    buf[i + 2] = data[n_data - i - 1];
 	}
 
-	uint16_t sum = 0;
-
+	// Sum buffer bytes
+	sumBytes = 0;
 	for (size_t i = 0; i < n_data; i++) {
-	    sum += buf[i];
+	    sumBytes += buf[i];
 	}
 
-	buf[n_data + 2] = sum & 0x7F;
+	// Create checksum
+	sum += sumBytes;
+	buf[n_data + 2] = sumBytes & 0x7F;
 
-	write(fd, buf, n_data+3);
-	// serialPuts(fd, command);
-	// serialPutChar(fd, command);
-}
-
-// Clear the send/receive buffers
-void RoboClaw::flush() {
-	serialFlush(fd);
+	return write(fd, buf, n_data + 3);
 }
 
 // Main method for RoboClaw testing
@@ -68,25 +126,22 @@ int main() {
 
     // Holder variables
     int add;
-    int add1 = 0x80;
-    int add2 = 0x81;
-    int comm;
-    int val;
+    int mot;
+    float val;
 
     // Command Loop
     do {
         printf("Enter address (1 or 2): ");
         scanf("%d", &add);
-        if (add == 1) {
-            add = add1;
-        } else {
-            add = add2;
-        }
-        printf("Enter Command: ");
-        scanf("%d", &comm);
+        printf("Enter Motor: ");
+        scanf("%d", &mot);
         printf("Enter byteValue: ");
-        scanf("%d", &val);
-        rc->transmit((uint8_t) add, (uint8_t) comm, (uint8_t *) &val, 1);
+        scanf("%f", &val);
+        if (add == 1) {
+            rc->setMotorSpeed(0x80, mot, &val);
+        } else if (add == 2) {
+            rc->setMotorSpeed(0x81, mot, &val);
+        }
     } while (true);
 
 	return 0;
