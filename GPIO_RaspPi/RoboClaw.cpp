@@ -21,7 +21,7 @@ RoboClaw::RoboClaw(const char *dev) {
 		exit(1);
 	}
 
-	int res = 0;
+	int ret = 0;
 	struct termios uart_config;
 	ret = tcgetattr(uart, &uart_config);
 	if (ret < 0) {
@@ -29,7 +29,7 @@ RoboClaw::RoboClaw(const char *dev) {
 		exit(1);
 	}
 
-	uart_config.c_oflag &= ~ONCLR;
+	uart_config.c_oflag &= ~ONLCR;
 	ret = cfsetispeed(&uart_config, B38400);
 	if (ret < 0) {
 		printf("failed to set input speed.\n");
@@ -42,7 +42,7 @@ RoboClaw::RoboClaw(const char *dev) {
 		exit(1);
 	}
 
-	ret = tcsetattr(_uart, TCSANOW, &uart_config);
+	ret = tcsetattr(uart, TCSANOW, &uart_config);
 	if (ret < 0) {
 		printf("failed to set attr.\n");
 		exit(1);
@@ -71,15 +71,15 @@ int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
 	// Send the command
 	if (motor == 1) {
 		if (value > 0) {
-			return transmit(address, CMD_DRIVE_FWD_1, &speed, 1);
+			return transmit(&address, 0, &speed, 1);
 		} else {
-			return transmit(address, CMD_DRIVE_REV_1, &speed, 1);
+			return transmit(&address, 1, &speed, 1);
 		}
 	} else if (motor == 2) {
 		if (value > 0) {
-			return transmit(address, CMD_DRIVE_FWD_2, &speed, 1);
+			return transmit(&address, 4, &speed, 1);
 		} else {
-			return transmit(address, CMD_DRIVE_REV_2, &speed, 1);
+			return transmit(&address, 5, &speed, 1);
 		}
 	}
 
@@ -87,14 +87,14 @@ int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
 }
 
 // Send Commands
-int RoboClaw::transmit(uint8_t address, uint8_t command,
-						uint8_t *data, size_t n_data) {
+int RoboClaw::transmit(uint8_t* address, int command,
+			uint8_t* data, size_t n_data) {
 	// Clear buffers of any pending data
 	tcflush(uart, TCIOFLUSH);
 
 	// Setup command list
 	uint8_t buf[n_data + 3];
-	buf[0] = address;
+	buf[0] = *address;
 	buf[1] = command;
 
 	// Create the transmission list
@@ -112,7 +112,7 @@ int RoboClaw::transmit(uint8_t address, uint8_t command,
 	sum += sumBytes;
 	buf[n_data + 2] = sumBytes & 0x7F;
 
-	return write(fd, buf, n_data + 3);
+	return write(uart, buf, n_data + 3);
 }
 
 // Main method for RoboClaw testing
@@ -121,11 +121,13 @@ int RoboClaw::transmit(uint8_t address, uint8_t command,
 int main() {
     // Create RoboClaw object
     printf("Making RoboClaw... ");
-    RoboClaw* rc = new RoboClaw("/dev/ttyAMA0", 38400);
+    RoboClaw* rc = new RoboClaw("/dev/ttyAMA0");
     printf("Done!\n\n\n");
 
     // Holder variables
     int add;
+    uint8_t add1 = 0x80;
+    uint8_t add2 = 0x81;
     int mot;
     float val;
 
@@ -138,9 +140,9 @@ int main() {
         printf("Enter byteValue: ");
         scanf("%f", &val);
         if (add == 1) {
-            rc->setMotorSpeed(0x80, mot, &val);
+            rc->setMotorSpeed(add1, mot, val);
         } else if (add == 2) {
-            rc->setMotorSpeed(0x81, mot, &val);
+            rc->setMotorSpeed(add2, mot, val);
         }
     } while (true);
 
