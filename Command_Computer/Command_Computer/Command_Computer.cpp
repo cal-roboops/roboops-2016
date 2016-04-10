@@ -129,6 +129,7 @@ BOOL InitInstance1(HINSTANCE hInstance, int nCmdShow)
 	MoveWindow(hWnd1, 0, 0, 645, 350, true);
 	UpdateWindow(hWnd1);
 
+
 	return TRUE;
 }
 

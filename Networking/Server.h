@@ -4,8 +4,6 @@
 //
 // Created by Mitchell Oleson on 2/8/2016
 //
-// Copyright © 2016 Andrew Pau. All rights reserved.
-//
 // Written for Debian Linux
 //
 
@@ -40,15 +38,16 @@ class Server {
 
 	    // Private Methods
 	    int server_socket();
-	    int connect();
+	    int server_connect();
 
 	public:
 	    // Public Variables
 	    char recvbuf[DEFAULT_BUFLEN];
+	    char msgbuf[DEFAULT_BUFLEN];
 
 	    // Public Methods
 	    Server(char* port);
 	    ~Server();
-	    int receive();
-	    int send(const char* msg);
+	    int server_receive();
+	    int server_send(const char* msg);
 };

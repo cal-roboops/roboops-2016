@@ -1,2 +1,4 @@
 ﻿  Command_Computer.cpp
-  Command_Computer.vcxproj -> C:\Users\Scott\Documents\Roboops\Command_Computer\Debug\Command_Computer.exe
+  LINK : C:\Users\Scott\Documents\Roboops\Command_Computer\Debug\Command_Computer.exe not found or not built by the last incremental link; performing full link
+Command_Computer.obj : error LNK2011: precompiled object not linked in; image may not run
+C:\Users\Scott\Documents\Roboops\Command_Computer\Debug\Command_Computer.exe : fatal error LNK1120: 1 unresolved externals

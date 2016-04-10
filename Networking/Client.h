@@ -1,10 +1,8 @@
 //
-// Client.h
+// Client.h - Version 2
 // CPP Project
 //
 // Created by Mitchell Oleson on 2/8/2016
-// 
-// Copyright © 2016 Mitchell Oleson. All rights reserved.
 //
 // Written for Windows
 //
@@ -46,15 +44,16 @@ class Client {
 	    static const int sendbuflen = DEFAULT_BUFLEN;
 
  		// Private Methods
- 		int connect();
+ 		int client_connect();
 
  	public:
  		// Public Variables
  		char recvbuf[DEFAULT_BUFLEN];
+        char msgbuf[DEFAULT_BUFLEN];
 
  		// Public Methods
  		Client(char* ip, char* port);
  		~Client();
- 		int receive();
- 		int send(const char* msg);
+ 		int client_receive();
+ 		int client_send(const char* msg);
 };

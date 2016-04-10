@@ -4,8 +4,6 @@
 //
 // Created by Andrew Pau on 1/14/2016
 // Modified by Mitchell Oleson on 2/8/2016
-// 
-// Copyright © 2016 Andrew Pau. All rights reserved.
 //
 // Written for Windows
 //
@@ -17,14 +15,15 @@ Client::Client(char* ip, char* port) {
     server_ip = ip;
     server_port = port;
 
-    printf("Starting Client Setup...\n");
+    //printf("Starting Client Setup...\n");
 
-	status = connect();
-	if (status == 1) {
+	status = client_connect();
+	if (status == -1) {
+        printf("Failed to connect.\n");
 		exit(1);
 	}
 
-    printf("Client Setup Complete!\n");
+    //printf("Client Setup Complete!\n");
 }
 
 // Client Destructor
@@ -39,18 +38,17 @@ Client::~Client() {
     // Cleanup
     closesocket(ClientSocket);
     WSACleanup();
-
 }
 
 // Connection Initializer
-int Client::connect() {
-    printf("Setting up client socket...\n");
+int Client::client_connect() {
+    //printf("Setting up client socket...\n");
 
 	// Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
         printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
+        return -1;
     }
 
     ZeroMemory( &host_info, sizeof(host_info) );
@@ -63,11 +61,11 @@ int Client::connect() {
     if ( iResult != 0 ) {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
-    printf("Client Socket Success!\n");
-    printf("Client Connecting...\n");
+    //printf("Client Socket Success!\n");
+    //printf("Client Connecting...\n");
 
     // Attempt to connect to an address until one succeeds
     for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
@@ -77,7 +75,7 @@ int Client::connect() {
         if (ClientSocket == INVALID_SOCKET) {
             printf("Socket failed with error: %d\n", WSAGetLastError());
             WSACleanup();
-            return 1;
+            return -1;
         }
 
         // Connect to server.
@@ -95,21 +93,21 @@ int Client::connect() {
     if (ClientSocket == INVALID_SOCKET) {
         printf("Unable to connect to server!\n");
         WSACleanup();
-        return 1;
+        return -1;
     }
 
-    printf("Client Connection Success!\n");
+    //printf("Client Connection Success!\n");
     return 0;
 }
 
 // Send messages
-int Client::send(const char* msg) {
+int Client::client_send(const char* msg) {
 	iSendResult = send(ClientSocket, msg, (int) strlen(msg), 0 );
     if (iSendResult == SOCKET_ERROR) {
         printf("Send failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     printf("Bytes sent: %d\n", iSendResult);
@@ -117,7 +115,7 @@ int Client::send(const char* msg) {
 }
 
 // Recieve messages
-int Client::receive() {
+int Client::client_receive() {
     ZeroMemory(recvbuf, sizeof(recvbuf));
 	iReceiveResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
     if (iReceiveResult > 0) {
@@ -126,38 +124,36 @@ int Client::receive() {
         printf("recv failed with error: %d\n", WSAGetLastError());
         closesocket(ClientSocket);
         WSACleanup();
-        return 1;
+        return -1;
     }
 
     return 0;
 }
 
-// Main Method for Command Line
-// Sets up intial config and begins 
-// ouputing to the terminal
-int main(int argc, char **argv) {
+// Main method for Client testing
+// Sets up intial config and begins ouputing to the terminal
+// Rename to main if compiling only this file
+int main_client(int argc, char **argv) {
     // Validate the parameters
     if (argc != 3) {
         printf("Usage: %s <server-name> <port-number>\n", argv[0]);
-        return 1;
+        return -1;
     }
 
     // No print buffering
     setvbuf (stdout, NULL, _IONBF, 0);
 
-    printf("Making client...\n");
+    // Create Client object
+    printf("Making client... ");
     Client* c = new Client(argv[1], argv[2]);
-    printf("Client Success!\n\n\n");
-
-    // Message holder
-    char msg[DEFAULT_BUFLEN];
+    printf("Done!\n\n\n");
 
     // Send/Receive Loop
     do {
         printf("Enter message: ");
-        scanf("%s", msg);
-        c->send((const char *) &msg);
-        c->receive();
+        scanf("%s", c->msgbuf);
+        c->client_send((const char *) &(c->msgbuf));
+        c->client_receive();
         printf("Message Recieved: \"%s\"\n\n", c->recvbuf);
     } while (true);
 

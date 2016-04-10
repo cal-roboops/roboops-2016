@@ -1,16 +1,35 @@
-#include <wiringPi.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include "../wiringPi/wiringPi/wiringPi.h"
+#include "../wiringPi/wiringPi/softServo.h"
 
-int main (void) {
-    int pos;
-    wiringPiSetup () ;
-    pinMode(15, OUTPUT) ;
-    for (pos = 0; pos <= 180; pos++) {
-    	digitalWrite(15, 1);
-    	delay(15);
+int main () {
+    if (wiringPiSetup () == -1) {
+    fprintf (stdout, "oops: %s\n", strerror (errno)) ;
+    return 1 ;
     }
-    for (pos = 180; pos >= 0; pos--) {
-    	digitalWrite(15, -1);
-    	delay(15);
+
+    softServoSetup(0, 1, 2, 3, 4, 5, 6, 7);
+
+    softServoWrite (0,  500) ;
+/*
+    softServoWrite (1, 1000) ;
+    softServoWrite (2, 1100) ;
+    softServoWrite (3, 1200) ;
+    softServoWrite (4, 1300) ;
+    softServoWrite (5, 1400) ;
+    softServoWrite (6, 1500) ;
+    softServoWrite (7, 2200) ;
+*/
+    // Hold variables
+    int value;
+
+    // Servo Control Loop
+    while (true) {
+        printf("Set value to: ");
+        scanf("%d", &value);
+        softServoWrite(0, value);
     }
-    return 0;
+
 }

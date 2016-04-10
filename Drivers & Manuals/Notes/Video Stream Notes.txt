@@ -1,0 +1,20 @@
+
+After researching online, I found that … 
+Video capture is most simply done with the OpenCV library. 
+Video streaming can be done with a Motion JPEG (MJPEG) Stream.
+
+How a MPEG streaming server usually works is that it sends a stream of images over a HTTP protocol, and you then type the IP address into a browser that supports this (Most big-name browsers do, such as Chrome), and you would see what the camera sees in the browser. 
+
+There are also many people who have done projects with these on GitHub, but I couldn’t find any tutorials. You could use their source code for reference.
+
+
+https://github.com/jacksonliam/mjpg-streamer
+
+https://github.com/swank-rats/image-processing
+
+https://www.cs.utexas.edu/~teammco/misc/udp_video/
+
+
+If you want a “shortcut”, you could also ssh into the Raspberry Pi and then just run OpenCV to display it on your monitor, as shown through this YouTube video.
+
+https://www.youtube.com/watch?v=pldlEXcPOqA
