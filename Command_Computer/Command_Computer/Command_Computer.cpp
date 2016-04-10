@@ -148,7 +148,7 @@ BOOL InitInstance2(HINSTANCE hInstance, int nCmdShow)
 	DWORD width = GetSystemMetrics(SM_CXSCREEN);
 	DWORD height = GetSystemMetrics(SM_CYSCREEN);
 	ShowWindow(hWnd2, nCmdShow);
-	MoveWindow(hWnd2, 635, 0, width/2, height/2, true);
+	MoveWindow(hWnd2, width/2, 0, width/2, height/2, true);
 	UpdateWindow(hWnd2);
 
 	return TRUE;
@@ -168,7 +168,7 @@ BOOL InitInstance3(HINSTANCE hInstance, int nCmdShow)
 	DWORD width = GetSystemMetrics(SM_CXSCREEN);
 	DWORD height = GetSystemMetrics(SM_CYSCREEN);
 	ShowWindow(hWnd3, nCmdShow);
-	MoveWindow(hWnd3, 0, 350, width/2, height/2, true);
+	MoveWindow(hWnd3, 0, height/2, width/2, height/2, true);
 	UpdateWindow(hWnd3);
 
 	return TRUE;
@@ -188,7 +188,7 @@ BOOL InitInstance4(HINSTANCE hInstance, int nCmdShow)
 	DWORD width = GetSystemMetrics(SM_CXSCREEN);
 	DWORD height = GetSystemMetrics(SM_CYSCREEN);
 	ShowWindow(hWnd4, nCmdShow);
-	MoveWindow(hWnd4, 635, 350, width/2, height/2, true);
+	MoveWindow(hWnd4, width/2, height/2, width/2, height/2, true);
 	UpdateWindow(hWnd4);
 
 	return TRUE;
