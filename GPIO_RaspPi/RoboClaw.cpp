@@ -135,10 +135,13 @@ int main() {
     do {
         printf("Enter address (1 or 2): ");
         scanf("%d", &add);
-        printf("Enter Motor: ");
+        printf("Enter Motor (1 or 2): ");
         scanf("%d", &mot);
-        printf("Enter byteValue: ");
+        printf("Enter byteValue (-1 < x < 1): ");
         scanf("%f", &val);
+        printf("%d\n", mot);
+        printf("%d\n", mot);
+        printf("%f\n", val);
         if (add == 1) {
             rc->setMotorSpeed(add1, mot, val);
         } else if (add == 2) {
