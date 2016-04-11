@@ -30,14 +30,14 @@ class RoboClaw {
 		uint16_t sumBytes;
 		const char *deviceName;
 
-		// Private Methods 
+		// Private Methods
 		// transmit (command=single number defined to function in manual)
-		int transmit(uint8_t* address, int command, uint8_t* data, size_t n_data);
+		int transmit(uint16_t address, int command, uint8_t* data, size_t n_data);
 
 	public:
 		// Public Variables
 		// Public Methods
 		RoboClaw(const char* dev);
 		~RoboClaw();
-		int setMotorSpeed(uint8_t address, int motor, float value);
+		int setMotorSpeed(uint16_t address, int motor, float value);
 };

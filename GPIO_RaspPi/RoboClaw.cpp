@@ -55,13 +55,13 @@ RoboClaw::~RoboClaw() {
 }
 
 // Set Motor Speed
-int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
+int RoboClaw::setMotorSpeed(uint16_t address, int motor, float value) {
 	sum = 0;
 
 	// Bound
 	if (value > 1) {
 		value = 1;
-	} else if (value < 1) {
+	} else if (value < -1) {
 		value = -1;
 	}
 
@@ -71,15 +71,15 @@ int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
 	// Send the command
 	if (motor == 1) {
 		if (value > 0) {
-			return transmit(&address, 0, &speed, 1);
+			return transmit(address, 0, &speed, 1);
 		} else {
-			return transmit(&address, 1, &speed, 1);
+			return transmit(address, 1, &speed, 1);
 		}
 	} else if (motor == 2) {
 		if (value > 0) {
-			return transmit(&address, 4, &speed, 1);
+			return transmit(address, 4, &speed, 1);
 		} else {
-			return transmit(&address, 5, &speed, 1);
+			return transmit(address, 5, &speed, 1);
 		}
 	}
 
@@ -87,7 +87,7 @@ int RoboClaw::setMotorSpeed(uint8_t address, int motor, float value) {
 }
 
 // Send Commands
-int RoboClaw::transmit(uint8_t* address, int command,
+int RoboClaw::transmit(uint16_t address, int command,
 			uint8_t* data, size_t n_data) {
 	// Clear buffers of any pending data
 	tcflush(uart, TCIOFLUSH);
@@ -104,13 +104,18 @@ int RoboClaw::transmit(uint8_t* address, int command,
 
 	// Sum buffer bytes
 	sumBytes = 0;
-	for (size_t i = 0; i < n_data; i++) {
+	for (size_t i = 0; i < n_data + 2; i++) {
 	    sumBytes += buf[i];
 	}
 
 	// Create checksum
 	sum += sumBytes;
-	buf[n_data + 2] = sumBytes & 0x7F;
+	uint16_t checksum = sumBytes & 0x7F;
+	buf[n_data + 2] = checksum;
+
+	for (size_t i = 0; i < n_data + 3; i++) {
+	    printf("%d\n", buf[i]);
+	}
 
 	return write(uart, buf, n_data + 3);
 }
@@ -126,10 +131,11 @@ int main() {
 
     // Holder variables
     int add;
-    uint8_t add1 = 0x80;
-    uint8_t add2 = 0x81;
+    uint16_t add1 = 0x80;
+    uint16_t add2 = 0x81;
     int mot;
     float val;
+    int res;
 
     // Command Loop
     do {
@@ -139,14 +145,12 @@ int main() {
         scanf("%d", &mot);
         printf("Enter byteValue (-1 < x < 1): ");
         scanf("%f", &val);
-        printf("%d\n", mot);
-        printf("%d\n", mot);
-        printf("%f\n", val);
         if (add == 1) {
-            rc->setMotorSpeed(add1, mot, val);
+            res = rc->setMotorSpeed(add1, mot, val);
         } else if (add == 2) {
-            rc->setMotorSpeed(add2, mot, val);
+            res = rc->setMotorSpeed(add2, mot, val);
         }
+	printf("%d\n", res);
     } while (true);
 
 	return 0;
