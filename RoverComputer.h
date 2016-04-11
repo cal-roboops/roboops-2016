@@ -17,13 +17,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Python.h>
 #include "Networking/Server.h"
 #include "GPIO_RaspPi/Encoder.h"
-#include "GPIO_RaspPi/RoboClaw.h"
+//#include "GPIO_RaspPi/RoboClaw.h"
 #include "Helpers/sharedDefinitions.h"
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/softServo.h"
 
-RoboClaw* roboclaw;
+//RoboClaw* roboclaw;
 Server* raspPi;
 Encoder* encoders[4];
+PyObject *pName, *pModule, *pDict, *pValue, *pResult;
+PyObject *pFuncO, *pFuncFB;

@@ -13,8 +13,8 @@
 
 // Stop Roboclaw
 void stop_roboclaws() {
-    roboclaw->transmit(STOP_ROBOCLAW1);
-    roboclaw->transmit(STOP_ROBOCLAW2); 
+    //roboclaw->transmit(STOP_ROBOCLAW1);
+    //roboclaw->transmit(STOP_ROBOCLAW2); 
 }
 
 // Set Servos Straight
@@ -40,12 +40,21 @@ int initialize() {
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
-    roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[6], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[7], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[8], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[9], NULL, 10));
+    // If this doesn't work try PyTuple_Pack(val1, val2, ...)
+    pArgs = Py_BuildValue("(ii)", Right_RoboClaw, strtol(action[0], NULL, 10));
+    PyErr_Print();
+    pResult = PyObject_CallObject(pFuncFB, pValue);
+    PyErr_Print();
+    pArgs = Py_BuildValue("(ii)", Left_RoboClaw, strtol(action[1], NULL, 10));
+    PyErr_Print();
+    pResult = PyObject_CallObject(pFunFB, pValue);
+    PyErr_Print();
+    //roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
+    //roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
     return 0;
 }
 
@@ -135,8 +144,22 @@ int main(int argc, char **argv) {
     int i;
     int res;
 
-    // Motors
-    roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
+    // Motors (Using python code)
+    // Setup Python
+    Py_Initialize();
+    pName = PyString_FromString((char*) "roboclaw");
+    pModule = PyImport_Import(pName);
+    pDict = PyModule_GetDict(pModule);
+    // Import the functions we need
+    pFuncO = PyDict_GetItemString(pDict, (char*) "Open");
+    pFuncFB = PyDict_GetItemString(pDict, (char*) "ForwardBackwardMixed");
+    // Open the port
+    // If this doesn't work try PyTuple_Pack(val1, val2, ...)
+    pArgs = Py_BuildValue("(zi)", (char*) "/dev/ttyAMA0", 38400);
+    PyErr_Print();
+    pResult = PyObject_CallObject(pFuncO, pValue);
+    PyErr_Print();
+    //roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL, 
@@ -218,6 +241,13 @@ int main(int argc, char **argv) {
     	raspPi->server_send(complete);
         printf("\n");
     } while (true);
+
+    // Clean up
+    Py_DEREF(pModule);
+    Py_DEREF(pName);
+
+    // Finish Interpretor
+    Py_Finalize();
 
     return 0;
 }
