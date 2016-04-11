@@ -94,7 +94,7 @@ int RoboClaw::transmit(uint8_t* address, int command,
 
 	// Setup command list
 	uint8_t buf[n_data + 3];
-	buf[0] = *address;
+	buf[0] = address;
 	buf[1] = command;
 
 	// Create the transmission list
