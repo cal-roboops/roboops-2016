@@ -30,7 +30,8 @@ class RoboClaw {
 		uint16_t sumBytes;
 		const char *deviceName;
 
-		// Private Methods
+		// Private Methods 
+		// transmit (command=single number defined to function in manual)
 		int transmit(uint8_t* address, int command, uint8_t* data, size_t n_data);
 
 	public:
