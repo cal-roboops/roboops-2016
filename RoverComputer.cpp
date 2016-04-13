@@ -36,7 +36,7 @@ int initialize() {
 
 // ---------- ACTION MODES -----------
 
-/*char* generate(char* address, char* command) {
+char* generate(char* address, char* command) {
     char* temp;
     strcat(temp, "roboclaw.ForwardBackwardMixed(");
     strcat(temp, address);
@@ -44,13 +44,13 @@ int initialize() {
     strcat(temp, command);
     strcat(temp, ")");
     return temp;
-}*/
+}
 
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    //PyRun_SimpleString(generate(RIGHT_ROBOCLAW, action[0]));
-    //PyRun_SimpleString(generate(LEFT_ROBOCLAW, action[1]));
+    PyRun_SimpleString(generate(RIGHT_ROBOCLAW, action[0]));
+    PyRun_SimpleString(generate(LEFT_ROBOCLAW, action[1]));
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -108,7 +108,7 @@ int stop(int mode) {
 int main(int argc, char **argv) {
     // Check command line arguments
     char* port;
-	if (argc != 2) {
+    if (argc != 2) {
         port = DEFAULT_PORT;
     } else {
         port = argv[1];
@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
         if (strstr(raspPi->recvbuf, endMsg) != NULL) {
             stop(mode);
             printf("Received End Message from Command.\n");
-            //break;
+            break;
         }
 
         // Set mode to first value
@@ -203,8 +203,8 @@ int main(int argc, char **argv) {
         if (mode != prev_mode) {
             if (stop(prev_mode) != 0) {
                 printf("Couldn't stop previous mode.\n");
-		//raspPi->server_Send(endMsg);
-                //exit(1);
+		raspPi->server_send(endMsg);
+                exit(1);
             }
         }
 
