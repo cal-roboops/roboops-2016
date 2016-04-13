@@ -13,8 +13,6 @@
 
 // Stop Roboclaw
 void stop_roboclaws() {
-    //roboclaw->transmit(STOP_ROBOCLAW1);
-    //roboclaw->transmit(STOP_ROBOCLAW2);
     ;
 }
 
@@ -38,20 +36,24 @@ int initialize() {
 
 // ---------- ACTION MODES -----------
 
+char* compile(int address, char* command) {
+    char* temp;
+    strcat(temp, "roboclaw.ForwardBackwardMixed(");
+    char* add;
+    sprintf(add, "%d", address);
+    strcat(temp, add);
+    strcat(temp, ", ");
+    strcat(temp, command);
+    strcat(temp, ")");
+    return temp;
+}
+
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
     // If this doesn't work try PyTuple_Pack(val1, val2, ...)
-    pArgs = Py_BuildValue("(ii)", RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
-    PyErr_Print();
-    pResult = PyObject_CallObject(pFuncFB, pArgs);
-    PyErr_Print();
-    pArgs = Py_BuildValue("(ii)", LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
-    PyErr_Print();
-    pResult = PyObject_CallObject(pFuncFB, pArgs);
-    PyErr_Print();
-    //roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
-    //roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
+    PyRun_SimpleString(compile(RIGHT_ROBOCLAW, action[0]));
+    PyRun_SimpleString(compile(LEFT_ROBOCLAW, action[1]));
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -152,27 +154,13 @@ int main(int argc, char **argv) {
     // Motors (Using embedded python code)
     // Setup Python
     Py_Initialize();
+    // Import Modules and Set Path
     PyRun_SimpleString("import sys");
     PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")");
-    PyErr_Print();
-    pName = PyString_FromString((char*) "roboclaw");
-    PyErr_Print();
-    pModule = PyImport_Import(pName);
-    PyErr_Print();
-    pDict = PyModule_GetDict(pModule);
-    PyErr_Print();
-    // Import functions
-    pFuncO = PyDict_GetItemString(pDict, (char*) "Open");
-    PyErr_Print();
-    pFuncFB = PyDict_GetItemString(pDict, (char*) "ForwardBackwardMixed");
-    PyErr_Print();
-    // Open UART
-    // If this doesn't work try PyTuple_Pack(val1, val2, ...)
-    pArgs = Py_BuildValue("(zi)", (char*) "/dev/ttyAMA0", 38400);
-    PyErr_Print();
-    pResult = PyObject_CallObject(pFuncO, pArgs);
-    PyErr_Print();
-    //roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
+    PyRun_SimpleString("import roboclaw");
+    // Open UART ("/dev/ttyS0" on Pi 3, "/dev/ttyAMA0" Pi 2)
+    // Baudrate = 2400, 9600, 19200, 38400
+    PyRun_SimpleString("roboclaw.Open(\"/dev/ttyAMA0\", 38400)");
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
@@ -201,15 +189,15 @@ int main(int argc, char **argv) {
     do {
         // Receive commands from the main computer (Space seperated list)
     	raspPi->server_receive();
-        printf("Message Recieved: \"%s\"\n", raspPi->recvbuf);
+        printf("Message Received: \"%s\"\n", raspPi->recvbuf);
 
         // End connection if received endMsg command
-        if (strcmp(raspPi->recvbuf, endMsg) == 0) {
+        if (strstr(raspPi->recvbuf, endMsg) != NULL) {
             stop(mode);
-            printf("Recieved End Message from Command.\n");
-            break;
+            printf("Received End Message from Command.\n");
+            //break;
         }
-
+	printf("Here");
         // Set mode to first value
         prev_mode = mode;
         mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
@@ -218,13 +206,14 @@ int main(int argc, char **argv) {
         if (mode != prev_mode) {
             if (stop(prev_mode) != 0) {
                 printf("Couldn't stop previous mode.\n");
+		//raspPi->server_Send(endMsg);
                 //exit(1);
             }
         }
 
-        // Reset index
-        i = 0;
+	printf("Here");
         // Parse the comma seperated command list
+	i = 0;
         command = strtok(NULL, ",");
         while (command != NULL) {
             // Translate command to int and store in command list
@@ -234,9 +223,11 @@ int main(int argc, char **argv) {
             i++;
         }
 
+	printf("Here");
         // Act on the list of hexadecimal command
         res = act(command_list, mode);
 
+	printf("Here");
         // Check for successful completion of command
         if (res == -1) {
             // Send confirmation for each successful command
@@ -246,14 +237,11 @@ int main(int argc, char **argv) {
             raspPi->server_send(good);
         }
 
+	printf("Here");
         // Send command completion message
     	raspPi->server_send(complete);
         printf("\n");
     } while (true);
-
-    // Clean up
-    Py_DECREF(pModule);
-    Py_DECREF(pName);
 
     // Finish Interpretor
     Py_Finalize();
