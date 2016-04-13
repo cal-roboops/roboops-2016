@@ -14,7 +14,7 @@
 // Stop Roboclaw
 void stop_roboclaws() {
     //roboclaw->transmit(STOP_ROBOCLAW1);
-    //roboclaw->transmit(STOP_ROBOCLAW2); 
+    //roboclaw->transmit(STOP_ROBOCLAW2);
     ;
 }
 
@@ -147,12 +147,20 @@ int main(int argc, char **argv) {
     // Motors (Using embedded python code)
     // Setup Python
     Py_Initialize();
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.append(\".\")");
+    PyErr_Print();
     pName = PyString_FromString((char*) "roboclaw");
+    PyErr_Print();
     pModule = PyImport_Import(pName);
+    PyErr_Print();
     pDict = PyModule_GetDict(pModule);
+    PyErr_Print();
     // Import functions
     pFuncO = PyDict_GetItemString(pDict, (char*) "Open");
+    PyErr_Print();
     pFuncFB = PyDict_GetItemString(pDict, (char*) "ForwardBackwardMixed");
+    PyErr_Print();
     // Open UART
     // If this doesn't work try PyTuple_Pack(val1, val2, ...)
     pArgs = Py_BuildValue("(zi)", (char*) "/dev/ttyAMA0", 38400);
@@ -162,8 +170,8 @@ int main(int argc, char **argv) {
     //roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
 
     // Servos
-    softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL, 
-                    CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR, 
+    softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
+                    CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR,
                     0, 0, 0, 0);
 
     // Encoders
