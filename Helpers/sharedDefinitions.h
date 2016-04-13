@@ -12,7 +12,8 @@
 // Housed on UART pins 15 & 16
 #define LEFT_ROBOCLAW 128
 #define RIGHT_ROBOCLAW 129
-#define ZERO 64
+#define R_ZERO 64
+#define SERVO_CENTER 500
 
 #define CHASSIS_SERVO_PINFL 0
 #define CHASSIS_SERVO_PINBL 1
