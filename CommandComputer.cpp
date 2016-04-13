@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     // Chcek if port is given
     char* port;
     if (argc == 2) {
-        port = DEFAULT_PORT;
+        port = strdup(DEFAULT_PORT);
     } else {
         port = argv[2];
     }
