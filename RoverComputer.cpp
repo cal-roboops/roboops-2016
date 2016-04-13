@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
     // Setup Python
     Py_Initialize();
     PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append(\".\")");
+    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")");
     PyErr_Print();
     pName = PyString_FromString((char*) "roboclaw");
     PyErr_Print();
