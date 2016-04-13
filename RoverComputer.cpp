@@ -12,16 +12,20 @@
 // ---------- HELPERS -----------
 
 // Generate command syntax for roboclaw python
-std::string generate_syntax(const char* address, const char* command) {
-    std::string temp;
-    temp.append("roboclaw.ForwardBackwardMixed(").append(address).append(", ").append(command).append(")");
+const char* generate_syntax(const char* address, const char* command) {
+    delay(100000);
+    strcpy(temp, "roboclaw.ForwardBackwardMixed(");
+    strcat(temp, address);
+    strcat(temp, ", ");
+    strcat(temp, command);
+    strcat(temp, ")");
     return temp;
 }
 
 // Stop Roboclaw
 void stop_roboclaws() {
-    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, "0"));
-    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, "0"));
+    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, ZERO));
+    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, ZERO));
 }
 
 // Set Servos Straight
@@ -105,9 +109,8 @@ int stop(int mode) {
 // Main control function for the Rover
 int main(int argc, char **argv) {
     // Check command line arguments
-    char* port;
     if (argc != 2) {
-        port = DEFAULT_PORT;
+        port = strdup(DEFAULT_PORT);
     } else {
         port = argv[1];
     }
