@@ -1,11 +1,15 @@
 Address, Command, ByteValue, Checksum
 address byte, command byte, data bytes and a checksum
 
-First Number => Roboclaw address 1 or 2 (translates to 0x80 and 0x81)
-Second Number => Motor on roboclaw 1 or 2
-Third Number => Speed to set roboclaw -1 <= x <= 1
+First Number => Mode
+Second Number => Right Roboclaw Value
+Third Number => Left Roboclaw Value
+Fourth Number => Front Left Servo Value
+Fifth Number => Back Left Servo Value
+Sixth Number => Front Right Servo Value
+Seventh Number => Back Right Servo Value
 
-Test M1 Comands:
-	128, 0, 1
-	128, 0, 0.5
-	128, 0, 0
+Test Comands:
+	1) Full Backward => 0,0,0,500,500,500,500
+	2) Stop => 0,64,64,500,500,500,500
+	3) Full Forward => 0,127,127,500,500,500,500
