@@ -48,19 +48,8 @@ int main(int argc, char **argv) {
     char* command;
     char* command_list[DEFAULT_BUFLEN];
 
-    // Indexing & result variables
+    // Indexing variable
     int i;
-    int res;
-
-    // Motors (Using embedded python code)
-    // Setup Python
-    Py_Initialize();
-    // Import Modules and Set Path
-    PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-    PyRun_SimpleString("import roboclaw\n");
-    // Open UART
-    PyRun_SimpleString(SETUP_UART_PI2);
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
@@ -79,8 +68,18 @@ int main(int argc, char **argv) {
     // Initialize the rover
     printf("Setting up physical Rover... ");
     // Set Roboclaws to Zero
+    // Setup Python
+    Py_Initialize();
+    // Import Modules and Set Path
+    PyRun_SimpleString("import sys\n");
+    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+    PyRun_SimpleString("import roboclaw\n");
+    // Open UART
+    PyRun_SimpleString(SETUP_UART_PI2);
     PyRun_SimpleString(R1_ZERO);
     PyRun_SimpleString(R2_ZERO);
+    // Shutdown Python
+    Py_Finalize();
     // Set Servos to Dead Straigt
     softServoWrite(CHASSIS_SERVO_PINFL, SERVO_CENTER);
     softServoWrite(CHASSIS_SERVO_PINBL, SERVO_CENTER);
@@ -99,7 +98,6 @@ int main(int argc, char **argv) {
 
         // End connection if received endMsg command
         if (strstr(raspPi->recvbuf, endMsg) != NULL) {
-            stop(mode);
             printf("Received End Message from Command.\n");
             break;
         }
@@ -108,20 +106,22 @@ int main(int argc, char **argv) {
         prev_mode = mode;
         mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
 
-        // Setup Python
-        Py_Initialize();
-        // Import Modules and Set Path
-        PyRun_SimpleString("import sys\n");
-        PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-        PyRun_SimpleString("import roboclaw\n");
-        // Open UART
-        PyRun_SimpleString(SETUP_UART_PI2);
-
         // Stop the previous modes commands
         if (mode != prev_mode) {
             // Set Roboclaws to Zero
+            // Setup Python
+            Py_Initialize();
+            // Import Modules and Set Path
+            PyRun_SimpleString("import sys\n");
+            PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+            PyRun_SimpleString("import roboclaw\n");
+            // Open UART
+            PyRun_SimpleString(SETUP_UART_PI2);
+            // Run commands
             PyRun_SimpleString(R1_ZERO);
             PyRun_SimpleString(R2_ZERO);
+            // Shutdown Python
+            Py_Finalize();
             // Set Servos to Dead Straigt
             softServoWrite(CHASSIS_SERVO_PINFL, SERVO_CENTER);
             softServoWrite(CHASSIS_SERVO_PINBL, SERVO_CENTER);
@@ -143,10 +143,20 @@ int main(int argc, char **argv) {
         // Act on the list of commands
         if (mode == 0 || mode == 1) {
             // Set Roboclaws
-            sprintf(command, "roboclaw.ForwardBackwardMixed(128, %d)", command_list[0]);
+            Py_Initialize();
+            // Import Modules and Set Path
+            PyRun_SimpleString("import sys\n");
+            PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+            PyRun_SimpleString("import roboclaw\n");
+            // Open UART
+            PyRun_SimpleString(SETUP_UART_PI2);
+            // Run Commands
+            sprintf(command, "roboclaw.ForwardBackwardMixed(128, %d)", strtol(command_list[0], NULL, 10));
             PyRun_SimpleString((const char*) command);
-            sprintf(command, "roboclaw.ForwardBackwardMixed(129, %d)", command_list[1]);
+            sprintf(command, "roboclaw.ForwardBackwardMixed(129, %s)", strtol(command_list[1], NULL, 10));
             PyRun_SimpleString((const char*) command);
+            // Shutdown Python
+            Py_Finalize();
 
             // Set Servos
             softServoWrite(CHASSIS_SERVO_PINFL, strtol(command_list[2], NULL, 10));
