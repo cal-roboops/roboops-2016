@@ -11,17 +11,14 @@
 
 // ---------- HELPERS -----------
 
-// Generate command syntax for roboclaw python
-const char* generate_syntax(const char* address, const char* command) {
-    sprintf(pArgs, "roboclaw.ForwardBackwardMixed(%s, %s)", address, command);
-    printf(pArgs);
-    return pArgs;
-}
-
 // Stop Roboclaw
 void stop_roboclaws() {
-    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, ZERO));
-    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, ZERO));
+    pArgs = PyTuple_Pack(2, PyInt_FromString(RIGHT_ROBOCLAW), PyInt_FromString(ZERO));
+    PyObject_CallObject(roboclaw_FB, pArgs);
+    pArgs = PyTuple_Pack(2, PyInt_FromString(LEFT_ROBOCLAW), PyInt_FromString(ZERO));
+    // pArgs = PyTuple_Pack("(ii)", LEFT_ROBOCLAW, ZERO);
+    PyObject_CallObject(roboclaw_FB, pArgs);
+    // PyObject_CallMethod(roboclaw_FB)
 }
 
 // Set Servos Straight
@@ -47,8 +44,10 @@ int initialize() {
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, action[0]));
-    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, action[1]));
+    pArgs = PyTuple_Pack(2, PyInt_FromString(RIGHT_ROBOCLAW), PyInt_FromString(action[0]));
+    PyObject_CallObject(roboclaw_FB, pArgs);
+    pArgs = PyTuple_Pack(2, PyInt_FromString(LEFT_ROBOCLAW), PyInt_FromString(action[1]));
+    PyObject_CallObject(roboclaw_FB, pArgs);
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -105,9 +104,7 @@ int stop(int mode) {
 // Main control function for the Rover
 int main(int argc, char **argv) {
     // Check command line arguments
-    if (argc != 2) {
-        port = strdup(DEFAULT_PORT);
-    } else {
+    if (argc == 2) {
         port = argv[1];
     }
 
@@ -149,12 +146,16 @@ int main(int argc, char **argv) {
     // Setup Python
     Py_Initialize();
     // Import Modules and Set Path
-    PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")");
-    PyRun_SimpleString("import roboclaw");
-    // Open UART ("/dev/ttyS0" on Pi 3, "/dev/ttyAMA0" Pi 2)
-    // Baudrate = 2400, 9600, 19200, 38400
-    PyRun_SimpleString("roboclaw.Open(\"/dev/ttyAMA0\", 38400)");
+    PyRun_SimpleString("import sys\n");
+    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+    roboclaw_module = PyImport_Import(PyString_FromString((char*) "roboclaw"));
+    roboclaw_O = PyObject_GetAttrString(roboclaw_module, (char*) "Open");
+    roboclaw_FB = PyObject_GetAttrString(roboclaw_module, (char*) "ForwardBackwardMixed");
+    // Open UART
+    pArgs = PyTuple_Pack(2, PyString_FromString((char*) UART_PI2), PyInt_FromString((char*) BAUDRATE));
+    // pArgs = PyTuple_Pack("(si)", UART_PI2, BAUDRATE);
+    PyObject_CallObject(roboclaw_O, pArgs);
+
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,

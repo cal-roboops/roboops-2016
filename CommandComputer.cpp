@@ -20,10 +20,7 @@ int main(int argc, char **argv) {
     }
 
     // Chcek if port is given
-    char* port;
-    if (argc == 2) {
-        port = strdup(DEFAULT_PORT);
-    } else {
+    if (argc == 3) {
         port = argv[2];
     }
 

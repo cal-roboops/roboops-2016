@@ -7,6 +7,11 @@
 // Made for Debian
 //
 
+// Baudrate = 2400, 9600, 19200, 38400
+#define BAUDRATE 38400
+#define UART_PI2 "/dev/ttyAMA0"
+#define UART_PI3 "/dev/ttyS0"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -19,6 +24,6 @@
 
 Server* raspPi;
 Encoder* encoders[4];
-PyObject* pResult;
-char* port;
-char* pArgs;
+PyObject* roboclaw_module;
+PyObject* roboclaw_O, roboclaw_FB;
+PyObject* pArgs;
