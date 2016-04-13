@@ -15,6 +15,7 @@
 void stop_roboclaws() {
     //roboclaw->transmit(STOP_ROBOCLAW1);
     //roboclaw->transmit(STOP_ROBOCLAW2); 
+    ;
 }
 
 // Set Servos Straight
@@ -43,11 +44,11 @@ int drive(char* action[]) {
     // If this doesn't work try PyTuple_Pack(val1, val2, ...)
     pArgs = Py_BuildValue("(ii)", Right_RoboClaw, strtol(action[0], NULL, 10));
     PyErr_Print();
-    pResult = PyObject_CallObject(pFuncFB, pValue);
+    pResult = PyObject_CallObject(pFuncFB, pArgs);
     PyErr_Print();
     pArgs = Py_BuildValue("(ii)", Left_RoboClaw, strtol(action[1], NULL, 10));
     PyErr_Print();
-    pResult = PyObject_CallObject(pFunFB, pValue);
+    pResult = PyObject_CallObject(pFunFB, pArgs);
     PyErr_Print();
     //roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
     //roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
@@ -131,7 +132,6 @@ int main(int argc, char **argv) {
     int prev_mode = 0;
 
     // Default Messages
-    const char* endMsg = "Done!";
     const char* complete = "Finished running commands.";
     const char* good = "All is good.";
     const char* bad = "Something broke...";
@@ -144,20 +144,20 @@ int main(int argc, char **argv) {
     int i;
     int res;
 
-    // Motors (Using python code)
+    // Motors (Using embedded python code)
     // Setup Python
     Py_Initialize();
     pName = PyString_FromString((char*) "roboclaw");
     pModule = PyImport_Import(pName);
     pDict = PyModule_GetDict(pModule);
-    // Import the functions we need
+    // Import functions
     pFuncO = PyDict_GetItemString(pDict, (char*) "Open");
     pFuncFB = PyDict_GetItemString(pDict, (char*) "ForwardBackwardMixed");
-    // Open the port
+    // Open UART
     // If this doesn't work try PyTuple_Pack(val1, val2, ...)
     pArgs = Py_BuildValue("(zi)", (char*) "/dev/ttyAMA0", 38400);
     PyErr_Print();
-    pResult = PyObject_CallObject(pFuncO, pValue);
+    pResult = PyObject_CallObject(pFuncO, pArgs);
     PyErr_Print();
     //roboclaw = new RoboClaw(ROBOCLAW_DEVICE_PI2, BAUDRATE);
 
@@ -198,6 +198,7 @@ int main(int argc, char **argv) {
         // End connection if received endMsg command
         if (strcmp(raspPi->recvbuf, endMsg) == 0) {
             stop(mode);
+            printf("Recieved End Message from Command.\n");
             break;
         }
 

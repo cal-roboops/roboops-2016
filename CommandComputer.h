@@ -10,7 +10,4 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Networking/Client.h"
-#include "Joystick/Saitek_X52.h"
 #include "Helpers/sharedDefinitions.h"
-
-Saitek_X52* s_X52;

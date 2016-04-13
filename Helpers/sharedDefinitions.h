@@ -25,3 +25,6 @@
 #define ENCODER_PIN3 9
 
 #define CAMERA_SERVO_PIN 10
+
+const char* endMsg = "Done!";
+const char* complete = "Finished running commands.";

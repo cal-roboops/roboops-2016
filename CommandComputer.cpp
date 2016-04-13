@@ -26,12 +26,6 @@ int main(int argc, char **argv) {
 
     // Connect to the command computer components
     printf("Setting up Controller, Windows and Defaults... ");
-    // Default Messages
-    // const char* endMsg = "Done!";
-    const char* complete = "Finished running commands.";
-
-    // Controller
-    s_X52 = new Saitek_X52();
 
     printf("Done!\n");
 
@@ -54,6 +48,10 @@ int main(int argc, char **argv) {
         // Receive running status of commands
         memset(winC->recvbuf, 0, sizeof(winC->recvbuf));
         while (strstr(winC->recvbuf, complete) == NULL) {
+            if (strstr(winC->recvbuf, endMsg) != NULL) {
+                printf("Recieved End Message from Rover.\n");
+                break;
+            }
             winC->client_receive();
             printf("Message Recieved: \"%s\"\n\n", winC->recvbuf);
         }
