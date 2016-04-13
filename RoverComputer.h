@@ -21,5 +21,4 @@ Server* raspPi;
 Encoder* encoders[4];
 PyObject* pResult;
 char* port;
-char* temp;
-const char* args;
+char* pArgs;

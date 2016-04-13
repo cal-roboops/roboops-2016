@@ -13,13 +13,9 @@
 
 // Generate command syntax for roboclaw python
 const char* generate_syntax(const char* address, const char* command) {
-    delay(100000);
-    strcpy(temp, "roboclaw.ForwardBackwardMixed(");
-    strcat(temp, address);
-    strcat(temp, ", ");
-    strcat(temp, command);
-    strcat(temp, ")");
-    return temp;
+    sprintf(pArgs, "roboclaw.ForwardBackwardMixed(%s, %s)", address, command);
+    printf(pArgs);
+    return pArgs;
 }
 
 // Stop Roboclaw
