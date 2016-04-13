@@ -151,9 +151,9 @@ int main(int argc, char **argv) {
             // Open UART
             PyRun_SimpleString(SETUP_UART_PI2);
             // Run Commands
-            sprintf(command, "roboclaw.ForwardBackwardMixed(128, %d)", strtol(command_list[0], NULL, 10));
+            sprintf(command, "roboclaw.ForwardBackwardMixed(128, %d)", (int) strtol(command_list[0], NULL, 10));
             PyRun_SimpleString((const char*) command);
-            sprintf(command, "roboclaw.ForwardBackwardMixed(129, %s)", strtol(command_list[1], NULL, 10));
+            sprintf(command, "roboclaw.ForwardBackwardMixed(129, %d)", (int) strtol(command_list[1], NULL, 10));
             PyRun_SimpleString((const char*) command);
             // Shutdown Python
             Py_Finalize();
