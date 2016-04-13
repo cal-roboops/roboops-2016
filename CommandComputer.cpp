@@ -14,9 +14,17 @@
 // Main control function for Command Computer
 int main(int argc, char **argv) {
 	// Validate the parameters
-    if (argc != 3) {
-        printf("Usage: %s <server-name> <port-number>\n", argv[0]);
+    if (argc < 2) {
+        printf("Usage: %s <server-name> (<port-number>)\n", argv[0]);
         return 1;
+    }
+
+    // Chcek if port is given
+    char* port;
+    if (argc == 2) {
+        port = DEFAULT_PORT;
+    } else {
+        port = argv[2];
     }
 
     // No print buffering
@@ -31,7 +39,7 @@ int main(int argc, char **argv) {
 
     // Create command client and connect to Rover Server
     printf("Making client... ");
-    Client* winC = new Client(argv[1], argv[2]);
+    Client* winC = new Client(argv[1], port);
     printf("Done!\n");
 
     printf("Command Computer Setup Complete!\n\n\n");
