@@ -117,6 +117,11 @@ int main(int argc, char **argv) {
 
     printf("Begin Rover Setup...\n");
 
+    // Create rover server and connect to command computer
+    printf("Setting up connection... ");
+    raspPi = new Server(port);
+    printf("Done!\n");
+
     // Setup the wiring pi interface
     printf("Setting up WiringPi... ");
     if (wiringPiSetup() == -1) {
@@ -180,11 +185,6 @@ int main(int argc, char **argv) {
     encoders[2] = new Encoder(ENCODER_PIN2);
     encoders[3] = new Encoder(ENCODER_PIN3);
 
-    printf("Done!\n");
-
-    // Create rover server and connect to command computer
-    printf("Setting up connection... ");
-    raspPi = new Server(port);
     printf("Done!\n");
 
     // Initialize the rover
