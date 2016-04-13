@@ -9,6 +9,90 @@
 
 #include "RoverComputer.h"
 
+// ---------- HELPERS -----------
+
+// Stop Roboclaw
+void stop_roboclaws() {
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, (char*) R_ZERO);
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, (char*) R_ZERO);
+}
+
+// Set Servos Straight
+void reset_chassis_servos() {
+    softServoWrite(CHASSIS_SERVO_PINFL, 500);
+    softServoWrite(CHASSIS_SERVO_PINBL, 500);
+    softServoWrite(CHASSIS_SERVO_PINFR, 500);
+    softServoWrite(CHASSIS_SERVO_PINBR, 500);
+}
+
+// ---------- INITIALIZE -----------
+
+// Initialize and setup the rover from its folded state
+int initialize() {
+    // Set wheel servos to straight
+    stop_roboclaws();
+    reset_chassis_servos();
+    return 0;
+}
+
+// ---------- ACTION MODES -----------
+
+// Command Transmission form (drive):
+// Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
+int drive(char* action[]) {
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, action[0]);
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, action[1]);
+    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
+    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
+    return 0;
+}
+
+// Command Transmission form (arm):
+// BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
+int arm(char* action[]) {
+    return 0;
+}
+
+// ---------- ACTION SELECTOR -----------
+
+// Takes in the desired mode/actions and acts accordingly
+int act(char* action[], int mode) {
+    switch (mode) {
+        case 0:
+        case 1: return drive(action); // Drive using car mode
+        case 2: return arm(action); // Move the arm
+        default: return -1;
+    }
+}
+
+// ---------- ZERO MODES -----------
+
+// Zeros the drive mode
+int zero_drive() {
+    stop_roboclaws();
+    reset_chassis_servos();
+    return 0;
+}
+
+// Zeros the arm mode
+int zero_arm() {
+    return 0;
+}
+
+// ---------- ZERO SELECTOR -----------
+
+// Stops actions/movements of the previous mode
+int stop(int mode) {
+    switch (mode) {
+        case 0:
+        case 1: return zero_drive();
+        case 2: return zero_arm();
+        default: return -1;
+    }
+}
+
 // ---------- MAIN FUNCTION -----------
 
 // Main control function for the Rover
@@ -22,7 +106,7 @@ int main(int argc, char **argv) {
 
     // Create rover server and connect to command computer
     printf("Setting up connection... ");
-    Server* raspPi = new Server(port);
+    raspPi = new Server(port);
     printf("Done!\n");
 
     // Setup the wiring pi interface
@@ -48,8 +132,24 @@ int main(int argc, char **argv) {
     char* command;
     char* command_list[DEFAULT_BUFLEN];
 
-    // Indexing variable
+    // Indexing & result variables
     int i;
+    int res;
+
+    // Motors (Using embedded python code)
+    // Setup Python
+    Py_Initialize();
+    // Import Modules and Set Path
+    PyRun_SimpleString("import sys\n");
+    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+    roboclaw_module = PyImport_Import(PyString_FromString((char*) "roboclaw"));
+    roboclaw_Open = PyObject_GetAttrString(roboclaw_module, (char*) "Open");
+    roboclaw_FB = PyObject_GetAttrString(roboclaw_module, (char*) "ForwardBackwardMixed");
+    if (roboclaw_Open == NULL || roboclaw_FB == NULL) {
+	printf("Failed to import Python");
+    }
+    // Open UART
+    PyObject_CallMethodObjArgs(roboclaw_module, roboclaw_Open, (char*) "(si)", (char*) UART_PI2, (char*) BAUDRATE);
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
@@ -57,7 +157,6 @@ int main(int argc, char **argv) {
                     0, 0, 0, 0);
 
     // Encoders
-    Encoder* encoders[4];
     encoders[0] = new Encoder(ENCODER_PIN0);
     encoders[1] = new Encoder(ENCODER_PIN1);
     encoders[2] = new Encoder(ENCODER_PIN2);
@@ -67,25 +166,10 @@ int main(int argc, char **argv) {
 
     // Initialize the rover
     printf("Setting up physical Rover... ");
-    // Set Roboclaws to Zero
-    // Setup Python
-    Py_Initialize();
-    // Import Modules and Set Path
-    PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-    PyRun_SimpleString("import roboclaw\n");
-    // Open UART
-    PyRun_SimpleString(SETUP_UART_PI2);
-    PyRun_SimpleString(R1_ZERO);
-    PyRun_SimpleString(R2_ZERO);
-    // Shutdown Python
-    Py_Finalize();
-    // Set Servos to Dead Straigt
-    softServoWrite(CHASSIS_SERVO_PINFL, SERVO_CENTER);
-    softServoWrite(CHASSIS_SERVO_PINBL, SERVO_CENTER);
-    softServoWrite(CHASSIS_SERVO_PINFR, SERVO_CENTER);
-    softServoWrite(CHASSIS_SERVO_PINBR, SERVO_CENTER);
-
+    if (initialize() != 0) {
+        printf("Could not initialize rover.\n");
+        exit(1);
+    }
     printf("Done!\n");
 
     printf("Rover Setup Complete!\n\n\n");
@@ -98,6 +182,7 @@ int main(int argc, char **argv) {
 
         // End connection if received endMsg command
         if (strstr(raspPi->recvbuf, endMsg) != NULL) {
+            stop(mode);
             printf("Received End Message from Command.\n");
             break;
         }
@@ -108,25 +193,11 @@ int main(int argc, char **argv) {
 
         // Stop the previous modes commands
         if (mode != prev_mode) {
-            // Set Roboclaws to Zero
-            // Setup Python
-            Py_Initialize();
-            // Import Modules and Set Path
-            PyRun_SimpleString("import sys\n");
-            PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-            PyRun_SimpleString("import roboclaw\n");
-            // Open UART
-            PyRun_SimpleString(SETUP_UART_PI2);
-            // Run commands
-            PyRun_SimpleString(R1_ZERO);
-            PyRun_SimpleString(R2_ZERO);
-            // Shutdown Python
-            Py_Finalize();
-            // Set Servos to Dead Straigt
-            softServoWrite(CHASSIS_SERVO_PINFL, SERVO_CENTER);
-            softServoWrite(CHASSIS_SERVO_PINBL, SERVO_CENTER);
-            softServoWrite(CHASSIS_SERVO_PINFR, SERVO_CENTER);
-            softServoWrite(CHASSIS_SERVO_PINBR, SERVO_CENTER);
+            if (stop(prev_mode) != 0) {
+                printf("Couldn't stop previous mode.\n");
+		        raspPi->server_send(endMsg);
+                exit(1);
+            }
         }
 
         // Parse the comma seperated command list
@@ -140,35 +211,16 @@ int main(int argc, char **argv) {
             i++;
         }
 
-        // Act on the list of commands
-        if (mode == 0 || mode == 1) {
-            // Set Roboclaws
-            Py_Initialize();
-            // Import Modules and Set Path
-            PyRun_SimpleString("import sys\n");
-            PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-            PyRun_SimpleString("import roboclaw\n");
-            // Open UART
-            PyRun_SimpleString(SETUP_UART_PI2);
-            // Run Commands
-            sprintf(command, "roboclaw.ForwardBackwardMixed(128, %d)", (int) strtol(command_list[0], NULL, 10));
-            PyRun_SimpleString((const char*) command);
-            sprintf(command, "roboclaw.ForwardBackwardMixed(129, %d)", (int) strtol(command_list[1], NULL, 10));
-            PyRun_SimpleString((const char*) command);
-            // Shutdown Python
-            Py_Finalize();
+        // Act on the list of hexadecimal command
+        res = act(command_list, mode);
 
-            // Set Servos
-            softServoWrite(CHASSIS_SERVO_PINFL, strtol(command_list[2], NULL, 10));
-            softServoWrite(CHASSIS_SERVO_PINBL, strtol(command_list[3], NULL, 10));
-            softServoWrite(CHASSIS_SERVO_PINFR, strtol(command_list[4], NULL, 10));
-            softServoWrite(CHASSIS_SERVO_PINBR, strtol(command_list[5], NULL, 10));
-
-            // Send confirmation
-            raspPi->server_send(good);
-        } else {
-            // Send bad command
+        // Check for successful completion of command
+        if (res == -1) {
+            // Send confirmation for each successful command
             raspPi->server_send(bad);
+        } else {
+            // Send bad status and corresponding hex command for failures
+            raspPi->server_send(good);
         }
 
         // Send command completion message

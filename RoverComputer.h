@@ -8,10 +8,9 @@
 //
 
 // Baudrate = 2400, 9600, 19200, 38400
-#define SETUP_UART_PI2 "roboclaw.Open(\"/dev/ttyAMA0\", 38400)\n"
-#define SETUP_UART_PI3 "roboclaw.Open(\"/dev/ttyS0\", 38400)\n"
-#define R1_ZERO "roboclaw.ForwardBackwardMixed(128, 64)"
-#define R2_ZERO "roboclaw.ForwardBackwardMixed(129, 64)"
+#define BAUDRATE 38400
+#define UART_PI2 "/dev/ttyAMA0"
+#define UART_PI3 "/dev/ttyS0"
 
 #include <stdio.h>
 #include <string.h>
@@ -22,3 +21,9 @@
 #include "Helpers/sharedDefinitions.h"
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/softServo.h"
+
+Server* raspPi;
+Encoder* encoders[4];
+PyObject *roboclaw_module;
+PyObject *roboclaw_Open, *roboclaw_FB;
+PyObject *pArgs;
