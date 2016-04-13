@@ -11,9 +11,17 @@
 
 // ---------- HELPERS -----------
 
+// Generate command syntax for roboclaw python
+std::string generate_syntax(const char* address, const char* command) {
+    std::string temp;
+    temp.append("roboclaw.ForwardBackwardMixed(").append(address).append(", ").append(command).append(")");
+    return temp;
+}
+
 // Stop Roboclaw
 void stop_roboclaws() {
-    ;
+    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, "0"));
+    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, "0"));
 }
 
 // Set Servos Straight
@@ -36,21 +44,11 @@ int initialize() {
 
 // ---------- ACTION MODES -----------
 
-char* generate(char* address, char* command) {
-    char* temp;
-    strcat(temp, "roboclaw.ForwardBackwardMixed(");
-    strcat(temp, address);
-    strcat(temp, ", ");
-    strcat(temp, command);
-    strcat(temp, ")");
-    return temp;
-}
-
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    PyRun_SimpleString(generate(RIGHT_ROBOCLAW, action[0]));
-    PyRun_SimpleString(generate(LEFT_ROBOCLAW, action[1]));
+    PyRun_SimpleString(generate_syntax(RIGHT_ROBOCLAW, action[0]));
+    PyRun_SimpleString(generate_syntax(LEFT_ROBOCLAW, action[1]));
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -203,13 +201,13 @@ int main(int argc, char **argv) {
         if (mode != prev_mode) {
             if (stop(prev_mode) != 0) {
                 printf("Couldn't stop previous mode.\n");
-		raspPi->server_send(endMsg);
+		        raspPi->server_send(endMsg);
                 exit(1);
             }
         }
 
         // Parse the comma seperated command list
-	i = 0;
+	    i = 0;
         command = strtok(NULL, ",");
         while (command != NULL) {
             // Translate command to int and store in command list
