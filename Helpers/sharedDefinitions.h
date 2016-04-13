@@ -26,6 +26,6 @@
 
 #define CAMERA_SERVO_PIN 10
 
-char* port = "8080";
+char* port = (char*) "8080";
 const char* endMsg = "Done!";
 const char* complete = "Finished running commands.";

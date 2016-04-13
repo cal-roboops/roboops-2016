@@ -24,6 +24,6 @@
 
 Server* raspPi;
 Encoder* encoders[4];
-PyObject* roboclaw_module;
-PyObject* roboclaw_O, roboclaw_FB;
-PyObject* pArgs;
+PyObject *roboclaw_module;
+PyObject *roboclaw_Open, *roboclaw_FB;
+PyObject *pArgs;

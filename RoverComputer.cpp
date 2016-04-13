@@ -13,12 +13,10 @@
 
 // Stop Roboclaw
 void stop_roboclaws() {
-    pArgs = PyTuple_Pack(2, PyInt_FromString(RIGHT_ROBOCLAW), PyInt_FromString(ZERO));
-    PyObject_CallObject(roboclaw_FB, pArgs);
-    pArgs = PyTuple_Pack(2, PyInt_FromString(LEFT_ROBOCLAW), PyInt_FromString(ZERO));
-    // pArgs = PyTuple_Pack("(ii)", LEFT_ROBOCLAW, ZERO);
-    PyObject_CallObject(roboclaw_FB, pArgs);
-    // PyObject_CallMethod(roboclaw_FB)
+    const char* temp = "roboclaw.ForwardBackwardMixed(128, 0)\n";
+    PyRun_SimpleString(temp);
+//    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, (char*) ZERO);
+//    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, (char*) ZERO);
 }
 
 // Set Servos Straight
@@ -44,10 +42,8 @@ int initialize() {
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    pArgs = PyTuple_Pack(2, PyInt_FromString(RIGHT_ROBOCLAW), PyInt_FromString(action[0]));
-    PyObject_CallObject(roboclaw_FB, pArgs);
-    pArgs = PyTuple_Pack(2, PyInt_FromString(LEFT_ROBOCLAW), PyInt_FromString(action[1]));
-    PyObject_CallObject(roboclaw_FB, pArgs);
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, action[0]);
+    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, action[1]);
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -148,14 +144,19 @@ int main(int argc, char **argv) {
     // Import Modules and Set Path
     PyRun_SimpleString("import sys\n");
     PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-    roboclaw_module = PyImport_Import(PyString_FromString((char*) "roboclaw"));
-    roboclaw_O = PyObject_GetAttrString(roboclaw_module, (char*) "Open");
-    roboclaw_FB = PyObject_GetAttrString(roboclaw_module, (char*) "ForwardBackwardMixed");
+    PyRun_SimpleString("import roboclaw\n");
+    PyRun_SimpleString("roboclaw.Open(\"/dev/ttyAMA0\", 38400)\n");
+//    PyRun_SimpleString("roboclaw.ForwardBackwardMixed(128, 50)\n");
+//    roboclaw_module = PyImport_Import(PyString_FromString((char*) "roboclaw"));
+//    roboclaw_Open = PyObject_GetAttrString(roboclaw_module, (char*) "Open");
+//    roboclaw_FB = PyObject_GetAttrString(roboclaw_module, (char*) "ForwardBackwardMixed");
+//    if (roboclaw_Open == NULL || roboclaw_FB == NULL) {
+//	printf("Failed to import Python");
+//    }
     // Open UART
-    pArgs = PyTuple_Pack(2, PyString_FromString((char*) UART_PI2), PyInt_FromString((char*) BAUDRATE));
-    // pArgs = PyTuple_Pack("(si)", UART_PI2, BAUDRATE);
-    PyObject_CallObject(roboclaw_O, pArgs);
-
+//    PyObject_CallMethodObjArgs(roboclaw_module, roboclaw_Open, (char*) "(si)", (char*) UART_PI2, (char*) BAUDRATE);
+//    PyObject_CallMethodObjArgs(roboclaw_module, roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, (char*) "50");
+//    PyObject_CallMethodObjArgs(roboclaw_FB, PyTuple_Pack(2, PyInt_FromString((char*) RIGHT_ROBOCLAW, NULL, 10), PyInt_FromString((char*) "50", NULL, 10)));
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
@@ -233,9 +234,6 @@ int main(int argc, char **argv) {
     	raspPi->server_send(complete);
         printf("\n");
     } while (true);
-
-    // Finish Interpretor
-    Py_Finalize();
 
     return 0;
 }
