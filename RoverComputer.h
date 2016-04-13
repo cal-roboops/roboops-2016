@@ -9,8 +9,6 @@
 
 // Baudrate set to 2400, 9600, 19200, 38400 (for ROBOCLAW)
 #define BAUDRATE 38400
-#define STOP_ROBOCLAW1
-#define STOP_ROBOCLAW2
 #define ROBOCLAW_DEVICE_PI2 "/dev/ttyAMA0"
 #define ROBOCLAW_DEVICE_PI3 "/dev/ttyS0"
 
@@ -28,5 +26,5 @@
 //RoboClaw* roboclaw;
 Server* raspPi;
 Encoder* encoders[4];
-PyObject *pName, *pModule, *pDict, *pValue, *pResult;
+PyObject *pName, *pModule, *pDict, *pArgs, *pResult;
 PyObject *pFuncO, *pFuncFB;

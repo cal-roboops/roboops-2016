@@ -42,13 +42,13 @@ int initialize() {
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
     // If this doesn't work try PyTuple_Pack(val1, val2, ...)
-    pArgs = Py_BuildValue("(ii)", Right_RoboClaw, strtol(action[0], NULL, 10));
+    pArgs = Py_BuildValue("(ii)", RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
     PyErr_Print();
     pResult = PyObject_CallObject(pFuncFB, pArgs);
     PyErr_Print();
-    pArgs = Py_BuildValue("(ii)", Left_RoboClaw, strtol(action[1], NULL, 10));
+    pArgs = Py_BuildValue("(ii)", LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
     PyErr_Print();
-    pResult = PyObject_CallObject(pFunFB, pArgs);
+    pResult = PyObject_CallObject(pFuncFB, pArgs);
     PyErr_Print();
     //roboclaw->transmit(Right_RoboClaw, strtol(action[1], NULL, 10), strtol(action[2], NULL, 10));
     //roboclaw->transmit(Left_RoboClaw, strtol(action[4], NULL, 10), strtol(action[5], NULL, 10));
@@ -70,9 +70,9 @@ int arm(char* action[]) {
 // Takes in the desired mode/actions and acts accordingly
 int act(char* action[], int mode) {
     switch (mode) {
-        case 0: 
+        case 0:
         case 1: return drive(action); // Drive using car mode
-        case 1: return arm(action); // Move the arm
+        case 2: return arm(action); // Move the arm
         default: return -1;
     }
 }
@@ -244,8 +244,8 @@ int main(int argc, char **argv) {
     } while (true);
 
     // Clean up
-    Py_DEREF(pModule);
-    Py_DEREF(pName);
+    Py_DECREF(pModule);
+    Py_DECREF(pName);
 
     // Finish Interpretor
     Py_Finalize();
