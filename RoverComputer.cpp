@@ -108,6 +108,15 @@ int main(int argc, char **argv) {
         prev_mode = mode;
         mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
 
+        // Setup Python
+        Py_Initialize();
+        // Import Modules and Set Path
+        PyRun_SimpleString("import sys\n");
+        PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
+        PyRun_SimpleString("import roboclaw\n");
+        // Open UART
+        PyRun_SimpleString(SETUP_UART_PI2);
+
         // Stop the previous modes commands
         if (mode != prev_mode) {
             // Set Roboclaws to Zero
