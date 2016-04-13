@@ -11,8 +11,8 @@
 #define DEFAULT_PORT "8080"
 
 // Housed on UART pins 15 & 16
-#define LEFT_ROBOCLAW 128
-#define RIGHT_ROBOCLAW 129
+#define LEFT_ROBOCLAW "128"
+#define RIGHT_ROBOCLAW "129"
 
 #define CHASSIS_SERVO_PINFL 0
 #define CHASSIS_SERVO_PINBL 1

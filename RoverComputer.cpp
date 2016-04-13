@@ -36,12 +36,10 @@ int initialize() {
 
 // ---------- ACTION MODES -----------
 
-char* compile(int address, char* command) {
+char* generate(char* address, char* command) {
     char* temp;
     strcat(temp, "roboclaw.ForwardBackwardMixed(");
-    char* add;
-    sprintf(add, "%d", address);
-    strcat(temp, add);
+    strcat(temp, address);
     strcat(temp, ", ");
     strcat(temp, command);
     strcat(temp, ")");
@@ -51,9 +49,8 @@ char* compile(int address, char* command) {
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
 int drive(char* action[]) {
-    // If this doesn't work try PyTuple_Pack(val1, val2, ...)
-    PyRun_SimpleString(compile(RIGHT_ROBOCLAW, action[0]));
-    PyRun_SimpleString(compile(LEFT_ROBOCLAW, action[1]));
+    PyRun_SimpleString(generate(RIGHT_ROBOCLAW, action[0]));
+    PyRun_SimpleString(generate(LEFT_ROBOCLAW, action[1]));
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
@@ -197,7 +194,7 @@ int main(int argc, char **argv) {
             printf("Received End Message from Command.\n");
             //break;
         }
-	printf("Here");
+
         // Set mode to first value
         prev_mode = mode;
         mode = strtol(strtok(raspPi->recvbuf, ","), NULL, 10);
@@ -211,7 +208,6 @@ int main(int argc, char **argv) {
             }
         }
 
-	printf("Here");
         // Parse the comma seperated command list
 	i = 0;
         command = strtok(NULL, ",");
@@ -223,11 +219,9 @@ int main(int argc, char **argv) {
             i++;
         }
 
-	printf("Here");
         // Act on the list of hexadecimal command
         res = act(command_list, mode);
 
-	printf("Here");
         // Check for successful completion of command
         if (res == -1) {
             // Send confirmation for each successful command
@@ -237,7 +231,6 @@ int main(int argc, char **argv) {
             raspPi->server_send(good);
         }
 
-	printf("Here");
         // Send command completion message
     	raspPi->server_send(complete);
         printf("\n");
