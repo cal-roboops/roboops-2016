@@ -44,7 +44,7 @@ class RoboClaw {
 	public:
 		// Public Variables
 		// Public Methods
-		RoboClaw(const char* dev, uint32_t tout);
+		RoboClaw(const char* dev);
 		~RoboClaw();
 		bool ForwardM1(uint8_t address, uint8_t speed);
 		bool BackwardM1(uint8_t address, uint8_t speed);

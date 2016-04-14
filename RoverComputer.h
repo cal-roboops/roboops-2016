@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <Python.h>
 #include "Networking/Server.h"
 #include "GPIO_RaspPi/Encoder.h"
 #include "GPIO_RaspPi/RoboClaw.h"

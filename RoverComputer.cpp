@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
     int i;
 
     // Motors
-    roboclaw = new RoboClaw(UART_PI2, (uint32_t) 10);
+    roboclaw = new RoboClaw(UART_PI2);
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,

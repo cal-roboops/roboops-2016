@@ -10,10 +10,9 @@
 #include "RoboClaw.h"
 
 // RoboClaw Constructor
-RoboClaw::RoboClaw(const char* dev, uint32_t tout) {
+RoboClaw::RoboClaw(const char* dev) {
 	// Set constants
 	deviceName = dev;
-	timeout = tout;
 
 	// Open and initialize serial port
 	uart = open(deviceName, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -187,7 +186,7 @@ bool RoboClaw::CombinedForwardBackward(uint8_t address, uint8_t speed) {
 int main_roboclaw() {
     // Create RoboClaw object
     printf("Making RoboClaw... ");
-    RoboClaw* rc = new RoboClaw("/dev/ttyAMA0", (uint32_t) 10);
+    RoboClaw* rc = new RoboClaw("/dev/ttyAMA0");
     printf("Done!\n\n\n");
 
     // Holder variables
