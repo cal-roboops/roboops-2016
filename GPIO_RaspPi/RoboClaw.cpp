@@ -79,7 +79,7 @@ uint16_t RoboClaw::crc_get() {
 
 // RoboClaw Write
 bool RoboClaw::write_n(uint8_t cnt, ... ) {
-	uint8_t trys=MAXRETRY;
+	uint8_t trys = MAXRETRY;
 
 	do {
 		// Clear Checksum
@@ -149,35 +149,23 @@ bool RoboClaw::ForwardBackwardM2(uint8_t address, uint8_t speed){
 
 // RoboClaw Combined Forward
 bool RoboClaw::CombinedForward(uint8_t address, uint8_t speed) {
-	if (!ForwardM1(address, speed)) {
-		return false;
-	} else if (!ForwardM2(address, speed)) {
-		return false;
-	} else {
-		return true;
-	}
+	bool m1 = ForwardM1(address, speed);
+	bool m2 = ForwardM2(address, speed);
+	return (m1 & m2);
 }
 
 // RoboClaw Combined Backward
 bool RoboClaw::CombinedBackward(uint8_t address, uint8_t speed) {
-	if (!BackwardM1(address, speed)) {
-		return false;
-	} else if (!BackwardM2(address, speed)) {
-		return false;
-	} else {
-		return true;
-	}
+	bool m1 = BackwardM1(address, speed);
+	bool m2 = BackwardM2(address, speed);
+	return (m1 & m2);
 }
 
 // RoboClaw Combined ForwardBackward
 bool RoboClaw::CombinedForwardBackward(uint8_t address, uint8_t speed) {
-	if (!ForwardBackwardM1(address, speed)) {
-		return false;
-	} else if (!ForwardBackwardM2(address, speed)) {
-		return false;
-	} else {
-		return true;
-	}
+	bool m1 = ForwardBackwardM1(address, speed);
+	bool m2 = ForwardBackwardM2(address, speed);
+	return (m1 & m2);
 }
 
 // Main method for RoboClaw testing
