@@ -257,7 +257,7 @@ bool RoboClaw::DutyM1M2(uint8_t address, uint16_t duty1, uint16_t duty2) {
 // Main method for RoboClaw testing
 // Sets up initial config and begins outputting to the terminal
 // Rename to main if compiling only this file
-int main() {
+int main_roboclaw() {
     // Create RoboClaw object
     printf("Making RoboClaw... ");
     RoboClaw* rc = new RoboClaw("/dev/ttyAMA0", (uint32_t) 10);
