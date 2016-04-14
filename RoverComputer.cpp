@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     raspPi->server_send("Connected!");
 
     // Get confirmation to setup systems
-    memset(recvbuf, 0, sizeof(recvbuf));
+    memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     while (strstr(raspPi->recvbuf, "Setup!") == NULL) {
         raspPi->server_receive();
         printf("%s\n", raspPi->recvbuf);
@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
     raspPi->server_send("Setup complete!");
 
     // Get confirmation to begin unfolding
-    memset(recvbuf, 0, sizeof(recvbuf));
+    memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     while (strstr(raspPi->recvbuf, "Unfold!"), == NULL) {
         raspPi->server_receive();
         printf("%s\n", raspPi->recvbuf);
@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
 
     printf("Rover Ready!\n\n\n");
     raspPi->server_send("Rover Ready!");
-    memset(recvbuf, 0, sizeof(recvbuf));
+    memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
 
     // Command Loop
     do {

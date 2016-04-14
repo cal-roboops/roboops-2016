@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     printf("Command Computer Setup Complete!\n\n");
 
     printf("Begin Rover Setup Instructions...");
-    ZeroMemory(recvbuf, sizeof(recvbuf));
+    ZeroMemory(winC->recvbuf, sizeof(winC->recvbuf));
     while(strstr(winC->recvbuf, "Rover Ready!") == NULL) {
         winC->client_receive();
         printf("%s\n", winC->recvbuf);
