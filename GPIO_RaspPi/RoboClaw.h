@@ -11,8 +11,6 @@
 #define SetDWORDval(arg) (uint8_t)(arg>>24),(uint8_t)(arg>>16),(uint8_t)(arg>>8),(uint8_t)arg
 #define SetWORDval(arg) (uint8_t)(arg>>8),(uint8_t)arg
 
-#include <poll.h>
-#include <math.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
@@ -22,8 +20,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <termios.h>
-#include "../wiringPi/wiringPi/wiringPi.h"
-#include "../wiringPi/wiringPi/wiringSerial.h"
 
 // RoboClaw Class
 class RoboClaw {
