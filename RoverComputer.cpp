@@ -132,6 +132,7 @@ int main(int argc, char **argv) {
     while (strstr(raspPi->recvbuf, "Setup!") == NULL) {
         raspPi->server_receive();
         printf("%s\n", raspPi->recvbuf);
+        raspPi->server_send("Waiting...");
     }
 
     // Send start of initializing
@@ -184,6 +185,7 @@ int main(int argc, char **argv) {
     while (strstr(raspPi->recvbuf, "Unfold!") == NULL) {
         raspPi->server_receive();
         printf("%s\n", raspPi->recvbuf);
+        raspPi->server_send("Waiting...");
     }
 
     // Send start to unfold
