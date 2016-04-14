@@ -118,6 +118,16 @@ bool RoboClaw::BackwardM1(uint8_t address, uint8_t speed) {
 	return write_n(3,address,M1BACKWARD,speed);
 }
 
+// RoboClaw Set Min Voltage Level
+bool RoboClaw::SetMinVoltageMainBattery(uint8_t address, uint8_t voltage){
+	return write_n(3,address,SETMINMB,voltage);
+}
+
+// RoboClaw Set Max Voltage Level
+bool RoboClaw::SetMaxVoltageMainBattery(uint8_t address, uint8_t voltage){
+	return write_n(3,address,SETMAXMB,voltage);
+}
+
 // RoboClaw M2 Forward
 bool RoboClaw::ForwardM2(uint8_t address, uint8_t speed) {
 	return write_n(3,address,M2FORWARD,speed);
@@ -128,50 +138,47 @@ bool RoboClaw::BackwardM2(uint8_t address, uint8_t speed) {
 	return write_n(3,address,M2BACKWARD,speed);
 }
 
-// RoboClaw Mixed Forward
-bool RoboClaw::ForwardMixed(uint8_t address, uint8_t speed) {
-	return write_n(3,address,MIXEDFORWARD,speed);
+// RoboClaw M1 ForwardBackWard
+bool RoboClaw::ForwardBackwardM1(uint8_t address, uint8_t speed){
+	return write_n(3,address,M17BIT,speed);
 }
 
-// RoboClaw Mixed Backward
-bool RoboClaw::BackwardMixed(uint8_t address, uint8_t speed) {
-	return write_n(3,address,MIXEDBACKWARD,speed);
+// RoboClaw M2 ForwardBackWard
+bool RoboClaw::ForwardBackwardM2(uint8_t address, uint8_t speed){
+	return write_n(3,address,M27BIT,speed);
 }
 
-// RoboClaw Mixed Forward Backward
-bool RoboClaw::ForwardBackwardMixed(uint8_t address, uint8_t speed) {
-	return write_n(3,address,MIXEDFB,speed);
+// RoboClaw Combined Forward
+bool RoboClaw::CombinedForward(uint8_t address, uint8_t speed) {
+	if (!ForwardM1(address, speed)) {
+		return false;
+	} else if (!ForwardM2(address, speed)) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
-// RoboClaw Set M1 PID
-bool RoboClaw::SetM1VelocityPID(uint8_t address, float kp_fp, float ki_fp, float kd_fp, uint32_t qpps) {
-	uint32_t kp = kp_fp*65536;
-	uint32_t ki = ki_fp*65536;
-	uint32_t kd = kd_fp*65536;
-	return write_n(18,address,SETM1PID,SetDWORDval(kd),SetDWORDval(kp),SetDWORDval(ki),SetDWORDval(qpps));
+// RoboClaw Combined Backward
+bool RoboClaw::CombinedBackward(uint8_t address, uint8_t speed) {
+	if (!BackwardM1(address, speed)) {
+		return false;
+	} else if (!BackwardM2(address, speed)) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
-// RoboClaw Set M2 PID
-bool RoboClaw::SetM2VelocityPID(uint8_t address, float kp_fp, float ki_fp, float kd_fp, uint32_t qpps) {
-	uint32_t kp = kp_fp*65536;
-	uint32_t ki = ki_fp*65536;
-	uint32_t kd = kd_fp*65536;
-	return write_n(18,address,SETM2PID,SetDWORDval(kd),SetDWORDval(kp),SetDWORDval(ki),SetDWORDval(qpps));
-}
-
-// RoboClaw M1 Duty
-bool RoboClaw::DutyM1(uint8_t address, uint16_t duty) {
-	return write_n(4,address,M1DUTY,SetWORDval(duty));
-}
-
-// RoboClaw M2 Duty
-bool RoboClaw::DutyM2(uint8_t address, uint16_t duty) {
-	return write_n(4,address,M2DUTY,SetWORDval(duty));
-}
-
-// RoboClaw M1 & M2 Duty
-bool RoboClaw::DutyM1M2(uint8_t address, uint16_t duty1, uint16_t duty2) {
-	return write_n(6,address,MIXEDDUTY,SetWORDval(duty1),SetWORDval(duty2));
+// RoboClaw Combined ForwardBackward
+bool RoboClaw::CombinedForwardBackward(uint8_t address, uint8_t speed) {
+	if (!ForwardBackwardM1(address, speed)) {
+		return false;
+	} else if (!ForwardBackwardM2(address, speed)) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 // Main method for RoboClaw testing
@@ -197,9 +204,9 @@ int main_roboclaw() {
         printf("Enter byteValue (-1 < x < 1): ");
         scanf("%d", &val);
         if (add == 1) {
-            res = rc->ForwardBackwardMixed(add1, val);
+            res = rc->CombinedForwardBackward(add1, val);
         } else if (add == 2) {
-            res = rc->ForwardBackwardMixed(add2, val);
+            res = rc->CombinedForwardBackward(add2, val);
         }
 	printf("%d\n", res);
     } while (true);

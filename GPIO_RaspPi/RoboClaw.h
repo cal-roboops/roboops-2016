@@ -48,29 +48,25 @@ class RoboClaw {
 		~RoboClaw();
 		bool ForwardM1(uint8_t address, uint8_t speed);
 		bool BackwardM1(uint8_t address, uint8_t speed);
+		bool SetMinVoltageMainBattery(uint8_t address, uint8_t voltage);
+		bool SetMaxVoltageMainBattery(uint8_t address, uint8_t voltage);
 		bool ForwardM2(uint8_t address, uint8_t speed);
 		bool BackwardM2(uint8_t address, uint8_t speed);
-		bool ForwardMixed(uint8_t address, uint8_t speed);
-		bool BackwardMixed(uint8_t address, uint8_t speed);
-		bool ForwardBackwardMixed(uint8_t address, uint8_t speed);
-		bool SetM1VelocityPID(uint8_t address, float kp_fp, float ki_fp, float kd_fp, uint32_t qpps);
-		bool SetM2VelocityPID(uint8_t address, float kp_fp, float ki_fp, float kd_fp, uint32_t qpps);
-		bool DutyM1(uint8_t address, uint16_t duty);
-		bool DutyM2(uint8_t address, uint16_t duty);
-		bool DutyM1M2(uint8_t address, uint16_t duty1, uint16_t duty2);
+		bool ForwardBackwardM1(uint8_t address, uint8_t speed);
+		bool ForwardBackwardM2(uint8_t address, uint8_t speed);
+		bool CombinedForward(uint8_t address, uint8_t speed);
+		bool CombinedBackward(uint8_t address, uint8_t speed);
+		bool CombinedForwardBackward(uint8_t address, uint8_t speed);
+
 
 		enum {
 			M1FORWARD = 0,
 			M1BACKWARD = 1,
+			SETMINMB = 2,
+			SETMAXMB = 3,
 			M2FORWARD = 4,
 			M2BACKWARD = 5,
-			MIXEDFORWARD = 8,
-			MIXEDBACKWARD = 9,
-			MIXEDFB = 12,
-			SETM1PID = 28,
-			SETM2PID = 29,
-			M1DUTY = 32,
-			M2DUTY = 33,
-			MIXEDDUTY = 34
+			M17BIT = 6,
+			M27BIT = 7
 		};
 };
