@@ -2,3 +2,8 @@
 *.sdf
 *.ipch
 *.pch
+*.idb
+*.pdb
+*.ilk
+*.obj
+*.exe
