@@ -43,8 +43,6 @@ RoboClaw::RoboClaw(const char* dev, uint32_t tout) {
 		exit(1);
 	}
 
-	tcflush(uart, TCIFLUSH);
-
 	ret = tcsetattr(uart, TCSANOW, &uart_config);
 	if (ret < 0) {
 		printf("failed to set attr.\n");
@@ -105,9 +103,6 @@ bool RoboClaw::write_n(uint8_t cnt, ... ) {
 		write(uart, &c, 1);
 		write(uart, &crc, 1);
 
-		if (read(uart, NULL, 1) == 0xFF) {
-			return true;
-		}
 	} while(trys--);
 
 	return false;
