@@ -27,6 +27,11 @@ int main(int argc, char **argv) {
     // No print buffering
     setvbuf (stdout, NULL, _IONBF, 0);
 
+    // Connecting to Rover
+    printf("Connecting to Rover... ");
+    Client* winC = new Client(argv[1], port);
+    printf("Done!\n");
+
     printf("Begin Command Computer Setup...\n");
 
     // Connect to the command computer components
@@ -34,12 +39,17 @@ int main(int argc, char **argv) {
 
     printf("Done!\n");
 
-    // Create command client and connect to Rover Server
-    printf("Making client... ");
-    Client* winC = new Client(argv[1], port);
-    printf("Done!\n");
+    printf("Command Computer Setup Complete!\n\n");
 
-    printf("Command Computer Setup Complete!\n\n\n");
+    printf("Begin Rover Setup Instructions...");
+    ZeroMemory(recvbuf, sizeof(recvbuf));
+    while(strstr(winC->recvbuf, "Rover Ready!") == NULL) {
+        winC->client_receive();
+        printf("%s\n", winC->recvbuf);
+        printf("Enter next instruction:\n");
+        scanf("%s", winC->msgbuf);
+        winC->client_send((const char*) &(winC->msgbuf));
+    }
 
 	// Command Loop
 	do {
@@ -48,7 +58,7 @@ int main(int argc, char **argv) {
         scanf("%s", winC->msgbuf);
 
         // Send list of commands to the rover
-        winC->client_send((const char *) &(winC->msgbuf));
+        winC->client_send((const char*) &(winC->msgbuf));
 
         // Receive running status of commands
         memset(winC->recvbuf, 0, sizeof(winC->recvbuf));

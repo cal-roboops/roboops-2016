@@ -11,85 +11,102 @@
 
 // ---------- HELPERS -----------
 
-// Stop Roboclaw
-void stop_roboclaws() {
-    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, (char*) R_ZERO);
-    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, (char*) R_ZERO);
+// Stop RoboClaw
+bool stop_roboclaws() {
+    roboclaw->ForwardBackwardMixed(RIGHT_ROBOCLAW, RMIXED_ZERO);
+    roboclaw->ForwardBackwardMixed(LEFT_ROBOCLAW, RMIXED_ZERO);
+    return true;
 }
 
 // Set Servos Straight
-void reset_chassis_servos() {
+bool reset_chassis_servos() {
     softServoWrite(CHASSIS_SERVO_PINFL, 500);
     softServoWrite(CHASSIS_SERVO_PINBL, 500);
     softServoWrite(CHASSIS_SERVO_PINFR, 500);
     softServoWrite(CHASSIS_SERVO_PINBR, 500);
+    return true;
 }
 
 // ---------- INITIALIZE -----------
 
 // Initialize and setup the rover from its folded state
-int initialize() {
+bool initialize() {
+    // Stop roboclaws
+    if (!stop_roboclaws()) {
+        return false;
+    }
+
     // Set wheel servos to straight
-    stop_roboclaws();
-    reset_chassis_servos();
-    return 0;
+    if (!reset_chassis_servos()) {
+        return false;
+    }
+
+    return true;
 }
 
 // ---------- ACTION MODES -----------
 
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
-int drive(char* action[]) {
-    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) RIGHT_ROBOCLAW, action[0]);
-    PyObject_CallFunction(roboclaw_FB, (char*) "(ii)", (char*) LEFT_ROBOCLAW, action[1]);
+bool drive(char* action[]) {
+    roboclaw->ForwardBackwardMixed(RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
+    roboclaw->ForwardBackwardMixed(LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
-    return 0;
+    return true;
 }
 
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
-int arm(char* action[]) {
-    return 0;
+bool arm(char* action[]) {
+    return true;
 }
 
 // ---------- ACTION SELECTOR -----------
 
 // Takes in the desired mode/actions and acts accordingly
-int act(char* action[], int mode) {
+bool act(char* action[], int mode) {
     switch (mode) {
         case 0:
         case 1: return drive(action); // Drive using car mode
         case 2: return arm(action); // Move the arm
-        default: return -1;
+        default: return false;
     }
 }
 
 // ---------- ZERO MODES -----------
 
 // Zeros the drive mode
-int zero_drive() {
-    stop_roboclaws();
-    reset_chassis_servos();
-    return 0;
+bool zero_drive() {
+    // Stop roboclaws
+    if (!stop_roboclaws()) {
+        return false;
+    }
+
+    // Set wheel servos to straight
+    if (!reset_chassis_servos()) {
+        return false;
+    }
+    
+    return true;
 }
 
 // Zeros the arm mode
-int zero_arm() {
-    return 0;
+bool zero_arm() {
+    return true;
 }
 
 // ---------- ZERO SELECTOR -----------
 
 // Stops actions/movements of the previous mode
-int stop(int mode) {
+bool stop(int mode) {
     switch (mode) {
         case 0:
         case 1: return zero_drive();
         case 2: return zero_arm();
-        default: return -1;
+        default: return false;
     }
 }
 
@@ -102,14 +119,27 @@ int main(int argc, char **argv) {
         port = argv[1];
     }
 
-    printf("Begin Rover Setup...\n");
-
     // Create rover server and connect to command computer
-    printf("Setting up connection... ");
+    printf("Connecting to Command Computer... ");
     raspPi = new Server(port);
     printf("Done!\n");
 
-    // Setup the wiring pi interface
+    // Send first message
+    raspPi->server_send("Connected!");
+
+    // Get confirmation to setup systems
+    memset(recvbuf, 0, sizeof(recvbuf));
+    while (strstr(raspPi->recvbuf, "Setup!") == NULL) {
+        raspPi->server_receive();
+        printf("%s\n", raspPi->recvbuf);
+    }
+
+    // Send start of initializing
+    raspPi->server_send("Setting up... ");
+
+    printf("Begin Rover Setup...\n");
+
+    // Setup the WiringPi interface
     printf("Setting up WiringPi... ");
     if (wiringPiSetup() == -1) {
         printf("WiringPi failed to start.\n");
@@ -123,33 +153,15 @@ int main(int argc, char **argv) {
     int mode = 0;
     int prev_mode = 0;
 
-    // Default Messages
-    const char* complete = "Finished running commands.";
-    const char* good = "All is good.";
-    const char* bad = "Something broke...";
-
     // Command list for different modes
     char* command;
     char* command_list[DEFAULT_BUFLEN];
 
-    // Indexing & result variables
+    // Indexing variable
     int i;
-    int res;
 
-    // Motors (Using embedded python code)
-    // Setup Python
-    Py_Initialize();
-    // Import Modules and Set Path
-    PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString("sys.path.append(\"./GPIO_RaspPi\")\n");
-    roboclaw_module = PyImport_Import(PyString_FromString((char*) "roboclaw"));
-    roboclaw_Open = PyObject_GetAttrString(roboclaw_module, (char*) "Open");
-    roboclaw_FB = PyObject_GetAttrString(roboclaw_module, (char*) "ForwardBackwardMixed");
-    if (roboclaw_Open == NULL || roboclaw_FB == NULL) {
-	printf("Failed to import Python");
-    }
-    // Open UART
-    PyObject_CallMethodObjArgs(roboclaw_module, roboclaw_Open, (char*) "(si)", (char*) UART_PI2, (char*) BAUDRATE);
+    // Motors
+    roboclaw = new RoboClaw(UART_PI2, (uint32_t) 10);
 
     // Servos
     softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
@@ -164,15 +176,33 @@ int main(int argc, char **argv) {
 
     printf("Done!\n");
 
+    // Send done starting up
+    raspPi->server_send("Setup complete!");
+
+    // Get confirmation to begin unfolding
+    memset(recvbuf, 0, sizeof(recvbuf));
+    while (strstr(raspPi->recvbuf, "Unfold!"), == NULL) {
+        raspPi->server_receive();
+        printf("%s\n", raspPi->recvbuf);
+    }
+
+    // Send start to unfold
+    raspPi->server_send("Unfolding... ");
+
     // Initialize the rover
     printf("Setting up physical Rover... ");
-    if (initialize() != 0) {
+    if (!initialize()) {
         printf("Could not initialize rover.\n");
         exit(1);
     }
     printf("Done!\n");
 
-    printf("Rover Setup Complete!\n\n\n");
+    // Send done unfolding
+    raspPi->server_send("Unfolding Complete!");
+
+    printf("Rover Ready!\n\n\n");
+    raspPi->server_send("Rover Ready!");
+    memset(recvbuf, 0, sizeof(recvbuf));
 
     // Command Loop
     do {
@@ -193,9 +223,10 @@ int main(int argc, char **argv) {
 
         // Stop the previous modes commands
         if (mode != prev_mode) {
-            if (stop(prev_mode) != 0) {
+            if (!stop(prev_mode)) {
                 printf("Couldn't stop previous mode.\n");
-		        raspPi->server_send(endMsg);
+		        raspPi->server_send(failedMsg);
+                raspPi->server_send(endMsg);
                 exit(1);
             }
         }
@@ -211,16 +242,10 @@ int main(int argc, char **argv) {
             i++;
         }
 
-        // Act on the list of hexadecimal command
-        res = act(command_list, mode);
-
-        // Check for successful completion of command
-        if (res == -1) {
-            // Send confirmation for each successful command
-            raspPi->server_send(bad);
-        } else {
-            // Send bad status and corresponding hex command for failures
-            raspPi->server_send(good);
+        // Act on the commands and check for successful completion
+        if (!act(command_list, mode)) {
+            // Send failed status for bad commands
+            raspPi->server_send(failedMsg);
         }
 
         // Send command completion message
