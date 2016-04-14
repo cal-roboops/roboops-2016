@@ -89,7 +89,7 @@ bool zero_drive() {
     if (!reset_chassis_servos()) {
         return false;
     }
-    
+
     return true;
 }
 
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 
     // Get confirmation to begin unfolding
     memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
-    while (strstr(raspPi->recvbuf, "Unfold!"), == NULL) {
+    while (strstr(raspPi->recvbuf, "Unfold!") == NULL) {
         raspPi->server_receive();
         printf("%s\n", raspPi->recvbuf);
     }

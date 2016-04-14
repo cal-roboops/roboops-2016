@@ -16,7 +16,7 @@ RoboClaw::RoboClaw(const char* dev, uint32_t tout) {
 	timeout = tout;
 
 	// Open and initialize serial port
-	uart = open(deviceName, O_RDWR | O_NOCTTY);
+	uart = open(deviceName, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (uart < 0) {
 		printf("Failed to open device: %s\n", strerror(errno));
 		exit(1);
@@ -43,6 +43,8 @@ RoboClaw::RoboClaw(const char* dev, uint32_t tout) {
 		exit(1);
 	}
 
+	tcflush(uart, TCIFLUSH);
+
 	ret = tcsetattr(uart, TCSANOW, &uart_config);
 	if (ret < 0) {
 		printf("failed to set attr.\n");
@@ -56,12 +58,12 @@ RoboClaw::~RoboClaw() {
 }
 
 // RoboClaw Clear Checksum
-void Roboclaw::crc_clear() {
-	checksum = 0;
+void RoboClaw::crc_clear() {
+	crc = 0;
 }
 
 // RoboClaw Update Checksum
-void Roboclaw::crc_update(uint8_t data) {
+void RoboClaw::crc_update(uint8_t data) {
 	int i;
 	crc = crc ^ ((uint16_t) data << 8);
 	for (i=0; i<8; i++) {
@@ -93,95 +95,18 @@ bool RoboClaw::write_n(uint8_t cnt, ... ) {
 		for (uint8_t index=0; index<cnt; index++) {
 			uint8_t data = va_arg(marker, int);
 			crc_update(data);
-			write(data);
+			write(uart, &data, 1);
 		}
 
 		// Reset variable arguments
 		va_end(marker);
 		uint16_t crc = crc_get();
-		write(crc >> 8);
-		write(crc);
+		uint16_t c = crc >> 8;
+		write(uart, &c, 1);
+		write(uart, &crc, 1);
 
-		if(read(timeout) == 0xFF) {
+		if (read(uart, NULL, 1) == 0xFF) {
 			return true;
-		}
-	} while(trys--);
-
-	return false;
-}
-
-// RoboClaw Read
-bool RoboClaw::read_n(uint8_t cmd,uint8_t address,uint8_t cnt,...) {
-	uint32_t value=0;
-	uint8_t trys=MAXRETRY;
-	int16_t data;
-
-	do {
-		flush();
-		
-		data = 0;
-		crc_clear();
-		write(address);
-		crc_update(address);
-		write(cmd);
-		crc_update(cmd);
-
-		// Send data with crc
-		va_list marker;
-		// Initialize variable arguments
-		va_start(marker, cnt);
-		for (uint8_t index=0; index<cnt; index++) {
-			uint32_t *ptr = (uint32_t *)va_arg(marker, int);
-
-			if (data != -1) {
-				data = read(timeout);
-				crc_update(data);
-				value = (uint32_t) data << 24;
-			} else {
-				break;
-			}
-			
-			if (data != -1) {
-				data = read(timeout);
-				crc_update(data);
-				value|=(uint32_t)data<<16;
-			} else {
-				break;
-			}
-
-			if (data != -1) {
-				data = read(timeout);
-				crc_update(data);
-				value|=(uint32_t)data<<8;
-			} else {
-				break;
-			}
-
-			if (data != -1) {
-				data = read(timeout);
-				crc_update(data);
-				value|=(uint32_t)data;
-			} else {
-				break;
-			}
-
-			*ptr = value;
-		}
-
-		// Reset variable arguments
-		va_end(marker);
-
-		if (data != -1) {
-			uint16_t ccrc;
-			data = read(timeout);
-			if (data != -1) {
-				ccrc = data << 8;
-				data = read(timeout);
-				if (data != -1) {
-					ccrc |= data;
-					return crc_get()==ccrc;
-				}
-			}
 		}
 	} while(trys--);
 

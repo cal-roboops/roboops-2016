@@ -16,6 +16,7 @@
 #include <Python.h>
 #include "Networking/Server.h"
 #include "GPIO_RaspPi/Encoder.h"
+#include "GPIO_RaspPi/RoboClaw.h"
 #include "Helpers/sharedDefinitions.h"
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/softServo.h"

@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <termios.h>
 #include "../wiringPi/wiringPi/wiringPi.h"
 #include "../wiringPi/wiringPi/wiringSerial.h"
@@ -39,8 +40,7 @@ class RoboClaw {
 		uint16_t crc_get();
 		void crc_update(uint8_t data);
 		bool write_n(uint8_t cnt, ... );
-		bool read_n(uint8_t cmd,uint8_t address,uint8_t cnt,...);
-		
+
 	public:
 		// Public Variables
 		// Public Methods
@@ -72,5 +72,5 @@ class RoboClaw {
 			M1DUTY = 32,
 			M2DUTY = 33,
 			MIXEDDUTY = 34
-		}
+		};
 };
