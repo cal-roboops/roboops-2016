@@ -47,14 +47,14 @@ int main(int argc, char **argv) {
 
     printf("Begin Rover Setup Instructions...\n");
     ZeroMemory(winC->recvbuf, sizeof(winC->recvbuf));
-    while(strstr(winC->recvbuf, "Rover Ready!") == NULL) {
+    while(strstr(winC->recvbuf, "Setup complete!") == NULL) {
         printf("Enter instruction: ");
         scanf("%s", winC->msgbuf);
         winC->client_send((const char*) &(winC->msgbuf));
         winC->client_receive();
         printf("%s\n", winC->recvbuf);
     }
-    
+
     printf("Rover Setup Complete!\n");
 
 	// Command Loop
