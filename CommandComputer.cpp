@@ -32,6 +32,10 @@ int main(int argc, char **argv) {
     Client* winC = new Client(argv[1], port);
     printf("Done!\n");
 
+    // Make sure we're connected
+    winC->client_receive();
+    printf("%s\n", winC->recvbuf);
+
     printf("Begin Command Computer Setup...\n");
 
     // Connect to the command computer components
@@ -41,15 +45,17 @@ int main(int argc, char **argv) {
 
     printf("Command Computer Setup Complete!\n\n");
 
-    printf("Begin Rover Setup Instructions...");
+    printf("Begin Rover Setup Instructions...\n");
     ZeroMemory(winC->recvbuf, sizeof(winC->recvbuf));
     while(strstr(winC->recvbuf, "Rover Ready!") == NULL) {
-        winC->client_receive();
-        printf("%s\n", winC->recvbuf);
-        printf("Enter next instruction:\n");
+        printf("Enter instruction: ");
         scanf("%s", winC->msgbuf);
         winC->client_send((const char*) &(winC->msgbuf));
+        winC->client_receive();
+        printf("%s\n", winC->recvbuf);
     }
+    
+    printf("Rover Setup Complete!\n");
 
 	// Command Loop
 	do {

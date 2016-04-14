@@ -32,16 +32,11 @@ bool reset_chassis_servos() {
 // Initialize and setup the rover from its folded state
 bool initialize() {
     // Stop roboclaws
-    if (!stop_roboclaws()) {
-        return false;
-    }
-
+    bool robo = stop_roboclaws();
     // Set wheel servos to straight
-    if (!reset_chassis_servos()) {
-        return false;
-    }
-
-    return true;
+    bool serv = reset_chassis_servos();
+    
+    return (robo & serv);
 }
 
 // ---------- ACTION MODES -----------
