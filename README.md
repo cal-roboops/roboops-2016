@@ -13,3 +13,4 @@ Setup Notes:
 	3) Use rpi-serial-console to setup the UART on the Rover's Raspberry Pi then use the wiringPi libraries to control the GPIO's via C++. Note: On Raspberry Pi 2 the UART is mapped to '/dev/ttyAMA0' and on the Pi 3 it is at '/dev/ttyS0' (the bluetooth is now at the old mapping).
 		- To use the serial device follow guide at 'http://elinux.org/RPi_Serial_Connection'
 	4) Make sure that the roboclaw is in the right mode. It has the tendancy to switch modes if it goes for a hard resert which isn't what we want and will result in erratic behaviour.
+	5) Command Computer will need to download the Saitek X52 Drivers from 'www.saitek.com/uk/drivers.php' in order to pickup and run the joystick.

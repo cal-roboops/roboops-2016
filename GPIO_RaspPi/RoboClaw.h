@@ -27,7 +27,6 @@ class RoboClaw {
 		// Private Variables
 		int uart;
 		uint16_t crc;
-		uint32_t timeout;
 		const char* deviceName;
 
 		// Private Methods

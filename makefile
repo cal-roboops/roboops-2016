@@ -11,7 +11,7 @@ Server:
 	g++ -Wall -Wno-long-long -o Server.exe Server.cpp
 
 PiSSH:
-	ssh pi@2601:644:102:7600::fa89 (wifi)
+	ssh pi@2601:644:102:7600::xxxx (wifi)
 	ssh pi@192.168.137.xxx (ethernet - last number changes)
 
 UART:
