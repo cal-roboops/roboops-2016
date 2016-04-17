@@ -1,0 +1,13 @@
+1) Make sure all robocalws are in the right mode
+2) ssh into raspberry pi via git bash and run 'sudo ./roboops-2016/RoverComputer.exe'
+3) open gitbash and run './CommandComputer.exe'
+4) Send 'Setup!' then 'Unfold!' then it should be ready for the drive commands
+5) Dirve command structure: Mode, RightMotors, LeftMotors, FL_Servo, BL_Servo, FR_Servo, BL_Servo
+
+Motors: 0 -> Full Backward, 64 -> Stop, 127 -> Full Forward
+Servos: -250 < x < 1250 (500 dead center)
+
+
+Stop: 0,64,64,500,500,500,500
+Full Backward: 0,0,0,500,500,500,500
+Full Forward: 0,127,127,500,500,500,500
