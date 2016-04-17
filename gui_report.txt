@@ -1,0 +1,13 @@
+GUI:
+
+- Used Visual Studio c++
+- Created 4 window panels
+	- Used a function to grab system display parameters so the panels could size up and down and fit perfectly to any display
+- Top left screen: Arm graphic
+- Top right screen: State Variables
+	- Stored position variables in joystick class, created joystick instance and displayed stated variables by called joystick.update
+- Bottom left screen: Camera 1 feed
+	- Embedded url for camera 1
+- Bottom right screen: Camera 2 feed
+	- Embedded url for camera 2
+
