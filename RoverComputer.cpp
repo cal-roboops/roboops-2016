@@ -15,7 +15,8 @@
 bool stop_roboclaws() {
     bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RMIXED_ZERO);
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RMIXED_ZERO);
-    return !(right | left);
+    // Make sure all roboclaws are working otherwise there'll be an error
+    return (right & left);
 }
 
 // Set Servos Straight
@@ -50,7 +51,8 @@ bool drive(char* action[]) {
     softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
     softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
-    return !(right | left);
+    // Make sure all roboclaws are working otherwise there'll be an error
+    return (right & left);
 }
 
 // Command Transmission form (arm):

@@ -102,9 +102,17 @@ bool RoboClaw::write_n(uint8_t cnt, ... ) {
 		write(uart, &c, 1);
 		write(uart, &crc, 1);
 
+		// This is broken (Not reading roboclaw right)
+		// if (read(timeout) == 0xFF) {
+		//	return true;
+		//}
+
 	} while(trys--);
 
-	return false;
+	// This function always returns true since there where problems
+	// reading the value back from the roboclaw (which is normally used
+	// to confirm that the command was sent)
+	return true;
 }
 
 // RoboClaw M1 Forward
