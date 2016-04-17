@@ -1,3 +1,13 @@
+#
+# VideoCapture.py
+# Python Project
+#
+# Created by Andrew Pau on 4/13/2016
+# Edited by Mitchell Oleson on 4/14/2016
+#
+# Written for Debian Linux
+#
+
 import cv2
 
 #Initialize the webcams
