@@ -7,6 +7,11 @@
 #
 # Written for Debian Linux
 #
+#
+# NOTE: We decided to use motion instead for simplicity
+# and support. (sudo apt-get install motion -> then edit
+# edit the config files)
+#
 
 import cv2
 

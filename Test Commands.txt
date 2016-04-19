@@ -2,12 +2,14 @@ Address, Command, ByteValue, Checksum
 address byte, command byte, data bytes and a checksum
 
 First Number => Mode
-Second Number => Right Roboclaw Value
-Third Number => Left Roboclaw Value
-Fourth Number => Front Left Servo Value
-Fifth Number => Back Left Servo Value
-Sixth Number => Front Right Servo Value
-Seventh Number => Back Right Servo Value
+
+Mode == 0 || Mode == 1
+	Second Number => Right Roboclaw Value
+	Third Number => Left Roboclaw Value
+	Fourth Number => Drive Train Front Left Servo Value
+	Fifth Number => Drive Train Back Left Servo Value
+	Sixth Number => Drive Train Front Right Servo Value
+	Seventh Number => Drive Train Back Right Servo Value
 
 Test Comands:
 	1) Full Backward => 0,0,0,500,500,500,500

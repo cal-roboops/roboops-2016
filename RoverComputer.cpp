@@ -13,18 +13,26 @@
 
 // Stop RoboClaw
 bool stop_roboclaws() {
-    bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RMIXED_ZERO);
-    bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RMIXED_ZERO);
+    bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool arm = roboclaw->CombinedForwardBackward(ARM_ROBOCLAW, RC_COMBINEDFB_ZERO)
     // Make sure all roboclaws are working otherwise there'll be an error
-    return (right & left);
+    return (right & left & arm);
 }
 
 // Set Servos Straight
 bool reset_chassis_servos() {
-    softServoWrite(CHASSIS_SERVO_PINFL, 500);
-    softServoWrite(CHASSIS_SERVO_PINBL, 500);
-    softServoWrite(CHASSIS_SERVO_PINFR, 500);
-    softServoWrite(CHASSIS_SERVO_PINBR, 500);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FL, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_BL, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FR, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_BR, SERVO_CENTER);
+    return true;
+}
+
+// Unfold the Rover
+bool unfold() {
+    // Raise Camera Mast
+    softServoWrite(CAMERA_SERVO_PIN_MAST, 1250)
     return true;
 }
 
@@ -32,25 +40,29 @@ bool reset_chassis_servos() {
 
 // Initialize and setup the rover from its folded state
 bool initialize() {
-    // Stop roboclaws
+    // Unfold the rover
+    bool setup = unfold();
+    // Stop all roboclaws
     bool robo = stop_roboclaws();
     // Set wheel servos to straight
-    bool serv = reset_chassis_servos();
+    bool servo = reset_chassis_servos();
 
-    return (robo & serv);
+    return (setup & robo & servo);
 }
 
 // ---------- ACTION MODES -----------
 
 // Command Transmission form (drive):
-// Right_RoboClaw, Left_RoboClaw, CServoFL, CServoBL, CServoFR, CServoBR, CameraServo
+// Right_RoboClaw, Left_RoboClaw, DT_ServoFL, DT_ServoBL, DT_ServoFR, DT_ServoBR, CameraServoX, CameraServoY
 bool drive(char* action[]) {
     bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFL, strtol(action[2], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBL, strtol(action[3], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINFR, strtol(action[4], NULL, 10));
-    softServoWrite(CHASSIS_SERVO_PINBR, strtol(action[5], NULL, 10));
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FL, strtol(action[2], NULL, 10));
+    softServoWrite(DRIVETRAIN_SERVO_PIN_BL, strtol(action[3], NULL, 10));
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FR, strtol(action[4], NULL, 10));
+    softServoWrite(DRIVETRAIN_SERVO_PIN_BR, strtol(action[5], NULL, 10));
+    softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[6], NULL, 10));
+    softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[7], NULL, 10));
     // Make sure all roboclaws are working otherwise there'll be an error
     return (right & left);
 }
@@ -58,7 +70,12 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    return true;
+    bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
+    softServoWrite();
+    softServoWrite();
+    softServoWrite();
+    bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
+    return (base & claw);
 }
 
 // ---------- ACTION SELECTOR -----------
@@ -73,10 +90,10 @@ bool act(char* action[], int mode) {
     }
 }
 
-// ---------- ZERO MODES -----------
+// ---------- STOP MOVEMENT -----------
 
-// Zeros the drive mode
-bool zero_drive() {
+// Stops actions/movements when switching modes or exiting
+bool stop(bool fold) {
     // Stop roboclaws
     if (!stop_roboclaws()) {
         return false;
@@ -88,23 +105,6 @@ bool zero_drive() {
     }
 
     return true;
-}
-
-// Zeros the arm mode
-bool zero_arm() {
-    return true;
-}
-
-// ---------- ZERO SELECTOR -----------
-
-// Stops actions/movements of the previous mode
-bool stop(int mode) {
-    switch (mode) {
-        case 0:
-        case 1: return zero_drive();
-        case 2: return zero_arm();
-        default: return false;
-    }
 }
 
 // ---------- MAIN FUNCTION -----------
@@ -162,15 +162,15 @@ int main(int argc, char **argv) {
     roboclaw = new RoboClaw(UART_PI2);
 
     // Servos
-    softServoSetup(CHASSIS_SERVO_PINFL, CHASSIS_SERVO_PINBL,
-                    CHASSIS_SERVO_PINFR, CHASSIS_SERVO_PINBR,
+    softServoSetup(DRIVETRAIN_SERVO_PIN_FL, DRIVETRAIN_SERVO_PIN_BL,
+                    DRIVETRAIN_SERVO_PIN_FR, DRIVETRAIN_SERVO_PIN_BR,
                     0, 0, 0, 0);
 
-    // Encoders
-    encoders[0] = new Encoder(ENCODER_PIN0);
-    encoders[1] = new Encoder(ENCODER_PIN1);
-    encoders[2] = new Encoder(ENCODER_PIN2);
-    encoders[3] = new Encoder(ENCODER_PIN3);
+    // Encoders (Don't have any encoders)
+    //encoders[0] = new Encoder(ENCODER_PIN0);
+    //encoders[1] = new Encoder(ENCODER_PIN1);
+    //encoders[2] = new Encoder(ENCODER_PIN2);
+    //encoders[3] = new Encoder(ENCODER_PIN3);
 
     printf("Done!\n");
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
 
         // End connection if received endMsg command
         if (strstr(raspPi->recvbuf, endMsg) != NULL) {
-            stop(mode);
+            stop(true);
             printf("Received End Message from Command.\n");
             break;
         }
@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
 
         // Stop the previous modes commands
         if (mode != prev_mode) {
-            if (!stop(prev_mode)) {
+            if (!stop(false)) {
                 printf("Couldn't stop previous mode.\n");
 		        raspPi->server_send(failedMsg);
                 raspPi->server_send(endMsg);
