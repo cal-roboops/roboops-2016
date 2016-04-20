@@ -1,3 +1,0 @@
-﻿  Command_Computer.cpp
-c:\users\scott\documents\roboops\command_computer\command_computer\command_computer.cpp(33): error C2065: 'Joystick': undeclared identifier
-c:\users\scott\documents\roboops\command_computer\command_computer\command_computer.cpp(33): error C2065: 'joy': undeclared identifier

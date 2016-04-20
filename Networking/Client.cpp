@@ -8,6 +8,7 @@
 // Written for Windows
 //
 
+#include "stdafx.h" // Needed for Visual Studio to compile
 #include "Client.h"
 
 // Client Constructor
