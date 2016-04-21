@@ -45,10 +45,10 @@ SaitekJoystick::SaitekJoystick() {
 
 	// Set the cooperative level to let DInput know how this device should
 	// interact with the system and with other DInput applications.
-	if (FAILED(hr = g_pJoystick->SetCooperativeLevel(NULL, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) {
-		printf("Couldn't set cooperative level.\n");
-		exit(1);
-	}
+	//if (FAILED(hr = g_pJoystick->SetCooperativeLevel(NULL, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) {
+	//	printf("Couldn't set cooperative level.\n");
+	//	exit(2);
+	//}
 
 	// Determine how many axis the joystick has (so we don't error out setting
 	// properties for unavailable axis)

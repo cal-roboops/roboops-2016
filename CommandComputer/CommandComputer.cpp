@@ -10,6 +10,8 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+SaitekJoystick* sJoy;							// Global Joystick Object
+Client* cc;										// Global Client Object
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -26,8 +28,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-	//Client* cc = new Client(IP, PORT);
-	SaitekJoystick* sJoy = new SaitekJoystick();
+	// Create the client for communication
+	Client* cc = new Client(ip, port);
+	// Create the Joystick for control input
+	sJoy = new SaitekJoystick();
+
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_COMMANDCOMPUTER, szWindowClass, MAX_LOADSTRING);
