@@ -26,7 +26,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-
+	//Client* cc = new Client(IP, PORT);
+	SaitekJoystick* sJoy = new SaitekJoystick();
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_COMMANDCOMPUTER, szWindowClass, MAX_LOADSTRING);

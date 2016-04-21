@@ -36,6 +36,9 @@
     <ClInclude Include="..\Joystick\SaitekJoystick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Helpers\sharedDefinitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -1,14 +1,6 @@
-﻿  Client.cpp
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\networking\client.cpp(155): error C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1270): note: see declaration of 'scanf'
-  SaitekJoystick.cpp
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\joystick\saitekjoystick.cpp(122): error C3867: 'SaitekJoystick::EnumJoysticksCallback': non-standard syntax; use '&' to create a pointer to member
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\joystick\saitekjoystick.cpp(152): error C3867: 'SaitekJoystick::EnumObjectsCallback': non-standard syntax; use '&' to create a pointer to member
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\joystick\saitekjoystick.cpp(227): error C4996: 'swscanf': This function or variable may be unsafe. Consider using swscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstdio.h(2037): note: see declaration of 'swscanf'
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\joystick\saitekjoystick.cpp(230): error C4996: 'swscanf': This function or variable may be unsafe. Consider using swscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstdio.h(2037): note: see declaration of 'swscanf'
+﻿  SaitekJoystick.cpp
   Generating Code...
   Compiling...
   CommandComputer.cpp
   Generating Code...
+  CommandComputer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\CommandComputer\Debug\CommandComputer.exe

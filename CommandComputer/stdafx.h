@@ -9,6 +9,8 @@
 // Required for Client.cpp
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Wsock32.lib")
+#pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #include "targetver.h"
 
@@ -21,6 +23,5 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-
 
 // TODO: reference additional headers your program requires here

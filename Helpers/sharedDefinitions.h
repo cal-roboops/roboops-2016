@@ -28,6 +28,7 @@
 #define CAMERA_SERVO_PIN_Y 11
 
 char* port = (char*) "8080";
+char* ip = (char*) "192.168.137.40";
 const char* endMsg = "Done!";
 const char* failedMsg = "Failed...";
 const char* complete = "Finished running commands.";
