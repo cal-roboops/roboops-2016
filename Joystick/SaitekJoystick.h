@@ -75,17 +75,6 @@ class SaitekJoystick {
 		// Public Variables
 		DIJOYSTATE2* js;
 
-		// Joystick State Holders
-		TCHAR x_axis[DEFAULT_BUFLEN];
-		TCHAR y_axis[DEFAULT_BUFLEN];
-		TCHAR z_axis[DEFAULT_BUFLEN];
-		TCHAR x_rot[DEFAULT_BUFLEN];
-		TCHAR y_rot[DEFAULT_BUFLEN];
-		TCHAR z_rot[DEFAULT_BUFLEN];
-		TCHAR slider0[DEFAULT_BUFLEN];
-		TCHAR pov0[DEFAULT_BUFLEN];
-		TCHAR buttons[DEFAULT_BUFLEN];
-
 		// Public Methods
 		SaitekJoystick();
 		~SaitekJoystick();

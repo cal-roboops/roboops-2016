@@ -10,6 +10,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
 SaitekJoystick* sJoy;							// Global Joystick Object
 Client* cc;										// Global Client Object
 
@@ -18,6 +19,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+const char*			compile_message();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -28,6 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
+
 	// Create the client for communication
 	Client* cc = new Client(ip, port);
 	// Create the Joystick for control input
@@ -156,6 +160,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+	case WM_TIMER:
+		{
+			if (FAILED(sJoy->UpdateInputState()))
+			{
+				KillTimer(hWnd, 0);
+				MessageBox(nullptr, TEXT("Error Reading Input State. ") \
+					TEXT("The sample will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK);
+				EndDialog(hWnd, TRUE);
+			}
+			cc->client_send(compile_message());
+		}
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -183,4 +198,9 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+// Message compiler for rover send
+const char* compile_message() {
+	return "Stub";
 }
