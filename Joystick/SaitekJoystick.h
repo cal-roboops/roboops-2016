@@ -14,7 +14,6 @@
 //#define _WIN32_DCOM
 //#endif
 
-#define DEFAULT_BUFLEN 512
 #define DIRECTINPUT_VERSION 0x0800
 
 #include <windows.h>
@@ -32,10 +31,10 @@
 //#include <assert.h>
 //#include <oleauto.h>
 //#include <shellapi.h>
+#include "../CommandComputer/Resource.h"
 
 // Stuff to filter out XInput devices
 #include <wbemidl.h>
-#include "../CommandComputer/Resource.h"
 
 // Constants and Globals
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }

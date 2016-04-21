@@ -202,5 +202,11 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 // Message compiler for rover send
 const char* compile_message() {
-	return "Stub";
+	char comp_msg[DEFAULT_BUFLEN];
+
+	// Motor speed
+	sprintf(comp_msg, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 0, (int)(127 * (sJoy->js->lX)), (int)(127 * (sJoy->js->lY)),
+		SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
+
+	return (const char*) comp_msg;
 }

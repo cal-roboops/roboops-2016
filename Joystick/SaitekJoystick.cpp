@@ -80,52 +80,6 @@ SaitekJoystick::~SaitekJoystick() {
 	SAFE_RELEASE(g_pDI);
 }
 
-// Called once for each enumerated joystick
-BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext) {
-    HRESULT hr;
-
-	// Obtain an interface to the enumerated joystick.
-	hr = g_pDI->CreateDevice(pdidInstance->guidInstance, &g_pJoystick, NULL);
-
-	// If it failed, then we can't use this joystick. (Maybe the user unplugged
-	// it while we were in the middle of enumerating it.)
-	if (FAILED(hr)) {
-		return DIENUM_CONTINUE;
-	}
-
-	// Stop enumeration. Note: we're just taking the first joystick we get. You
-	// could store all the enumerated joysticks and let the user pick.
-	return DIENUM_STOP;
-}
-
-// Callback function for enumerating objects (axes, buttons, POVs) on a joystick
-BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext) {
-    HWND hDlg = (HWND) pContext;
-
-    static int nSliderCount = 0;  // Number of returned slider controls
-    static int nPOVCount = 0;     // Number of returned POV controls
-
-    // For axes that are returned, set the DIPROP_RANGE property for the
-    // enumerated axis in order to scale min/max values.
-    if (pdidoi->dwType & DIDFT_AXIS) {
-        DIPROPRANGE diprg;
-        diprg.diph.dwSize = sizeof(DIPROPRANGE);
-        diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        diprg.diph.dwHow = DIPH_BYID;
-        diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
-        diprg.lMin = -1000;
-        diprg.lMax = +1000;
-
-        // Set the range for the axis
-		if (FAILED(g_pJoystick->SetProperty(DIPROP_RANGE, &diprg.diph))) {
-			return DIENUM_STOP;
-		}
-
-    }
-
-    return DIENUM_CONTINUE;
-}
-
 // Get the input device's state and display it
 HRESULT SaitekJoystick::UpdateInputState() {
     HRESULT hr;
@@ -206,4 +160,54 @@ HRESULT SaitekJoystick::UpdateInputState() {
 	*/
 
     return S_OK;
+}
+
+// Global functions needed for enumerating the joystick and buttons
+// These will cause program to throw an error if included under the
+// SaitekJoystick class
+
+// Called once for each enumerated joystick
+BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext) {
+	HRESULT hr;
+
+	// Obtain an interface to the enumerated joystick.
+	hr = g_pDI->CreateDevice(pdidInstance->guidInstance, &g_pJoystick, NULL);
+
+	// If it failed, then we can't use this joystick. (Maybe the user unplugged
+	// it while we were in the middle of enumerating it.)
+	if (FAILED(hr)) {
+		return DIENUM_CONTINUE;
+	}
+
+	// Stop enumeration. Note: we're just taking the first joystick we get. You
+	// could store all the enumerated joysticks and let the user pick.
+	return DIENUM_STOP;
+}
+
+// Callback function for enumerating objects (axes, buttons, POVs) on a joystick
+BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext) {
+	HWND hDlg = (HWND)pContext;
+
+	static int nSliderCount = 0;  // Number of returned slider controls
+	static int nPOVCount = 0;     // Number of returned POV controls
+
+								  // For axes that are returned, set the DIPROP_RANGE property for the
+								  // enumerated axis in order to scale min/max values.
+	if (pdidoi->dwType & DIDFT_AXIS) {
+		DIPROPRANGE diprg;
+		diprg.diph.dwSize = sizeof(DIPROPRANGE);
+		diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+		diprg.diph.dwHow = DIPH_BYID;
+		diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
+		diprg.lMin = -1000;
+		diprg.lMax = +1000;
+
+		// Set the range for the axis
+		if (FAILED(g_pJoystick->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+			return DIENUM_STOP;
+		}
+
+	}
+
+	return DIENUM_CONTINUE;
 }

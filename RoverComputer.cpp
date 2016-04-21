@@ -29,10 +29,22 @@ bool reset_chassis_servos() {
     return true;
 }
 
+// Make Camera Level
+bool level_camera() {
+    softServoWrite(CAMERA_SERVO_PIN_X, SERVO_CENTER);
+    softServoWrite(CAMERA_SERVO_PIN_Y, SERVO_CENTER);
+    return true;
+}
+
 // Unfold the Rover
 bool unfold() {
     // Raise Camera Mast
     softServoWrite(CAMERA_SERVO_PIN_MAST, 1250)
+    return true;
+}
+
+// Refold the rover (Doesn't do anything currently)
+bool fold() {
     return true;
 }
 
@@ -42,12 +54,14 @@ bool unfold() {
 bool initialize() {
     // Unfold the rover
     bool setup = unfold();
+    // Level the camera
+    bool level = level_camera();
     // Stop all roboclaws
     bool robo = stop_roboclaws();
-    // Set wheel servos to straight
+    // Set straighten wheel servos
     bool servo = reset_chassis_servos();
 
-    return (setup & robo & servo);
+    return (setup &level & robo & servo);
 }
 
 // ---------- ACTION MODES -----------
@@ -71,9 +85,9 @@ bool drive(char* action[]) {
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
     bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    softServoWrite();
-    softServoWrite();
-    softServoWrite();
+    softServoWrite(, strtol(action[1], NULL, 10));
+    softServoWrite(, strtol(action[2], NULL, 10));
+    softServoWrite(, strtol(action[3], NULL, 10));
     bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
     return (base & claw);
 }
@@ -93,7 +107,7 @@ bool act(char* action[], int mode) {
 // ---------- STOP MOVEMENT -----------
 
 // Stops actions/movements when switching modes or exiting
-bool stop(bool fold) {
+bool stop(bool done) {
     // Stop roboclaws
     if (!stop_roboclaws()) {
         return false;
@@ -102,6 +116,19 @@ bool stop(bool fold) {
     // Set wheel servos to straight
     if (!reset_chassis_servos()) {
         return false;
+    }
+
+    // If done running
+    if (done) {
+        // Set camera straight
+        if (!level_camera()) {
+            return false;
+        }
+
+        // Refold the rover
+        if (!fold()) {
+            return false;
+        }
     }
 
     return true;
@@ -164,7 +191,7 @@ int main(int argc, char **argv) {
     // Servos
     softServoSetup(DRIVETRAIN_SERVO_PIN_FL, DRIVETRAIN_SERVO_PIN_BL,
                     DRIVETRAIN_SERVO_PIN_FR, DRIVETRAIN_SERVO_PIN_BR,
-                    0, 0, 0, 0);
+                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, 0, 0);
 
     // Encoders (Don't have any encoders)
     //encoders[0] = new Encoder(ENCODER_PIN0);

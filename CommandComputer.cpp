@@ -13,15 +13,12 @@
 
 // Main control function for Command Computer
 int main(int argc, char **argv) {
-	// Validate the parameters
-    if (argc < 2) {
-        printf("Usage: %s <server-name> [<port-number>]\n", argv[0]);
-        return 1;
-    }
-
-    // Chcek if port is given
+    // Chcek if ip and port are given
     if (argc == 3) {
+        ip = argv[1];
         port = argv[2];
+    } else if (argc == 2) {
+        ip = argv[1]
     }
 
     // No print buffering
@@ -29,7 +26,7 @@ int main(int argc, char **argv) {
 
     // Connecting to Rover
     printf("Connecting to Rover... ");
-    Client* winC = new Client(argv[1], port);
+    Client* winC = new Client(ip, port);
     printf("Done!\n");
 
     // Make sure we're connected
