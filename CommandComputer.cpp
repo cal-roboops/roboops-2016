@@ -14,11 +14,14 @@
 // Main control function for Command Computer
 int main(int argc, char **argv) {
     // Chcek if ip and port are given
+    char* ip;
     if (argc == 3) {
         ip = argv[1];
         port = argv[2];
     } else if (argc == 2) {
-        ip = argv[1]
+        ip = argv[1];
+    } else {
+        ip = ipv4;
     }
 
     // No print buffering

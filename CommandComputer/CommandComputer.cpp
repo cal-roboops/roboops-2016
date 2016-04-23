@@ -41,7 +41,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Send Unfold Command to RaspPi
 	cc->client_send("Unfold!");
 	cc->client_receive();
-	printf(cc->recvbuf);
+	cc->client_send("0,0,0,0,0,0,0,0,0,0,0,0,0");
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -143,6 +143,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_COMMAND:
         {
+			// Set a timer to go off 30 times a second. At every timer message
+			// the input device will be read
+			SetTimer(hWnd, 0, 1000 / 30, nullptr);
+
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
             switch (wmId)

@@ -19,8 +19,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
-//#include <commctrl.h>
-//#include <basetsd.h>
+#include <commctrl.h>
+#include <basetsd.h>
 
 #pragma warning(push)
 #pragma warning(disable:6000 28251)
@@ -28,9 +28,9 @@
 #pragma warning(pop)
 
 #include <dinputd.h>
-//#include <assert.h>
-//#include <oleauto.h>
-//#include <shellapi.h>
+#include <assert.h>
+#include <oleauto.h>
+#include <shellapi.h>
 #include "../CommandComputer/Resource.h"
 
 // Stuff to filter out XInput devices
