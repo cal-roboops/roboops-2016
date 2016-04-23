@@ -17,7 +17,7 @@ bool stop_roboclaws() {
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RC_COMBINEDFB_ZERO);
     bool arm = roboclaw->CombinedForwardBackward(ARM_ROBOCLAW, RC_COMBINEDFB_ZERO)
     // Make sure all roboclaws are working otherwise there'll be an error
-    return (right & left & arm);
+    return true; //(right & left & arm);
 }
 
 // Set Servos Straight
@@ -78,7 +78,7 @@ bool drive(char* action[]) {
     softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[6], NULL, 10));
     softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[7], NULL, 10));
     // Make sure all roboclaws are working otherwise there'll be an error
-    return (right & left);
+    return true;//(right & left);
 }
 
 // Command Transmission form (arm):

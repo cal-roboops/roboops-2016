@@ -33,9 +33,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Place code here.
 
 	// Create the client for communication
-	Client* cc = new Client(ip, port);
+	Client* cc = new Client(ipv6, port);
+	cc->client_send("Setup!");
 	// Create the Joystick for control input
 	sJoy = new SaitekJoystick();
+	cc->client_send("Unfold!");
+	cc->client_receive();
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -170,6 +173,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				EndDialog(hWnd, TRUE);
 			}
 			cc->client_send(compile_message());
+			cc->client_receive();
 		}
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -205,7 +209,7 @@ const char* compile_message() {
 	char comp_msg[DEFAULT_BUFLEN];
 
 	// Motor speed
-	sprintf(comp_msg, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 0, (int)(127 * (sJoy->js->lX)), (int)(127 * (sJoy->js->lY)),
+	sprintf(comp_msg, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE0, (int)(127 * (sJoy->js->lX)), (int)(127 * (sJoy->js->lY)),
 		SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
 
 	return (const char*) comp_msg;

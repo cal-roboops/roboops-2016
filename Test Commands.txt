@@ -10,6 +10,13 @@ Mode == 0 || Mode == 1
 	Fifth Number => Drive Train Back Left Servo Value
 	Sixth Number => Drive Train Front Right Servo Value
 	Seventh Number => Drive Train Back Right Servo Value
+	Eighth Number => Camera Mast Servo X Value
+	Ninth Number => Camera Mast Servo Y Value
+
+Mode == 2
+	Second Number => Arm Roboclaw Motor 1 Value
+	Third Number => Arm Roboclaw Motor 2 Value
+	Fourth
 
 Test Comands:
 	1) Full Backward => 0,0,0,500,500,500,500
