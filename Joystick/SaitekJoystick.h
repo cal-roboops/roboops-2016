@@ -31,16 +31,9 @@
 #include <assert.h>
 #include <oleauto.h>
 #include <shellapi.h>
-#include "../CommandComputer/Resource.h"
-
-// Stuff to filter out XInput devices
-#include <wbemidl.h>
-
-// Constants and Globals
-#define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }
-#define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
 // Global Structs
+
 struct XINPUT_DEVICE_NODE {
 	DWORD dwVidPid;
 	XINPUT_DEVICE_NODE* pNext;
@@ -58,24 +51,31 @@ LPDIRECTINPUTDEVICE8 g_pJoystick = nullptr;
 // Global Methods
 BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext);
 BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext);
+bool IsXInputDevice(const GUID* pGuidProductFromDirectInput);
+void CleanupForIsXInputDevice();
+
+// Stuff to filter out XInput devices
+#include <wbemidl.h>
+
+// Constants and Globals
+#define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }
+#define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
 
 class SaitekJoystick {
 	private:
 		// Private Variables
-		bool g_bFilterOutXinputDevices = false;
-		XINPUT_DEVICE_NODE* g_pXInputDeviceList = nullptr;
 		DIDEVCAPS capabilities;
 
 		// Private Methods
-
+		HRESULT SetupForIsXInputDevice();
 		
 	public:
 		// Public Variables
-		DIJOYSTATE2* js;
+		DIJOYSTATE2 js;
 
 		// Public Methods
-		SaitekJoystick();
+		SaitekJoystick(HWND hDlg);
 		~SaitekJoystick();
 		HRESULT UpdateInputState();
 };

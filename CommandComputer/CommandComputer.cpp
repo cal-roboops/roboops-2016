@@ -20,7 +20,7 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-const char*			compile_message();
+void				compile_message();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -31,17 +31,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
-
-	// Create the client for communication
-	cc = new Client(ipv4, port);
-	// Send Setup Command to RaspPi
-	cc->client_send("Setup!");
-	// Create the Joystick for control input
-	sJoy = new SaitekJoystick();
-	// Send Unfold Command to RaspPi
-	cc->client_send("Unfold!");
-	cc->client_receive();
-	cc->client_send("0,0,0,0,0,0,0,0,0,0,0,0,0");
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -120,6 +109,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   
+   // Create the client for communication
+   cc = new Client(ipv4, port);
+   // Send Setup Command to RaspPi
+   cc->client_send("Setup!");
+   // Create the Joystick for control input
+   sJoy = new SaitekJoystick(hWnd);
+   // Send Unfold Command to RaspPi
+   cc->client_send("Unfold!");
+   cc->client_receive();
+
+   // Set a timer to go off 30 times a second. At every timer message
+   // the input device will be read
+   SetTimer(hWnd, 0, 1000, nullptr);
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -143,10 +146,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_COMMAND:
         {
-			// Set a timer to go off 30 times a second. At every timer message
-			// the input device will be read
-			SetTimer(hWnd, 0, 1000 / 30, nullptr);
-
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
             switch (wmId)
@@ -172,16 +171,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 	case WM_TIMER:
 		{
-			if (FAILED(sJoy->UpdateInputState()))
-			{
+			if (FAILED(sJoy->UpdateInputState())) {
 				KillTimer(hWnd, 0);
-				MessageBox(nullptr, TEXT("Error Reading Input State. ") \
-					TEXT("The sample will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK);
+				MessageBox(nullptr, TEXT("Error Reading Input State. The sample will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK); 
 				EndDialog(hWnd, TRUE);
 			}
-			cc->client_send(compile_message());
-			cc->client_receive();
+			compile_message();
+			cc->client_send(cc->msgbuf);
 		}
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -212,12 +210,8 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // Message compiler for rover send
-const char* compile_message() {
-	char comp_msg[DEFAULT_BUFLEN];
-
+void compile_message() {
 	// Motor speed
-	sprintf(comp_msg, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE0, (int)(127 * (sJoy->js->lX)), (int)(127 * (sJoy->js->lY)),
+	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE0, sJoy->js.lX, sJoy->js.lY,
 		SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
-
-	return (const char*) comp_msg;
 }

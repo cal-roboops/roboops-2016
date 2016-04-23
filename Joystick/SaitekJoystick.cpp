@@ -10,26 +10,55 @@
 #include "stdafx.h" // Needed for Visual Studio to compile
 #include "SaitekJoystick.h"
 
+bool g_bFilterOutXinputDevices = false;
+XINPUT_DEVICE_NODE* g_pXInputDeviceList = nullptr;
 
 // Entry point for the application
-SaitekJoystick::SaitekJoystick() {
+SaitekJoystick::SaitekJoystick(HWND hDlg) {
 	HRESULT hr;
 
-	// Create a DirectInput device
-	if (FAILED(hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**) &g_pDI, NULL))) {
-		printf("Failed to create DirectInput device.\n");
+	// Register with the DirectInput subsystem and get a pointer
+	// to a IDirectInput interface we can use.
+	// Create a DInput object
+	if (FAILED(hr = DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**)&g_pDI, nullptr))) {
 		exit(1);
 	}
 
-	// Look for the first simple joystick we can find.
-	if (FAILED(hr = g_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, NULL, DIEDFL_ATTACHEDONLY))) {
-		printf("Failed to find simple joystick.\n");
+
+	if (g_bFilterOutXinputDevices) {
+		SetupForIsXInputDevice();
+	}
+
+	DIJOYCONFIG PreferredJoyCfg = { 0 };
+	DI_ENUM_CONTEXT enumContext;
+	enumContext.pPreferredJoyCfg = &PreferredJoyCfg;
+	enumContext.bPreferredJoyCfgValid = false;
+
+	IDirectInputJoyConfig8* pJoyConfig = nullptr;
+	if (FAILED(hr = g_pDI->QueryInterface(IID_IDirectInputJoyConfig8, (void**)&pJoyConfig))) {
 		exit(1);
+	}
+
+	PreferredJoyCfg.dwSize = sizeof(PreferredJoyCfg);
+	// This function is expected to fail if no joystick is attached
+	if (SUCCEEDED(pJoyConfig->GetConfig(0, &PreferredJoyCfg, DIJC_GUIDINSTANCE))) {
+		enumContext.bPreferredJoyCfgValid = true;
+	}
+	SAFE_RELEASE(pJoyConfig);
+
+	// Look for a simple joystick we can use for this sample program.
+	if (FAILED(hr = g_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, &enumContext, DIEDFL_ATTACHEDONLY))) {
+		exit(1);
+	}
+
+	if (g_bFilterOutXinputDevices) {
+		CleanupForIsXInputDevice();
 	}
 
 	// Make sure we got a joystick
-	if (g_pJoystick == NULL) {
-		printf("Joystick not found.\n");
+	if (!g_pJoystick) {
+		MessageBox(nullptr, TEXT("Joystick not found. The sample will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK);
+		EndDialog(hDlg, 0);
 		exit(1);
 	}
 
@@ -39,30 +68,19 @@ SaitekJoystick::SaitekJoystick() {
 	// and how they should be reported. This tells DInput that we will be
 	// passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
 	if (FAILED(hr = g_pJoystick->SetDataFormat(&c_dfDIJoystick2))) {
-		printf("Couldn't set data format to simple joystick.\n");
 		exit(1);
 	}
 
 	// Set the cooperative level to let DInput know how this device should
 	// interact with the system and with other DInput applications.
-	//if (FAILED(hr = g_pJoystick->SetCooperativeLevel(NULL, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) {
-	//	printf("Couldn't set cooperative level.\n");
-	//	exit(2);
-	//}
-
-	// Determine how many axis the joystick has (so we don't error out setting
-	// properties for unavailable axis)
-	capabilities.dwSize = sizeof(DIDEVCAPS);
-	if (FAILED(hr = g_pJoystick->GetCapabilities(&capabilities))) {
-		printf("Couldn't determine how many axis the joystick has.\n");
+	if (FAILED(hr = g_pJoystick->SetCooperativeLevel(hDlg, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) {
 		exit(1);
 	}
 
-	// Enumerate the axes of the joyctick and set the range of each axis. Note:
-	// we could just use the defaults, but we're just trying to show an example
-	// of enumerating device objects (axes, buttons, etc.).
-	if (FAILED(hr = g_pJoystick->EnumObjects(EnumObjectsCallback, NULL, DIDFT_AXIS))) {
-		printf("Couldn't enumerate the axes.\n");
+	// Enumerate the joystick objects. The callback function enabled user
+	// interface elements for objects that are found, and sets the min/max
+	// values property for discovered axes.
+	if (FAILED(hr = g_pJoystick->EnumObjects(EnumObjectsCallback, (VOID*)hDlg, DIDFT_ALL))) {
 		exit(1);
 	}
 }
@@ -78,6 +96,116 @@ SaitekJoystick::~SaitekJoystick() {
 	// Release any DirectInput objects.
 	SAFE_RELEASE(g_pJoystick);
 	SAFE_RELEASE(g_pDI);
+}
+
+
+// Setup the XInput Device
+HRESULT SaitekJoystick::SetupForIsXInputDevice() {
+	IWbemServices* pIWbemServices = nullptr;
+	IEnumWbemClassObject* pEnumDevices = nullptr;
+	IWbemLocator* pIWbemLocator = nullptr;
+	IWbemClassObject* pDevices[20] = { 0 };
+	BSTR bstrDeviceID = nullptr;
+	BSTR bstrClassName = nullptr;
+	BSTR bstrNamespace = nullptr;
+	DWORD uReturned = 0;
+	bool bCleanupCOM = false;
+	UINT iDevice = 0;
+	VARIANT var;
+	HRESULT hr;
+
+	// CoInit if needed
+	hr = CoInitialize(nullptr);
+	bCleanupCOM = SUCCEEDED(hr);
+
+	// Create WMI
+	hr = CoCreateInstance(__uuidof(WbemLocator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IWbemLocator), (LPVOID*)&pIWbemLocator);
+	if (FAILED(hr) || pIWbemLocator == nullptr) {
+		goto LCleanup;
+	}
+
+	// Create BSTRs for WMI
+	bstrNamespace = SysAllocString(L"\\\\.\\root\\cimv2"); if (bstrNamespace == nullptr) goto LCleanup;
+	bstrDeviceID = SysAllocString(L"DeviceID");           if (bstrDeviceID == nullptr)  goto LCleanup;
+	bstrClassName = SysAllocString(L"Win32_PNPEntity");    if (bstrClassName == nullptr) goto LCleanup;
+
+	// Connect to WMI 
+	hr = pIWbemLocator->ConnectServer(bstrNamespace, nullptr, nullptr, 0L, 0L, nullptr, nullptr, &pIWbemServices);
+	if (FAILED(hr) || pIWbemServices == nullptr) {
+		goto LCleanup;
+	}
+
+	// Switch security level to IMPERSONATE
+	(void)CoSetProxyBlanket(pIWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, 0);
+
+	// Get list of Win32_PNPEntity devices
+	hr = pIWbemServices->CreateInstanceEnum(bstrClassName, 0, nullptr, &pEnumDevices);
+	if (FAILED(hr) || pEnumDevices == nullptr) {
+		goto LCleanup;
+	}
+
+	// Loop over all devices
+	for (; ; ) {
+		// Get 20 at a time
+		hr = pEnumDevices->Next(10000, 20, pDevices, &uReturned);
+		if (FAILED(hr)) {
+			goto LCleanup;
+		}
+		if (uReturned == 0) {
+			break;
+		}
+
+		for (iDevice = 0; iDevice < uReturned; iDevice++) {
+			if (!pDevices[iDevice]) {
+				continue;
+			}
+
+			// For each device, get its device ID
+			hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, nullptr, nullptr);
+			if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != nullptr) {
+				// Check if the device ID contains "IG_".  If it does, then it’s an XInput device
+				// Unfortunately this information can not be found by just using DirectInput 
+				if (wcsstr(var.bstrVal, L"IG_")) {
+					// If it does, then get the VID/PID from var.bstrVal
+					DWORD dwPid = 0, dwVid = 0;
+					WCHAR* strVid = wcsstr(var.bstrVal, L"VID_");
+					if (strVid && swscanf(strVid, L"VID_%4X", &dwVid) != 1) {
+						dwVid = 0;
+					}
+					WCHAR* strPid = wcsstr(var.bstrVal, L"PID_");
+					if (strPid && swscanf(strPid, L"PID_%4X", &dwPid) != 1) {
+						dwPid = 0;
+					}
+
+					DWORD dwVidPid = MAKELONG(dwVid, dwPid);
+
+					// Add the VID/PID to a linked list
+					XINPUT_DEVICE_NODE* pNewNode = new XINPUT_DEVICE_NODE;
+					if (pNewNode) {
+						pNewNode->dwVidPid = dwVidPid;
+						pNewNode->pNext = g_pXInputDeviceList;
+						g_pXInputDeviceList = pNewNode;
+					}
+				}
+			}
+			SAFE_RELEASE(pDevices[iDevice]);
+		}
+	}
+
+LCleanup:
+	if (bstrNamespace)
+		SysFreeString(bstrNamespace);
+	if (bstrDeviceID)
+		SysFreeString(bstrDeviceID);
+	if (bstrClassName)
+		SysFreeString(bstrClassName);
+	for (iDevice = 0; iDevice < 20; iDevice++)
+		SAFE_RELEASE(pDevices[iDevice]);
+	SAFE_RELEASE(pEnumDevices);
+	SAFE_RELEASE(pIWbemLocator);
+	SAFE_RELEASE(pIWbemServices);
+
+	return hr;
 }
 
 // Get the input device's state and display it
@@ -112,55 +240,10 @@ HRESULT SaitekJoystick::UpdateInputState() {
 		return hr;
 	}
 
-	/*
-    // Display joystick state to dialog
-
-    // Axes
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lX);
-    SetWindowText(GetDlgItem(hDlg, IDC_X_AXIS), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lY);
-    SetWindowText(GetDlgItem(hDlg, IDC_Y_AXIS), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lZ);
-    SetWindowText(GetDlgItem(hDlg, IDC_Z_AXIS), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lRx);
-    SetWindowText(GetDlgItem(hDlg, IDC_X_ROT), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lRy);
-    SetWindowText(GetDlgItem(hDlg, IDC_Y_ROT), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.lRz);
-    SetWindowText(GetDlgItem(hDlg, IDC_Z_ROT), strText);
-
-    // Slider controls
-    _stprintf_s(strText, 512, TEXT("%ld"), js.rglSlider[0]);
-    SetWindowText(GetDlgItem(hDlg, IDC_SLIDER0), strText);
-    _stprintf_s(strText, 512, TEXT("%ld"), js.rglSlider[1]);
-    SetWindowText(GetDlgItem(hDlg, IDC_SLIDER1), strText);
-
-    // Points of view
-    _stprintf_s(strText, 512, TEXT("%lu"), js.rgdwPOV[0]);
-    SetWindowText(GetDlgItem(hDlg, IDC_POV0), strText);
-    _stprintf_s(strText, 512, TEXT("%lu"), js.rgdwPOV[1]);
-    SetWindowText(GetDlgItem(hDlg, IDC_POV1), strText);
-    _stprintf_s(strText, 512, TEXT("%lu"), js.rgdwPOV[2]);
-    SetWindowText(GetDlgItem(hDlg, IDC_POV2), strText);
-    _stprintf_s(strText, 512, TEXT("%lu"), js.rgdwPOV[3]);
-    SetWindowText(GetDlgItem(hDlg, IDC_POV3), strText);
-
-
-    // Fill up text with which buttons are pressed
-    _tcscpy_s(strText, 512, TEXT(""));
-    for (int i = 0; i < 128; i++) {
-        if (js.rgbButtons[i] & 0x80) {
-            TCHAR sz[128];
-            _stprintf_s(sz, 128, TEXT("%02d "), i);
-            _tcscat_s(strText, 512, sz);
-        }
-    }
-
-    SetWindowText(GetDlgItem(hDlg, IDC_BUTTONS), strText);
-	*/
-
     return S_OK;
 }
+
+
 
 // Global functions needed for enumerating the joystick and buttons
 // These will cause program to throw an error if included under the
@@ -168,10 +251,21 @@ HRESULT SaitekJoystick::UpdateInputState() {
 
 // Called once for each enumerated joystick
 BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext) {
+	auto pEnumContext = reinterpret_cast<DI_ENUM_CONTEXT*>(pContext);
 	HRESULT hr;
 
+	if (g_bFilterOutXinputDevices && IsXInputDevice(&pdidInstance->guidProduct)) {
+		return DIENUM_CONTINUE;
+	}
+
+	// Skip anything other than the perferred joystick device as defined by the control panel.  
+	// Instead you could store all the enumerated joysticks and let the user pick.
+	if (pEnumContext->bPreferredJoyCfgValid && !IsEqualGUID(pdidInstance->guidInstance, pEnumContext->pPreferredJoyCfg->guidInstance)) {
+		return DIENUM_CONTINUE;
+	}
+
 	// Obtain an interface to the enumerated joystick.
-	hr = g_pDI->CreateDevice(pdidInstance->guidInstance, &g_pJoystick, NULL);
+	hr = g_pDI->CreateDevice(pdidInstance->guidInstance, &g_pJoystick, nullptr);
 
 	// If it failed, then we can't use this joystick. (Maybe the user unplugged
 	// it while we were in the middle of enumerating it.)
@@ -210,4 +304,29 @@ BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pC
 	}
 
 	return DIENUM_CONTINUE;
+}
+
+// Test whether object is an XInput Device
+bool IsXInputDevice(const GUID* pGuidProductFromDirectInput) {
+	// Check each xinput device to see if this device's vid/pid matches
+	XINPUT_DEVICE_NODE* pNode = g_pXInputDeviceList;
+	while (pNode) {
+		if (pNode->dwVidPid == pGuidProductFromDirectInput->Data1) {
+			return true;
+		}
+		pNode = pNode->pNext;
+	}
+
+	return false;
+}
+
+// Cleanup XInput Device Testing
+void CleanupForIsXInputDevice() {
+	// Cleanup linked list
+	XINPUT_DEVICE_NODE* pNode = g_pXInputDeviceList;
+	while (pNode) {
+		XINPUT_DEVICE_NODE* pDelete = pNode;
+		pNode = pNode->pNext;
+		SAFE_DELETE(pDelete);
+	}
 }

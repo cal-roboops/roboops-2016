@@ -1,3 +1,2 @@
 ﻿  CommandComputer.cpp
-c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(222): warning C4172: returning address of local variable or temporary: comp_msg
   CommandComputer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\CommandComputer\Debug\CommandComputer.exe
