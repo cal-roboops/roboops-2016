@@ -33,12 +33,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Place code here.
 
 	// Create the client for communication
-	Client* cc = new Client(ipv6, port);
+	cc = new Client(ipv4, port);
+	// Send Setup Command to RaspPi
 	cc->client_send("Setup!");
 	// Create the Joystick for control input
 	sJoy = new SaitekJoystick();
+	// Send Unfold Command to RaspPi
 	cc->client_send("Unfold!");
 	cc->client_receive();
+	printf(cc->recvbuf);
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

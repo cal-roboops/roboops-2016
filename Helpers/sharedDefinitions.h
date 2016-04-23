@@ -16,7 +16,8 @@
 #define MODE2 2
 
 char* port = (char*) "8080";
-char* ipv4 = (char*) "192.168.137.40";
+char* ipve = (char*) "192.168.137.40";
+char* ipv4 = (char*) "10.1.10.66";
 char* ipv6 = (char*) "2601:644:102:7600::585d";
 const char* endMsg = "Done!";
 const char* failedMsg = "Failed...";
