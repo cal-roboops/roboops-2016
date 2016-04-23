@@ -15,7 +15,7 @@
 bool stop_roboclaws() {
     bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RC_COMBINEDFB_ZERO);
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RC_COMBINEDFB_ZERO);
-    bool arm = roboclaw->CombinedForwardBackward(ARM_ROBOCLAW, RC_COMBINEDFB_ZERO)
+    bool arm = roboclaw->CombinedForwardBackward(ARM_ROBOCLAW, RC_COMBINEDFB_ZERO);
     // Make sure all roboclaws are working otherwise there'll be an error
     return true; //(right & left & arm);
 }
@@ -39,7 +39,7 @@ bool level_camera() {
 // Unfold the Rover
 bool unfold() {
     // Raise Camera Mast
-    softServoWrite(CAMERA_SERVO_PIN_MAST, 1250)
+    softServoWrite(CAMERA_SERVO_PIN_MAST, 1250);
     return true;
 }
 
@@ -85,9 +85,9 @@ bool drive(char* action[]) {
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
     bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    softServoWrite(, strtol(action[1], NULL, 10));
-    softServoWrite(, strtol(action[2], NULL, 10));
-    softServoWrite(, strtol(action[3], NULL, 10));
+    softServoWrite(0, strtol(action[1], NULL, 10));
+    softServoWrite(0, strtol(action[2], NULL, 10));
+    softServoWrite(0, strtol(action[3], NULL, 10));
     bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
     return (base & claw);
 }

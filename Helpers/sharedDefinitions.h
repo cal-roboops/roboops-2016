@@ -17,7 +17,7 @@
 
 char* port = (char*) "8080";
 char* ipv4 = (char*) "192.168.137.40";
-char* ipv6 = (char*) "2601:644:102:7600::585d"
+char* ipv6 = (char*) "2601:644:102:7600::585d";
 const char* endMsg = "Done!";
 const char* failedMsg = "Failed...";
 const char* complete = "Finished running commands.";
