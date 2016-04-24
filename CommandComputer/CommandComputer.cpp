@@ -211,7 +211,26 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 // Message compiler for rover send
 void compile_message() {
-	// Motor speed
-	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE0, sJoy->js.lX, sJoy->js.lY,
-		SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
+	// Grab all values that we could possibly need
+	long x = sJoy->js.lX;
+	long y = sJoy->js.lY;
+	long z = sJoy->js.lZ;
+	long rx = sJoy->js.lRx;
+	long ry = sJoy->js.lRy;
+	long rz = sJoy->js.lRz;
+	byte m = 0x80; // sJoy->js.rgbButtons[];
+	byte m1 = sJoy->js.rgbButtons[03];
+	byte m2 = sJoy->js.rgbButtons[26];
+	byte m3 = sJoy->js.rgbButtons[25];
+
+	// Reset memory before writing updated command
+	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
+
+	if (m & 0x80) {
+		// Motor speed
+		sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", x, y, z, rx, ry, rz, m1, m2, m3);
+	} else {
+		sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE2, x, y,
+			SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
+	}
 }

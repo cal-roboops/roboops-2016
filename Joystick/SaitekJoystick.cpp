@@ -73,7 +73,8 @@ SaitekJoystick::SaitekJoystick(HWND hDlg) {
 
 	// Set the cooperative level to let DInput know how this device should
 	// interact with the system and with other DInput applications.
-	if (FAILED(hr = g_pJoystick->SetCooperativeLevel(hDlg, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) {
+	// DISCL_EXCLUSIVE, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND, DISCL_BACKGROUND
+	if (FAILED(hr = g_pJoystick->SetCooperativeLevel(hDlg, DISCL_EXCLUSIVE | DISCL_BACKGROUND))) {
 		exit(1);
 	}
 
