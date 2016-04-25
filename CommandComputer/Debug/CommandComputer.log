@@ -1,2 +1,7 @@
 ﻿  CommandComputer.cpp
-  CommandComputer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\CommandComputer\Debug\CommandComputer.exe
+h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\commandcomputer\commandcomputer.cpp(297): warning C4474: 'sprintf' : too many arguments passed for format string
+  h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\commandcomputer\commandcomputer.cpp(297): note: placeholders and their parameters expect 9 variadic arguments, but 11 were provided
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  Client.cpp
+  CommandComputer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\CommandComputer\Debug\CommandComputer.exe

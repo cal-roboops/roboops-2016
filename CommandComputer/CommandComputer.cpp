@@ -215,22 +215,87 @@ void compile_message() {
 	long x = sJoy->js.lX;
 	long y = sJoy->js.lY;
 	long z = sJoy->js.lZ;
-	long rx = sJoy->js.lRx;
 	long ry = sJoy->js.lRy;
 	long rz = sJoy->js.lRz;
-	byte m = 0x80; // sJoy->js.rgbButtons[];
-	byte m1 = sJoy->js.rgbButtons[03];
-	byte m2 = sJoy->js.rgbButtons[26];
-	byte m3 = sJoy->js.rgbButtons[25];
+	long s0 = sJoy->js.rglSlider[0];
+	byte m1 = 0x80; // sJoy->js.rgbButtons[];
+	byte m2 = 0x80; // sJoy->js.rgbButtons[];
+	byte m3 = 0x80; // sJoy->js.rgbButtons[];
+
+	// Mode
+	long mode = MODE0;
+	// Two Motor Controllers
+	long mc_0 = RC_COMBINEDFB_ZERO;
+	long mc_1 = RC_COMBINEDFB_ZERO;
+	// Eight PWM Outputs
+	long s_0 = SERVO_CENTER;
+	long s_1 = SERVO_CENTER;
+	long s_2 = SERVO_CENTER;
+	long s_3 = SERVO_CENTER;
+	long s_4 = SERVO_CENTER;
+	long s_5 = SERVO_CENTER;
+	long s_6 = SERVO_CENTER;
+	long s_7 = SERVO_CENTER;
 
 	// Reset memory before writing updated command
 	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
 
-	if (m & 0x80) {
-		// Motor speed
-		sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", x, y, z, rx, ry, rz, m1, m2, m3);
-	} else {
-		sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", MODE2, x, y,
-			SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER, SERVO_CENTER);
+	if (m1 & 0x80) {
+		// Set Mode to Tank
+		mode = MODE0;
+
+		// Map the commands into the appropriate range
+		if ((abs(y) >= abs(rz)) || (abs(x) >= abs(rz))) {
+			if (abs(y) >= abs(x)) {
+				// Keep drive servos straight to go forward/backward
+				s_0 = SERVO_CENTER;
+				s_1 = SERVO_CENTER;
+				s_2 = SERVO_CENTER;
+				s_3 = SERVO_CENTER;
+			} else {
+				// Turn drive servos 90 degres to go sideways
+				s_0 = SERVO_90_Degrees;
+				s_1 = SERVO_90_Degrees;
+				s_2 = SERVO_90_Degrees;
+				s_3 = SERVO_90_Degrees;
+				// Use negative x instead of y
+				y = -x;
+			}
+
+			// Map motor speed
+			if (y != 0) {
+				// Drive Forward/Right or Backward/Left
+				mc_0 = 64 - (64 * y / 1000);
+			} else {
+				// Stop
+				mc_0 = RC_COMBINEDFB_ZERO;
+			}
+
+			// Set Motor 1 equal to Motor 0
+			mc_1 = mc_0;
+		} else {
+			// Turn drive servos to 45 degrees and spin
+			s_0 = SERVO_45_Degrees;
+			s_1 = SERVO_45_Degrees;
+			s_2 = SERVO_45_Degrees;
+			s_3 = SERVO_45_Degrees;
+
+			// Map motor speed
+			if (rz != 0) {
+				// Spin Left/Right
+				mc_0 = 64 - (64 * rz / 1000);
+				mc_1 = 64 + (64 * rz / 1000);
+			} else {
+				// Stop
+				mc_0 = RC_COMBINEDFB_ZERO;
+				mc_1 = RC_COMBINEDFB_ZERO;
+			}
+		}
 	}
+
+	// Save Compiled Command to the clients MSGBUF
+	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
+
+	// Test
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, ry, rz, s0, m1, m2, m3, 0);
 }
