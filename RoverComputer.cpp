@@ -185,8 +185,8 @@ int main(int argc, char **argv) {
     // Indexing variable
     int i;
 
-    // Motors
-    roboclaw = new RoboClaw(UART_PI2);
+    // Motors (Make sure correct UART selected)
+    roboclaw = new RoboClaw(UART_PI3);
 
     // Servos
     softServoSetup(DRIVETRAIN_SERVO_PIN_FL, DRIVETRAIN_SERVO_PIN_BL,
