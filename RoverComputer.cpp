@@ -26,6 +26,7 @@ bool reset_chassis_servos() {
     softServoWrite(DRIVETRAIN_SERVO_PIN_BL, SERVO_CENTER);
     softServoWrite(DRIVETRAIN_SERVO_PIN_FR, SERVO_CENTER);
     softServoWrite(DRIVETRAIN_SERVO_PIN_BR, SERVO_CENTER);
+    prev_servo_val = SERVO_CENTER;
     return true;
 }
 
@@ -69,14 +70,34 @@ bool initialize() {
 // Command Transmission form (drive):
 // Right_RoboClaw, Left_RoboClaw, DT_ServoFL, DT_ServoBL, DT_ServoFR, DT_ServoBR, CameraServoX, CameraServoY
 bool drive(char* action[]) {
+    // Set servos and wait if changed (currently assumes all servos will be set to the same)
+    // Future iterations should check each servo individual for the drive mode
+    if (strtol(action[2], NULL, 10) != prev_servo_val) {
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FL, strtol(action[2], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_BL, strtol(action[3], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FR, strtol(action[4], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_BR, strtol(action[5], NULL, 10));
+
+        // Update saved servo value
+        prev_servo_val = strtol(action[2], NULL, 10);
+
+        // Wait for servos to move to position
+        pause(1000);
+
+        // Clear any built up commands
+        raspPi->server_receive();
+        raspPi->server_receive();
+        memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
+    }
+
+    // Set Roboclaw Speed and Direction
     bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
-    softServoWrite(DRIVETRAIN_SERVO_PIN_FL, strtol(action[2], NULL, 10));
-    softServoWrite(DRIVETRAIN_SERVO_PIN_BL, strtol(action[3], NULL, 10));
-    softServoWrite(DRIVETRAIN_SERVO_PIN_FR, strtol(action[4], NULL, 10));
-    softServoWrite(DRIVETRAIN_SERVO_PIN_BR, strtol(action[5], NULL, 10));
+
+    // Move Mast Camera
     softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[6], NULL, 10));
     softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[7], NULL, 10));
+
     // Make sure all roboclaws are working otherwise there'll be an error
     return true;//(right & left);
 }
@@ -84,10 +105,10 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    softServoWrite(0, strtol(action[1], NULL, 10));
-    softServoWrite(0, strtol(action[2], NULL, 10));
     softServoWrite(0, strtol(action[3], NULL, 10));
+    softServoWrite(0, strtol(action[4], NULL, 10));
+    softServoWrite(0, strtol(action[5], NULL, 10));
+    bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
     bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
     return (base & claw);
 }
@@ -182,7 +203,7 @@ int main(int argc, char **argv) {
     char* command;
     char* command_list[DEFAULT_BUFLEN];
 
-    // Indexing variable
+    // Variables
     int i;
 
     // Motors (Make sure correct UART selected)
@@ -233,6 +254,8 @@ int main(int argc, char **argv) {
     // Command Loop
     do {
         // Receive commands from the main computer (Space seperated list)
+        // mode, motor0, motor1, motor2, motor3, servo0, servo1, servo2, 
+        // servo3, servo4, servo5, servo6, servo7
     	raspPi->server_receive();
         printf("Message Received: \"%s\"\n", raspPi->recvbuf);
 

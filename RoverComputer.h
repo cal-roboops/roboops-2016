@@ -39,4 +39,5 @@
 
 Server* raspPi;
 RoboClaw* roboclaw;
-Encoder* encoders[4];
+//Encoder* encoders[4];
+int prev_servo_val;

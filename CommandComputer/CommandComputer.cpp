@@ -224,9 +224,11 @@ void compile_message() {
 
 	// Mode
 	long mode = MODE0;
-	// Two Motor Controllers
+	// Four Motor Controllers
 	long mc_0 = RC_COMBINEDFB_ZERO;
 	long mc_1 = RC_COMBINEDFB_ZERO;
+	long mc_2 = RC_COMBINEDFB_ZERO;
+	long mc_3 = RC_COMBINEDFB_ZERO;
 	// Eight PWM Outputs
 	long s_0 = SERVO_CENTER;
 	long s_1 = SERVO_CENTER;
@@ -240,7 +242,7 @@ void compile_message() {
 	// Reset memory before writing updated command
 	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
 
-	if (m1 & 0x80) {
+	if ((m1 & 0x80) || (m2 & 0x80)) {
 		// Set Mode to Tank
 		mode = MODE0;
 
@@ -291,11 +293,42 @@ void compile_message() {
 				mc_1 = RC_COMBINEDFB_ZERO;
 			}
 		}
+	} else if (m3 & 0x80) {
+		// Set Mode to Arm
+		mode = MODE2;
+
+
+	}
+
+	// Ensure that mc_0, mc_1, mc_2 and mc_3 are within the viable range
+	if (mc_0 > RC_HIGH) {
+		mc_0 = RC_HIGH;
+	} else if (mc_0 < RC_LOW) {
+		mc_0 = RC_LOW;
+	}
+
+	if (mc_1 > RC_HIGH) {
+		mc_1 = RC_HIGH;
+	} else if (mc_1 < RC_LOW) {
+		mc_1 = RC_LOW;
+	}
+
+	if (mc_2 > RC_HIGH) {
+		mc_2 = RC_HIGH;
+	} else if (mc_2 < RC_LOW) {
+		mc_2 = RC_LOW;
+	}
+
+	if (mc_3 > RC_HIGH) {
+		mc_3 = RC_HIGH;
+	} else if (mc_3 < RC_LOW) {
+		mc_3 = RC_LOW;
 	}
 
 	// Save Compiled Command to the clients MSGBUF
-	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
+	// mode, roboclaw0, roboclaw1, roboclaw2, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
+	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, mc_2, mc_3, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
 
 	// Test
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, ry, rz, s0, m1, m2, m3, 0);
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, ry, rz, s0, m1, m2, m3, 0, 0, 0);
 }
