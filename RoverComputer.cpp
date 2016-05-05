@@ -22,10 +22,8 @@ bool stop_roboclaws() {
 
 // Set Servos Straight
 bool reset_chassis_servos() {
-    softServoWrite(DRIVETRAIN_SERVO_PIN_FL, SERVO_CENTER);
-    softServoWrite(DRIVETRAIN_SERVO_PIN_BL, SERVO_CENTER);
-    softServoWrite(DRIVETRAIN_SERVO_PIN_FR, SERVO_CENTER);
-    softServoWrite(DRIVETRAIN_SERVO_PIN_BR, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, SERVO_CENTER);
     prev_servo_val = SERVO_CENTER;
     return true;
 }
@@ -73,10 +71,8 @@ bool drive(char* action[]) {
     // Set servos and wait if changed (currently assumes all servos will be set to the same)
     // Future iterations should check each servo individual for the drive mode
     if (strtol(action[2], NULL, 10) != prev_servo_val) {
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FL, strtol(action[2], NULL, 10));
-        softServoWrite(DRIVETRAIN_SERVO_PIN_BL, strtol(action[3], NULL, 10));
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FR, strtol(action[4], NULL, 10));
-        softServoWrite(DRIVETRAIN_SERVO_PIN_BR, strtol(action[5], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, strtol(action[2], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, strtol(action[3], NULL, 10));
 
         // Update saved servo value
         prev_servo_val = strtol(action[2], NULL, 10);
@@ -85,7 +81,6 @@ bool drive(char* action[]) {
         pause(1000);
 
         // Clear any built up commands
-        raspPi->server_receive();
         raspPi->server_receive();
         memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     }
@@ -110,7 +105,7 @@ bool arm(char* action[]) {
     softServoWrite(0, strtol(action[5], NULL, 10));
     bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
     bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
-    return (base & claw);
+    return true;//(base & claw);
 }
 
 // ---------- ACTION SELECTOR -----------
@@ -210,9 +205,9 @@ int main(int argc, char **argv) {
     roboclaw = new RoboClaw(UART_PI3);
 
     // Servos
-    softServoSetup(DRIVETRAIN_SERVO_PIN_FL, DRIVETRAIN_SERVO_PIN_BL,
-                    DRIVETRAIN_SERVO_PIN_FR, DRIVETRAIN_SERVO_PIN_BR,
-                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, 0, 0);
+    softServoSetup(DRIVETRAIN_SERVO_PIN_FLBR, DRIVETRAIN_SERVO_PIN_FRBL,
+                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y,
+                    0, 0, 0, 0);
 
     // Encoders (Don't have any encoders)
     //encoders[0] = new Encoder(ENCODER_PIN0);

@@ -252,14 +252,10 @@ void compile_message() {
 				// Keep drive servos straight to go forward/backward
 				s_0 = SERVO_CENTER;
 				s_1 = SERVO_CENTER;
-				s_2 = SERVO_CENTER;
-				s_3 = SERVO_CENTER;
 			} else {
 				// Turn drive servos 90 degres to go sideways
 				s_0 = SERVO_90_Degrees;
 				s_1 = SERVO_90_Degrees;
-				s_2 = SERVO_90_Degrees;
-				s_3 = SERVO_90_Degrees;
 				// Use negative x instead of y
 				y = -x;
 			}
@@ -279,8 +275,6 @@ void compile_message() {
 			// Turn drive servos to 45 degrees and spin
 			s_0 = SERVO_45_Degrees;
 			s_1 = SERVO_45_Degrees;
-			s_2 = SERVO_45_Degrees;
-			s_3 = SERVO_45_Degrees;
 
 			// Map motor speed
 			if (rz != 0) {
@@ -326,7 +320,7 @@ void compile_message() {
 	}
 
 	// Save Compiled Command to the clients MSGBUF
-	// mode, roboclaw0, roboclaw1, roboclaw2, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
+	// mode, mc_0, mc_1, mc_2, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
 	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, mc_2, mc_3, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
 
 	// Test
