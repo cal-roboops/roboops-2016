@@ -1,7 +1,11 @@
 ﻿  CommandComputer.cpp
-h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\commandcomputer\commandcomputer.cpp(297): warning C4474: 'sprintf' : too many arguments passed for format string
-  h:\mitchell stuff 2\work\berkeley\berkeley_aiaa\code\commandcomputer\commandcomputer.cpp(297): note: placeholders and their parameters expect 9 variadic arguments, but 11 were provided
+c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(278): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
+c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(294): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
+c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(295): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
+c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(317): warning C4244: 'initializing': conversion from 'float' to 'long', possible loss of data
+c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(318): warning C4244: 'initializing': conversion from 'float' to 'long', possible loss of data
   Generating Code...
   Skipping... (no relevant changes detected)
   Client.cpp
-  CommandComputer.vcxproj -> H:\MITCHELL STUFF 2\Work\Berkeley\Berkeley_AIAA\Code\CommandComputer\Debug\CommandComputer.exe
+  SaitekJoystick.cpp
+  CommandComputer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\CommandComputer\Debug\CommandComputer.exe

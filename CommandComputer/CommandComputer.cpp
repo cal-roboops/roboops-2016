@@ -13,6 +13,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 SaitekJoystick* sJoy;							// Global Joystick Object
 Client* cc;										// Global Client Object
+int mode;										// Mode state variable (only changes if buttons pressed)
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -110,8 +111,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
    
+   // Set mode to initial value of MODE0
+   mode = MODE0;
    // Create the client for communication
-   cc = new Client(ipv4, port);
+   cc = new Client(ipve, port);
    // Send Setup Command to RaspPi
    cc->client_send("Setup!");
    // Create the Joystick for control input
@@ -120,9 +123,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    cc->client_send("Unfold!");
    cc->client_receive();
 
-   // Set a timer to go off 30 times a second. At every timer message
+   // Set a timer to go off 3 times a second. At every timer message
    // the input device will be read
-   SetTimer(hWnd, 0, 1000, nullptr);
+   SetTimer(hWnd, 0, 1000/3, nullptr);
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -215,20 +218,32 @@ void compile_message() {
 	long x = sJoy->js.lX;
 	long y = sJoy->js.lY;
 	long z = sJoy->js.lZ;
+	long rx = sJoy->js.lRx;
 	long ry = sJoy->js.lRy;
 	long rz = sJoy->js.lRz;
 	long s0 = sJoy->js.rglSlider[0];
-	byte m1 = 0x80; // sJoy->js.rgbButtons[];
-	byte m2 = 0x80; // sJoy->js.rgbButtons[];
-	byte m3 = 0x80; // sJoy->js.rgbButtons[];
+	byte m1 = sJoy->js.rgbButtons[8];
+	byte m2 = sJoy->js.rgbButtons[9];
+	byte m3 = sJoy->js.rgbButtons[10];
+	byte m4 = sJoy->js.rgbButtons[11];
+	byte m5 = sJoy->js.rgbButtons[12];
+	byte m6 = sJoy->js.rgbButtons[13];
 
-	// Mode
-	long mode = MODE0;
-	// Four Motor Controllers
+	if ((m1 && 0x80) || (m2 && 0x80)) {
+		mode = MODE0;
+	} else if ((m3 && 0x80) || (m4 && 0x80)) {
+		mode = MODE2;
+	}
+
+	// Eight Motor Controllers
 	long mc_0 = RC_COMBINEDFB_ZERO;
 	long mc_1 = RC_COMBINEDFB_ZERO;
 	long mc_2 = RC_COMBINEDFB_ZERO;
 	long mc_3 = RC_COMBINEDFB_ZERO;
+	long mc_4 = RC_COMBINEDFB_ZERO;
+	long mc_5 = RC_COMBINEDFB_ZERO;
+	long mc_6 = RC_COMBINEDFB_ZERO;
+	long mc_7 = RC_COMBINEDFB_ZERO;
 	// Eight PWM Outputs
 	long s_0 = SERVO_CENTER;
 	long s_1 = SERVO_CENTER;
@@ -242,10 +257,7 @@ void compile_message() {
 	// Reset memory before writing updated command
 	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
 
-	if ((m1 & 0x80) || (m2 & 0x80)) {
-		// Set Mode to Tank
-		mode = MODE0;
-
+	if ((mode == MODE0) || (mode == MODE1)) {
 		// Map the commands into the appropriate range
 		if ((abs(y) >= abs(rz)) || (abs(x) >= abs(rz))) {
 			if (abs(y) >= abs(x)) {
@@ -263,7 +275,7 @@ void compile_message() {
 			// Map motor speed
 			if (y != 0) {
 				// Drive Forward/Right or Backward/Left
-				mc_0 = 64 - (64 * y / 1000);
+				mc_0 = 127 * ((float) (1000 - y) / 2000);
 			} else {
 				// Stop
 				mc_0 = RC_COMBINEDFB_ZERO;
@@ -279,50 +291,30 @@ void compile_message() {
 			// Map motor speed
 			if (rz != 0) {
 				// Spin Left/Right
-				mc_0 = 64 - (64 * rz / 1000);
-				mc_1 = 64 + (64 * rz / 1000);
+				mc_0 = 127 * ((float) (1000 - rz) / 2000);
+				mc_1 = 127 * ((float) (1000 + rz) / 2000);
 			} else {
 				// Stop
 				mc_0 = RC_COMBINEDFB_ZERO;
 				mc_1 = RC_COMBINEDFB_ZERO;
 			}
 		}
-	} else if (m3 & 0x80) {
-		// Set Mode to Arm
-		mode = MODE2;
-
-
-	}
-
-	// Ensure that mc_0, mc_1, mc_2 and mc_3 are within the viable range
-	if (mc_0 > RC_HIGH) {
-		mc_0 = RC_HIGH;
-	} else if (mc_0 < RC_LOW) {
-		mc_0 = RC_LOW;
-	}
-
-	if (mc_1 > RC_HIGH) {
-		mc_1 = RC_HIGH;
-	} else if (mc_1 < RC_LOW) {
-		mc_1 = RC_LOW;
-	}
-
-	if (mc_2 > RC_HIGH) {
-		mc_2 = RC_HIGH;
-	} else if (mc_2 < RC_LOW) {
-		mc_2 = RC_LOW;
-	}
-
-	if (mc_3 > RC_HIGH) {
-		mc_3 = RC_HIGH;
-	} else if (mc_3 < RC_LOW) {
-		mc_3 = RC_LOW;
+	} else if (mode == MODE2) {
+		mc_0 = (1000 - ry) / 20;
+		mc_1 = (1000 + s0) / 20;
+		mc_2 = (1000 - rx) / 20;
+		mc_3 = (1000 - z) / 20;
 	}
 
 	// Save Compiled Command to the clients MSGBUF
-	// mode, mc_0, mc_1, mc_2, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
-	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, mc_2, mc_3, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
+	// mode, mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
 
-	// Test
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, ry, rz, s0, m1, m2, m3, 0, 0, 0);
+	// Test Saitek
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, rx, ry, rz, s0, m1, m2, m3, m4, m5, m6);
+
+	// Test Arm
+	long t1 = 127 * ((float) (1000 - x) / 2000);
+	long t2 = 127 * ((float) (1000 - y) / 2000);
+	sprintf(cc->msgbuf, "%d,%d,%d", MODE2, t1, t2);
 }
