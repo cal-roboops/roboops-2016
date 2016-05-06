@@ -15,9 +15,10 @@
 bool stop_roboclaws() {
     bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RC_COMBINEDFB_ZERO);
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RC_COMBINEDFB_ZERO);
-    bool arm = roboclaw->CombinedForwardBackward(ARM_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool arm_base = roboclaw->CombinedForwardBackward(ARM_BASE_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool arm_extend = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, RC_COMBINEDFB_ZERO);
     // Make sure all roboclaws are working otherwise there'll be an error
-    return true; //(right & left & arm);
+    return true; //(right & left & arm_base & arm_extend);
 }
 
 // Set Servos Straight
@@ -101,14 +102,18 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    bool base1 = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    bool base2 = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
-    //softServoWrite(0, strtol(action[8], NULL, 10));
-    //softServoWrite(0, strtol(action[9], NULL, 10));
-    //softServoWrite(0, strtol(action[10], NULL, 10));
-    //bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    //bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
-    return true;//(base & claw);
+    bool arm_baseM1 = roboclaw->ForwardBackwardM1(ARM_BASE_ROBOCLAW, strtol(action[0], NULL, 10));
+    bool arm_baseM2 = roboclaw->ForwardBackwardM2(ARM_BASE_ROBOCLAW, strtol(action[1], NULL, 10));
+    bool arm_extendM1 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[2], NULL, 10));
+    bool arm_extendM2 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[3], NULL, 10));
+    int close_claw = strtol(action[16], NULL, 10) + strtol(action[17], NULL, 10);
+    bool claw = true;
+    if (close_claw == 1) {
+        ; // Close claw halfway
+    } else if (close_claw == 2) {
+        ; // Close claw fully
+    }
+    return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
 }
 
 // ---------- ACTION SELECTOR -----------
@@ -279,7 +284,7 @@ int main(int argc, char **argv) {
         }
 
         // Parse the comma seperated command list
-	    i = 0;
+	i = 0;
         command = strtok(NULL, ",");
         while (command != NULL) {
             // Translate command to int and store in command list
