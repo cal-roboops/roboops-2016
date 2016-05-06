@@ -70,15 +70,16 @@ bool initialize() {
 bool drive(char* action[]) {
     // Set servos and wait if changed (currently assumes all servos will be set to the same)
     // Future iterations should check each servo individual for the drive mode
-    if (strtol(action[2], NULL, 10) != prev_servo_val) {
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, strtol(action[2], NULL, 10));
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, strtol(action[3], NULL, 10));
+    if (strtol(action[8], NULL, 10) != prev_servo_val) {
+	stop_roboclaws();
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, strtol(action[8], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, strtol(action[9], NULL, 10));
 
         // Update saved servo value
-        prev_servo_val = strtol(action[2], NULL, 10);
+        prev_servo_val = strtol(action[8], NULL, 10);
 
         // Wait for servos to move to position
-        pause(1000);
+        delay(2000);
 
         // Clear any built up commands
         raspPi->server_receive();
@@ -90,8 +91,8 @@ bool drive(char* action[]) {
     bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
 
     // Move Mast Camera
-    softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[6], NULL, 10));
-    softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[7], NULL, 10));
+    softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
+    softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
 
     // Make sure all roboclaws are working otherwise there'll be an error
     return true;//(right & left);
@@ -100,11 +101,13 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    softServoWrite(0, strtol(action[3], NULL, 10));
-    softServoWrite(0, strtol(action[4], NULL, 10));
-    softServoWrite(0, strtol(action[5], NULL, 10));
-    bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
-    bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
+    bool base1 = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
+    bool base2 = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
+    //softServoWrite(0, strtol(action[8], NULL, 10));
+    //softServoWrite(0, strtol(action[9], NULL, 10));
+    //softServoWrite(0, strtol(action[10], NULL, 10));
+    //bool base = roboclaw->ForwardBackwardM1(ARM_ROBOCLAW, strtol(action[0], NULL, 10));
+    //bool claw = roboclaw->ForwardBackwardM2(ARM_ROBOCLAW, strtol(action[1], NULL, 10));
     return true;//(base & claw);
 }
 
@@ -271,7 +274,7 @@ int main(int argc, char **argv) {
                 printf("Couldn't stop previous mode.\n");
 		        raspPi->server_send(failedMsg);
                 raspPi->server_send(endMsg);
-                exit(1);
+                break;
             }
         }
 
@@ -296,6 +299,12 @@ int main(int argc, char **argv) {
     	raspPi->server_send(complete);
         printf("\n");
     } while (true);
+
+    // Double check that the roboclaws are stopped
+    while (!stop_roboclaws()) {
+        // If doesn't stop keeping trying to stop
+        ;
+    }
 
     return 0;
 }
