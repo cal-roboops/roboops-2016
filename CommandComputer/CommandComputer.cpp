@@ -222,16 +222,20 @@ void compile_message() {
 	long ry = sJoy->js.lRy;
 	long rz = sJoy->js.lRz;
 	long s0 = sJoy->js.rglSlider[0];
-	byte m1 = sJoy->js.rgbButtons[8];
-	byte m2 = sJoy->js.rgbButtons[9];
-	byte m3 = sJoy->js.rgbButtons[10];
-	byte m4 = sJoy->js.rgbButtons[11];
-	byte m5 = sJoy->js.rgbButtons[12];
-	byte m6 = sJoy->js.rgbButtons[13];
+	// Map button pushes from 0 and 128 (0x80) to 0 and 1
+	byte m1 = sJoy->js.rgbButtons[8] && 0x80;
+	byte m2 = sJoy->js.rgbButtons[9] && 0x80;
+	byte m3 = sJoy->js.rgbButtons[10] && 0x80;
+	byte m4 = sJoy->js.rgbButtons[11] && 0x80;
+	byte m5 = sJoy->js.rgbButtons[12] && 0x80;
+	byte m6 = sJoy->js.rgbButtons[13] && 0x80;
+	byte trigger_half = sJoy->js.rgbButtons[0] && 0x80;
+	byte trigger_full = sJoy->js.rgbButtons[14] && 0x80;
 
-	if ((m1 && 0x80) || (m2 && 0x80)) {
+	// Update the mode based on the buttons pressed
+	if (m1 || m2) {
 		mode = MODE0;
-	} else if ((m3 && 0x80) || (m4 && 0x80)) {
+	} else if (m3 || m4) {
 		mode = MODE2;
 	}
 
@@ -259,7 +263,7 @@ void compile_message() {
 
 	if ((mode == MODE0) || (mode == MODE1)) {
 		// Map the commands into the appropriate range
-		if ((abs(y) >= abs(rz)) || (abs(x) >= abs(rz))) {
+		if (((abs(y) + 10) >= abs(rz)) || ((abs(x) + 10) >= abs(rz))) {
 			if (abs(y) >= abs(x)) {
 				// Keep drive servos straight to go forward/backward
 				s_0 = SERVO_CENTER;
@@ -273,7 +277,7 @@ void compile_message() {
 			}
 
 			// Map motor speed
-			if (y != 0) {
+			if (y < -10 || y > 10) {
 				// Drive Forward/Right or Backward/Left
 				mc_0 = 127 * ((float) (1000 - y) / 2000);
 			} else {
@@ -289,7 +293,7 @@ void compile_message() {
 			s_1 = SERVO_45_Degrees;
 
 			// Map motor speed
-			if (rz != 0) {
+			if (rz < -10 || rz > 10) {
 				// Spin Left/Right
 				mc_0 = 127 * ((float) (1000 - rz) / 2000);
 				mc_1 = 127 * ((float) (1000 + rz) / 2000);
@@ -300,21 +304,29 @@ void compile_message() {
 			}
 		}
 	} else if (mode == MODE2) {
-		mc_0 = (1000 - ry) / 20;
+		mc_0 = (1000 + ry) / 20;
 		mc_1 = (1000 + s0) / 20;
-		mc_2 = (1000 - rx) / 20;
+		mc_2 = (1000 + rx) / 20;
 		mc_3 = (1000 - z) / 20;
 	}
 
 	// Save Compiled Command to the clients MSGBUF
 	// mode, mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7, s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
+	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
+				mode,
+				mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7,
+				s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7,
+				trigger_half, trigger_full);
 
 	// Test Saitek
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, rx, ry, rz, s0, m1, m2, m3, m4, m5, m6);
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, rx, ry, rz, s0, m1, m2, m3, m4, m5, m6, trigger_half, trigger_full);
 
 	// Test Arm
-	long t1 = 127 * ((float) (1000 - x) / 2000);
-	long t2 = 127 * ((float) (1000 - y) / 2000);
-	sprintf(cc->msgbuf, "%d,%d,%d", MODE2, t1, t2);
+	//long base_swivel = (1000 + ry) / 20;
+	//long shoulder_rl = (1000 + s0) / 20;
+	//long elbow = (1000 + rx) / 20;
+	//long forearm_extend = (1000 - z) / 20;
+	//int claw_half = trigger_half;
+	//int claw_full = trigger_full;
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d", MODE2, base_swivel, shoulder_rl, elbow, forearm_extend, claw_half + claw_full);
 }
