@@ -8,6 +8,8 @@
 //
 
 #define UART_PI2 "/dev/ttyAMA0"
+// Pi 3 UART does not work since it is controlled by
+// the CPU clock which too unstable
 #define UART_PI3 "/dev/ttyS0"
 
 #define RIGHT_ROBOCLAW 0x80

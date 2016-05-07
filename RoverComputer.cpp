@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
     int i;
 
     // Motors (Make sure correct UART selected)
-    roboclaw = new RoboClaw(UART_PI3);
+    roboclaw = new RoboClaw(UART_PI2);
 
     // Servos
     softServoSetup(DRIVETRAIN_SERVO_PIN_FLBR, DRIVETRAIN_SERVO_PIN_FRBL,
