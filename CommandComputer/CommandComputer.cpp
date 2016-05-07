@@ -282,7 +282,7 @@ void compile_message() {
 				mc_0 = 127 * ((float) (1000 - y) / 2000);
 			} else {
 				// Stop
-				mc_0 = RC_COMBINEDFB_ZERO;
+				mc_0 = RC_FB_ZERO;
 			}
 
 			// Set Motor 1 equal to Motor 0
