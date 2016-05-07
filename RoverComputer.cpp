@@ -71,31 +71,52 @@ bool initialize() {
 bool drive(char* action[]) {
     // Set servos and wait if changed (currently assumes all servos will be set to the same)
     // Future iterations should check each servo individual for the drive mode
-    if (strtol(action[8], NULL, 10) != prev_servo_val) {
+    int servo_val1 = strtol(action[8], NULL, 10);
+    int servo_val2 = strtol(action[9], NULL, 10);
+    if (servo_val1 != prev_servo_val) {
 	stop_roboclaws();
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, strtol(action[8], NULL, 10));
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, strtol(action[9], NULL, 10));
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, servo_val1);
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, servo_val2);
 
         // Update saved servo value
-        prev_servo_val = strtol(action[8], NULL, 10);
+        prev_servo_val = servo_val1;
 
         // Wait for servos to move to position
-        delay(2000);
+        delay(4000);
 
-        // Clear any built up commands
+        // Clear all the built up commands
+        // Will cause eratic behaviour if not cleared enough
+        // or left uncleared
+        raspPi->server_receive();
+        raspPi->server_receive();
         raspPi->server_receive();
         memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
+    } else {
+
+        // Set Roboclaw Speed and Direction
+	int m1 = strtol(action[0], NULL, 10);
+	int m2 = strtol(action[1], NULL, 10);
+
+        // Send the command to the roboclaw
+        if (m1 > 0) {
+            bool right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
+        } else {
+            bool right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
+        }
+
+        if (m2 > 0) {
+            bool left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
+        } else {
+            bool left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
+        }
+
+        // Move Mast Camera
+        softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
+        softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
+
+        // Make sure all roboclaws are working otherwise there'll be an error
     }
 
-    // Set Roboclaw Speed and Direction
-    bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, strtol(action[0], NULL, 10));
-    bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, strtol(action[1], NULL, 10));
-
-    // Move Mast Camera
-    softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
-    softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
-
-    // Make sure all roboclaws are working otherwise there'll be an error
     return true;//(right & left);
 }
 
@@ -252,6 +273,7 @@ int main(int argc, char **argv) {
 
     printf("Rover Ready!\n\n\n");
     raspPi->server_send("Rover Ready!");
+    raspPi->server_receive();
     memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
 
     // Command Loop

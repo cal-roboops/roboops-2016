@@ -9,6 +9,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define RC_COMBINEDFB_ZERO 64
+#define RC_FB_ZERO 0
 #define RC_HIGH 127
 #define RC_LOW 0
 #define SERVO_CENTER 500
