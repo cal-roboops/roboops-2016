@@ -279,7 +279,7 @@ void compile_message() {
 			// Map motor speed
 			if (y < -10 || y > 10) {
 				// Drive Forward/Right or Backward/Left
-				mc_0 = 127 * ((float) -y / 1000);
+				mc_0 = RC_FB_MAX * ((float) -y / 1000);
 			} else {
 				// Stop
 				mc_0 = RC_FB_ZERO;
@@ -295,8 +295,8 @@ void compile_message() {
 			// Map motor speed
 			if (rz < -10 || rz > 10) {
 				// Spin Left/Right
-				mc_0 = 127 * ((float) -rz / 1000);
-				mc_1 = 127 * ((float) rz / 1000);
+				mc_0 = RC_FB_MAX * ((float) -rz / 1000);
+				mc_1 = RC_FB_MAX * ((float) rz / 1000);
 			} else {
 				// Stop
 				mc_0 = RC_FB_ZERO;
