@@ -5,10 +5,10 @@ CommandComputer:
 	g++ -Wall -Wno-long-long Networking/Client.cpp CommandComputer.cpp -o CommandComputer.exe -lws2_32 -lwsock32
 
 FFSERVER:
-	ffserver -d -f /etc/ffserver.conf
+	ffserver &
 
 FFMPEG:
-	./ffmpeg -f video4linux -s 640x480 -r 15 -vcodec h264 -i /dev/video0 -codec copy -an http://localhost:8081/feed1.ffm
+	ffmpeg -f video4linux2 -i /dev/video0 http://localhost:8090/webcam1.ffm
 
 Client:
 	g++ -Wall -Wno-long-long -o Client.exe Client.cpp -lws2_32 -lwsock32
