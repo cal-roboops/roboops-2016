@@ -34,11 +34,11 @@ Setup Notes:
 
 Additions for future competitions:
 
-	1) Sanatize control inputs on the rover side to ensure that received value is within acceptable range. This could possible be done via rewriting the comand parsing structure so that it reads and immediately excutes the command. Could lead to simplification of code, faster execution speeds and also allows a variable amount of arguments (i.e. just roboclaw commands or just servo inputs).
+1) Sanatize control inputs on the rover side to ensure that received value is within acceptable range. This could possible be done via rewriting the comand parsing structure so that it reads and immediately excutes the command. Could lead to simplification of code, faster execution speeds and also allows a variable amount of arguments (i.e. just roboclaw commands or just servo inputs).
 
-	2) Add more drive modes and increase capability of the rover arm. Currently the arm is in a "monkey see, monkey do" kind of command structure. We use the visual feedback of the cameras to a sense of how to drive the pieces that had no encoders. This can be expanded to have more fluid/natrual movement or better mapping to the control stick.
+2) Add more drive modes and increase capability of the rover arm. Currently the arm is in a "monkey see, monkey do" kind of command structure. We use the visual feedback of the cameras to a sense of how to drive the pieces that had no encoders. This can be expanded to have more fluid/natrual movement or better mapping to the control stick.
 
-	3) Be able to fold and unfold the rover at will. Right now there is no way to return the rover back to folded position. Would require that more encoders be added to arm joints and making sure that raising and lowering camera mast is okay. (Might be done later but need to ensure encoders and pins).
+3) Be able to fold and unfold the rover at will. Right now there is no way to return the rover back to folded position. Would require that more encoders be added to arm joints and making sure that raising and lowering camera mast is okay. (Might be done later but need to ensure encoders and pins).
 
-	4) Add more redundancy and checks that it's harder to error out and crash the program. Also create a failsafe that stops all action on the rover side in the event of a disconnection (or even power loss  of the rover computer but not the roboclaws).
+4) Add more redundancy and checks that it's harder to error out and crash the program. Also create a failsafe that stops all action on the rover side in the event of a disconnection (or even power loss  of the rover computer but not the roboclaws).
 	
