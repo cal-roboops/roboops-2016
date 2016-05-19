@@ -94,20 +94,22 @@ bool drive(char* action[]) {
     } else {
 
         // Set Roboclaw Speed and Direction
-	int m1 = strtol(action[0], NULL, 10);
-	int m2 = strtol(action[1], NULL, 10);
+	   int m1 = strtol(action[0], NULL, 10);
+	   int m2 = strtol(action[1], NULL, 10);
+       bool right = false;
+       bool left = false;
 
         // Send the command to the roboclaw
         if (m1 > 0) {
-            bool right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
+            right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
         } else {
-            bool right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
+            right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
         }
 
         if (m2 > 0) {
-            bool left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
+            left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
         } else {
-            bool left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
+            left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
         }
 
         // Move Mast Camera
@@ -123,17 +125,107 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    bool arm_baseM1 = roboclaw->ForwardBackwardM1(ARM_BASE_ROBOCLAW, strtol(action[0], NULL, 10));
-    bool arm_baseM2 = roboclaw->ForwardBackwardM2(ARM_BASE_ROBOCLAW, strtol(action[1], NULL, 10));
-    bool arm_extendM1 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[2], NULL, 10));
-    bool arm_extendM2 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[3], NULL, 10));
+    int curr;
+    uint8_t status;
+    int32_t encoder;
+    bool valid = false;
+    bool arm_baseM1 = false;
+    bool arm_baseM2 = false;
+    bool arm_extendM1 = false;
+    bool arm_extendM2 = false;
+
+
+    // Swivel the base
+    curr = strtol(action[0], NULL, 10);
+    if (curr > 0) {
+        arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, 5);
+    } else {
+        arm_baseM1 = roboclaw->BackwardM1(ARM_BASE_ROBOCLAW, 5);
+    }
+
+    // Raise the shoulder
+    curr = strtol(action[1], NULL, 10)
+    if (curr < (shoulder_pos - ENCODER_MAX_ERROR) || curr > (shoulder_pos + ENCODER_MAX_ERROR)) {
+        while (curr < (shoulder_pos - ENCODER_MAX_ERROR)) {
+            arm_baseM2 = roboclaw->BackwardM2(ARM_BASE_ROBOCLAW, 5);
+            encoder = roboclaw->ReadEndM1(ARM_BASE_ROBOCLAW, &status, &valid);
+            if (!valid) {
+                roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
+                return false;
+            } else {
+                shoulder_pos = encoder;
+            }
+        }
+        while (curr > (shoulder_pos + ENCODER_MAX_ERROR)) {
+            arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, 5);
+            encoder = roboclaw->ReadEndM1(ARM_BASE_ROBOCLAW, &status, &valid);
+            if (!valid) {
+                roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
+                return false;
+            } else {
+                shoulder_pos = encoder;
+            }
+        }
+        arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
+    }
+
+    // Spin the elbow
+    curr = strtol(action[2], NULL, 10);
+    if (curr > 0) {
+        arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, 5);
+    } else {
+        arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, 5);
+    }
+
+    // Extend the forarm
+    curr = strtol(action[3], NULL, 10)
+    if (curr < (forearm_pos - ENCODER_MAX_ERROR) || curr > (forearm_pos + ENCODER_MAX_ERROR)) {
+        while (curr < (forearm_pos - ENCODER_MAX_ERROR)) {
+            arm_extendM2 = roboclaw->BackwardM2(ARM_EXTEND_ROBOCLAW, 5);
+            encoder = roboclaw->ReadEndM1(ARM_EXTEND_ROBOCLAW, &status, &valid);
+            if (!valid) {
+                roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
+                return false;
+            } else {
+                forearm_pos = encoder;
+            }
+        }
+        while (curr > (forearm_pos + ENCODER_MAX_ERROR)) {
+            arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, 5);
+            encoder = roboclaw->ReadEndM1(ARM_EXTEND_ROBOCLAW, &status, &valid);
+            if (!valid) {
+                roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
+                return false;
+            } else {
+                forearm_pos = encoder;
+            }
+        }
+        arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
+    }
+
+    // Close the claw
     int close_claw = strtol(action[16], NULL, 10) + strtol(action[17], NULL, 10);
     bool claw = true;
-    if (close_claw == 1) {
-        ; // Close claw halfway
+    if (close_claw == 0 && prev_claw != close_claw) {
+        if (prev_claw == 1) {
+            ; // Open claw half
+        } else if (prev_claw == 2) {
+            ; // Open claw full
+        }
+    } else if (close_claw == 1 && prev_claw != close_claw) {
+        if (prev_claw == 0) {
+            ; // Close claw half
+        } else if (prev_claw == 2) {
+            ; // Open claw half
+        }
     } else if (close_claw == 2) {
-        ; // Close claw fully
+        if (prev_claw == 0) {
+            ; // Close claw full
+        } else if (prev_claw == 1) {
+            ; // Close claw half
+        }
     }
+
     return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
 }
 

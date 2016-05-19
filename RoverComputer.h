@@ -28,6 +28,8 @@
 #define CAMERA_SERVO_PIN_X 8
 #define CAMERA_SERVO_PIN_Y 9
 
+#define ENCODER_MAX_ERROR 5
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -42,3 +44,6 @@ Server* raspPi;
 RoboClaw* roboclaw;
 //Encoder* encoders[4];
 int prev_servo_val = -1;
+int32_t shoulder_pos = 0;
+int32_t forearm_pos = 0;
+int prev_claw = 0;
