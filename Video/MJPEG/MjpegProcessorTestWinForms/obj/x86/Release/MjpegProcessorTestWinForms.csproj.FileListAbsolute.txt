@@ -1,0 +1,9 @@
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.csprojResolveAssemblyReference.cache
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.Form1.resources
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.Properties.Resources.resources
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.csproj.GenerateResource.Cache
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\bin\Release\MjpegProcessorTestWinForms.exe
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\bin\Release\MjpegProcessorTestWinForms.pdb
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\bin\Release\MjpegProcessor.dll
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.exe
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessorTestWinForms\obj\x86\Release\MjpegProcessorTestWinForms.pdb

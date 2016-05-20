@@ -1,0 +1,5 @@
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessor\bin\Debug\MjpegProcessor.dll
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessor\bin\Debug\MjpegProcessor.pdb
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessor\obj\Debug\MjpegProcessor.csprojResolveAssemblyReference.cache
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessor\obj\Debug\MjpegProcessor.dll
+C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\Video\MJPEG\MjpegProcessor\obj\Debug\MjpegProcessor.pdb

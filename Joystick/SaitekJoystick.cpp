@@ -57,7 +57,7 @@ SaitekJoystick::SaitekJoystick(HWND hDlg) {
 
 	// Make sure we got a joystick
 	if (!g_pJoystick) {
-		MessageBox(nullptr, TEXT("Joystick not found. The sample will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK);
+		MessageBox(nullptr, TEXT("Joystick not found. The program will now exit."), TEXT("DirectInput Sample"), MB_ICONERROR | MB_OK);
 		EndDialog(hDlg, 0);
 		exit(1);
 	}
