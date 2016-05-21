@@ -24,6 +24,8 @@
 
 #define CLAW_PIN 4
 
+#define ARM_MAX_SPEED 5
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,5 +38,4 @@
 
 Server* raspPi;
 RoboClaw* roboclaw;
-//Encoder* encoders[4];
 int prev_servo_val = -1;

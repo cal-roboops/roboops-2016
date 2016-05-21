@@ -92,13 +92,14 @@ bool drive(char* action[]) {
         memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     } else {
         // Set Roboclaw Speed and Direction
+	bool left = false;
+	bool right = false;
 	int m1 = strtol(action[0], NULL, 10);
 	int m2 = strtol(action[1], NULL, 10);
 
         // Send the command to the roboclaw
         if (m1 > 0) {
-<<<<<<< HEAD
-            right = roboclaw->ForwawrdM1(DRIVE_ROBOCLAW, m1);
+            right = roboclaw->ForwardM1(DRIVE_ROBOCLAW, m1);
         } else {
             right = roboclaw->BackwardM1(DRIVE_ROBOCLAW, -m1);
         }
@@ -107,17 +108,6 @@ bool drive(char* action[]) {
             left = roboclaw->ForwardM2(DRIVE_ROBOCLAW, m2);
         } else {
             left = roboclaw->BackwardM2(DRIVE_ROBOCLAW, -m2);
-=======
-            bool right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
-        } else {
-            bool right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
-        }
-
-        if (m2 > 0) {
-            bool left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
-        } else {
-            bool left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
->>>>>>> 6830c9e17c86c3f272dacc96065476463b04402f
         }
 
         // Move Mast Camera
@@ -134,7 +124,6 @@ bool drive(char* action[]) {
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
     int curr;
-    bool valid = false;
     bool arm_baseM1 = false;
     bool arm_baseM2 = false;
     bool arm_extendM1 = false;
@@ -175,9 +164,9 @@ bool arm(char* action[]) {
     // Close the claw
     curr = strtol(action[4], NULL, 10);
     if (curr > 0) {
-        claw = 0;
+        ;
     } else {
-        claw = 0;
+        ;
     }
     return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
 }
