@@ -1,9 +1,5 @@
-﻿  stdafx.cpp
-  CommandComputer.cpp
+﻿  CommandComputer.cpp
 c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(282): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
 c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(298): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
 c:\users\laptop\desktop\updated projects\cal rover\code\commandcomputer\commandcomputer.cpp(299): warning C4244: '=': conversion from 'float' to 'long', possible loss of data
-  Client.cpp
-  SaitekJoystick.cpp
-  Generating Code...
   CommandComputer.vcxproj -> C:\Users\Laptop\Desktop\Updated Projects\Cal Rover\Code\CommandComputer\x64\Debug\CommandComputer.exe

@@ -13,18 +13,17 @@
 
 // Stop RoboClaw
 bool stop_roboclaws() {
-    bool right = roboclaw->CombinedForwardBackward(RIGHT_ROBOCLAW, RC_COMBINEDFB_ZERO);
-    bool left = roboclaw->CombinedForwardBackward(LEFT_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool drive = roboclaw->CombinedForwardBackward(DRIVE_ROBOCLAW, RC_COMBINEDFB_ZERO);
     bool arm_base = roboclaw->CombinedForwardBackward(ARM_BASE_ROBOCLAW, RC_COMBINEDFB_ZERO);
     bool arm_extend = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, RC_COMBINEDFB_ZERO);
     // Make sure all roboclaws are working otherwise there'll be an error
-    return true; //(right & left & arm_base & arm_extend);
+    return true; //(drive & arm_base & arm_extend);
 }
 
 // Set Servos Straight
 bool reset_chassis_servos() {
-    softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, SERVO_CENTER);
     softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, SERVO_CENTER);
+    softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, SERVO_CENTER);
     prev_servo_val = SERVO_CENTER;
     return true;
 }
@@ -39,7 +38,6 @@ bool level_camera() {
 // Unfold the Rover
 bool unfold() {
     // Raise Camera Mast
-    softServoWrite(CAMERA_SERVO_PIN_MAST, 1250);
     return true;
 }
 
@@ -66,17 +64,18 @@ bool initialize() {
 
 // ---------- ACTION MODES -----------
 
-// Command Transmission form (drive):
-// Right_RoboClaw, Left_RoboClaw, DT_ServoFL, DT_ServoBL, DT_ServoFR, DT_ServoBR, CameraServoX, CameraServoY
+// Command Transmission form (drive)
+// LEFT_MOTORS, RIGHT_MOTORS, none, none, none, none, none, none, FRBL_SERVO, FLBR_SERVO, CAMERA_X, CAMERA_Y, 
+// none, none, none, none, none
 bool drive(char* action[]) {
     // Set servos and wait if changed (currently assumes all servos will be set to the same)
     // Future iterations should check each servo individual for the drive mode
     int servo_val1 = strtol(action[8], NULL, 10);
     int servo_val2 = strtol(action[9], NULL, 10);
     if (servo_val1 != prev_servo_val) {
-	stop_roboclaws();
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, servo_val1);
-        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, servo_val2);
+	    stop_roboclaws();
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, servo_val1);
+        softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, servo_val2);
 
         // Update saved servo value
         prev_servo_val = servo_val1;
@@ -92,7 +91,6 @@ bool drive(char* action[]) {
         raspPi->server_receive();
         memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     } else {
-
         // Set Roboclaw Speed and Direction
 	   int m1 = strtol(action[0], NULL, 10);
 	   int m2 = strtol(action[1], NULL, 10);
@@ -101,15 +99,15 @@ bool drive(char* action[]) {
 
         // Send the command to the roboclaw
         if (m1 > 0) {
-            right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
+            right = roboclaw->ForwawrdM1(DRIVE_ROBOCLAW, m1);
         } else {
-            right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
+            right = roboclaw->BackwardM1(DRIVE_ROBOCLAW, -m1);
         }
 
         if (m2 > 0) {
-            left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
+            left = roboclaw->ForwardM2(DRIVE_ROBOCLAW, m2);
         } else {
-            left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
+            left = roboclaw->BackwardM2(DRIVE_ROBOCLAW, -m2);
         }
 
         // Move Mast Camera
@@ -126,14 +124,11 @@ bool drive(char* action[]) {
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
     int curr;
-    uint8_t status;
-    int32_t encoder;
     bool valid = false;
     bool arm_baseM1 = false;
     bool arm_baseM2 = false;
     bool arm_extendM1 = false;
     bool arm_extendM2 = false;
-
 
     // Swivel the base
     curr = strtol(action[0], NULL, 10);
@@ -159,7 +154,7 @@ bool arm(char* action[]) {
         arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
     }
 
-    // Extend the forarm
+    // Extend the forearm
     curr = strtol(action[3], NULL, 10);
     if (curr > 0) {
         arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
@@ -168,7 +163,7 @@ bool arm(char* action[]) {
     }
 
     // Close the claw
-    curr = strtol(action[16], NULL, 10) + strtol(action[17], NULL, 10);
+    curr = strtol(action[4], NULL, 10);
     if (curr > 0) {
         claw = 0;
     } else {
@@ -275,9 +270,9 @@ int main(int argc, char **argv) {
     roboclaw = new RoboClaw(UART_PI2);
 
     // Servos
-    softServoSetup(DRIVETRAIN_SERVO_PIN_FLBR, DRIVETRAIN_SERVO_PIN_FRBL,
-                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y,
-                    0, 0, 0, 0);
+    softServoSetup(DRIVETRAIN_SERVO_PIN_FRBL, DRIVETRAIN_SERVO_PIN_FLBR,
+                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, CLAW_PIN,
+                    0, 0, 0);
 
     printf("Done!\n");
 
@@ -338,23 +333,28 @@ int main(int argc, char **argv) {
                 raspPi->server_send(endMsg);
                 break;
             }
-        }
-
-        // Parse the comma seperated command list
-	i = 0;
-        command = strtok(NULL, ",");
-        while (command != NULL) {
-            // Translate command to int and store in command list
-            command_list[i] = command;
-            // Get next command and incrememnt i
+            raspPi->server_receive();
+            raspPi->server_receive();
+            raspPi->server_receive();
+            memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
+        } else {
+            // Parse the comma seperated command list
+    	    i = 0;
             command = strtok(NULL, ",");
-            i++;
-        }
 
-        // Act on the commands and check for successful completion
-        if (!act(command_list, mode)) {
-            // Send failed status for bad commands
-            raspPi->server_send(failedMsg);
+            while (command != NULL) {
+                // Translate command to int and store in command list
+                command_list[i] = command;
+                // Get next command and incrememnt i
+                command = strtok(NULL, ",");
+                i++;
+            }
+
+            // Act on the commands and check for successful completion
+            if (!act(command_list, mode)) {
+                // Send failed status for bad commands
+                raspPi->server_send(failedMsg);
+            }
         }
 
         // Send command completion message

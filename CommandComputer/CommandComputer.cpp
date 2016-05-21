@@ -114,7 +114,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // Set mode to initial value of MODE0
    mode = MODE0;
    // Create the client for communication
-   cc = new Client(ipve, port);
+   cc = new Client(ipv4, port);
    // Send Setup Command to RaspPi
    cc->client_send("Setup!");
    // Create the Joystick for control input
@@ -229,8 +229,6 @@ void compile_message() {
 	byte m4 = sJoy->js.rgbButtons[11] && 0x80;
 	byte m5 = sJoy->js.rgbButtons[12] && 0x80;
 	byte m6 = sJoy->js.rgbButtons[13] && 0x80;
-	byte trigger_half = sJoy->js.rgbButtons[0] && 0x80;
-	byte trigger_full = sJoy->js.rgbButtons[14] && 0x80;
 
 	// Update the mode based on the buttons pressed
 	if (m1 || m2) {
@@ -248,6 +246,7 @@ void compile_message() {
 	long mc_5 = RC_COMBINEDFB_ZERO;
 	long mc_6 = RC_COMBINEDFB_ZERO;
 	long mc_7 = RC_COMBINEDFB_ZERO;
+
 	// Eight PWM Outputs
 	long s_0 = SERVO_CENTER;
 	long s_1 = SERVO_CENTER;
@@ -257,9 +256,6 @@ void compile_message() {
 	long s_5 = SERVO_CENTER;
 	long s_6 = SERVO_CENTER;
 	long s_7 = SERVO_CENTER;
-
-	// Reset memory before writing updated command
-	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
 
 	if ((mode == MODE0) || (mode == MODE1)) {
 		// Map the commands into the appropriate range
@@ -290,7 +286,7 @@ void compile_message() {
 		} else {
 			// Turn drive servos to 45 degrees and spin
 			s_0 = SERVO_45_Degrees;
-			s_1 = SERVO_45_Degrees;
+			s_1 = SERVO_45_Degrees + 350;
 
 			// Map motor speed
 			if (rz < -10 || rz > 10) {
@@ -310,23 +306,23 @@ void compile_message() {
 		mc_3 = (1000 - z) / 20;
 	}
 
+	// Reset memory before writing updated command
+	ZeroMemory(cc->msgbuf, sizeof(cc->msgbuf));
+
 	// Save Compiled Command to the clients MSGBUF
 	// mode, mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7, servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7
-	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
+	sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
 				mode,
 				mc_0, mc_1, mc_2, mc_3, mc_4, mc_5, mc_6, mc_7,
-				s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7,
-				trigger_half, trigger_full);
+				s_0, s_1, s_2, s_3, s_4, s_5, s_6, s_7);
 
 	// Test Saitek
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, rx, ry, rz, s0, m1, m2, m3, m4, m5, m6, trigger_half, trigger_full);
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", mode, x, y, z, rx, ry, rz, s0, m1, m2, m3, m4, m5, m6);
 
 	// Test Arm
 	//long base_swivel = (1000 + ry) / 20;
 	//long shoulder_rl = (1000 + s0) / 20;
 	//long elbow = (1000 + rx) / 20;
 	//long forearm_extend = (1000 - z) / 20;
-	//int claw_half = trigger_half;
-	//int claw_full = trigger_full;
-	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d", MODE2, base_swivel, shoulder_rl, elbow, forearm_extend, claw_half + claw_full);
+	//sprintf(cc->msgbuf, "%d,%d,%d,%d,%d,%d", MODE2, base_swivel, shoulder_rl, elbow, forearm_extend);
 }
