@@ -92,13 +92,12 @@ bool drive(char* action[]) {
         memset(raspPi->recvbuf, 0, sizeof(raspPi->recvbuf));
     } else {
         // Set Roboclaw Speed and Direction
-	   int m1 = strtol(action[0], NULL, 10);
-	   int m2 = strtol(action[1], NULL, 10);
-       bool right = false;
-       bool left = false;
+	int m1 = strtol(action[0], NULL, 10);
+	int m2 = strtol(action[1], NULL, 10);
 
         // Send the command to the roboclaw
         if (m1 > 0) {
+<<<<<<< HEAD
             right = roboclaw->ForwawrdM1(DRIVE_ROBOCLAW, m1);
         } else {
             right = roboclaw->BackwardM1(DRIVE_ROBOCLAW, -m1);
@@ -108,6 +107,17 @@ bool drive(char* action[]) {
             left = roboclaw->ForwardM2(DRIVE_ROBOCLAW, m2);
         } else {
             left = roboclaw->BackwardM2(DRIVE_ROBOCLAW, -m2);
+=======
+            bool right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
+        } else {
+            bool right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
+        }
+
+        if (m2 > 0) {
+            bool left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
+        } else {
+            bool left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
+>>>>>>> 6830c9e17c86c3f272dacc96065476463b04402f
         }
 
         // Move Mast Camera
@@ -169,7 +179,6 @@ bool arm(char* action[]) {
     } else {
         claw = 0;
     }
-
     return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
 }
 
@@ -273,6 +282,12 @@ int main(int argc, char **argv) {
     softServoSetup(DRIVETRAIN_SERVO_PIN_FRBL, DRIVETRAIN_SERVO_PIN_FLBR,
                     CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, CLAW_PIN,
                     0, 0, 0);
+
+    // Encoders (Don't have any encoders)
+    //encoders[0] = new Encoder(ENCODER_PIN0);
+    //encoders[1] = new Encoder(ENCODER_PIN1);
+    //encoders[2] = new Encoder(ENCODER_PIN2);
+    //encoders[3] = new Encoder(ENCODER_PIN3);
 
     printf("Done!\n");
 
