@@ -28,12 +28,11 @@
 #define CAMERA_SERVO_PIN_X 8
 #define CAMERA_SERVO_PIN_Y 9
 
-#define ARM_MAX_SPEED 5
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "Networking/Server.h"
+#include "GPIO_RaspPi/Encoder.h"
 #include "GPIO_RaspPi/RoboClaw.h"
 #include "Helpers/sharedDefinitions.h"
 #include "../wiringPi/wiringPi/wiringPi.h"
@@ -41,4 +40,5 @@
 
 Server* raspPi;
 RoboClaw* roboclaw;
+//Encoder* encoders[4];
 int prev_servo_val = -1;

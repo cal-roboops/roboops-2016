@@ -94,22 +94,20 @@ bool drive(char* action[]) {
     } else {
 
         // Set Roboclaw Speed and Direction
-	   int m1 = strtol(action[0], NULL, 10);
-	   int m2 = strtol(action[1], NULL, 10);
-       bool right = false;
-       bool left = false;
+	int m1 = strtol(action[0], NULL, 10);
+	int m2 = strtol(action[1], NULL, 10);
 
         // Send the command to the roboclaw
         if (m1 > 0) {
-            right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
+            bool right = roboclaw->CombinedForward(RIGHT_ROBOCLAW, m1);
         } else {
-            right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
+            bool right = roboclaw->CombinedBackward(RIGHT_ROBOCLAW, -m1);
         }
 
         if (m2 > 0) {
-            left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
+            bool left = roboclaw->CombinedForward(LEFT_ROBOCLAW, m2);
         } else {
-            left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
+            bool left = roboclaw->CombinedBackward(LEFT_ROBOCLAW, -m2);
         }
 
         // Move Mast Camera
@@ -125,56 +123,17 @@ bool drive(char* action[]) {
 // Command Transmission form (arm):
 // BaseSwivel, BaseJoint, ElbowJoint, ArmExtend, Claw
 bool arm(char* action[]) {
-    int curr;
-    uint8_t status;
-    int32_t encoder;
-    bool valid = false;
-    bool arm_baseM1 = false;
-    bool arm_baseM2 = false;
-    bool arm_extendM1 = false;
-    bool arm_extendM2 = false;
-
-
-    // Swivel the base
-    curr = strtol(action[0], NULL, 10);
-    if (curr > 0) {
-        arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
-        arm_baseM1 = roboclaw->BackwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+    bool arm_baseM1 = roboclaw->ForwardBackwardM1(ARM_BASE_ROBOCLAW, strtol(action[0], NULL, 10));
+    bool arm_baseM2 = roboclaw->ForwardBackwardM2(ARM_BASE_ROBOCLAW, strtol(action[1], NULL, 10));
+    bool arm_extendM1 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[2], NULL, 10));
+    bool arm_extendM2 = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, strtol(action[3], NULL, 10));
+    int close_claw = strtol(action[16], NULL, 10) + strtol(action[17], NULL, 10);
+    bool claw = true;
+    if (close_claw == 1) {
+        ; // Close claw halfway
+    } else if (close_claw == 2) {
+        ; // Close claw fully
     }
-
-    // Raise the shoulder
-    curr = strtol(action[1], NULL, 10);
-    if (curr > 0) {
-        arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
-        arm_baseM2 = roboclaw->BackwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
-    }
-
-    // Spin the elbow
-    curr = strtol(action[2], NULL, 10);
-    if (curr > 0) {
-        arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
-        arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    }
-
-    // Extend the forarm
-    curr = strtol(action[3], NULL, 10);
-    if (curr > 0) {
-        arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
-        arm_extendM2 = roboclaw->BackwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    }
-
-    // Close the claw
-    curr = strtol(action[16], NULL, 10) + strtol(action[17], NULL, 10);
-    if (curr > 0) {
-        claw = 0;
-    } else {
-        claw = 0;
-    }
-
     return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
 }
 
@@ -278,6 +237,12 @@ int main(int argc, char **argv) {
     softServoSetup(DRIVETRAIN_SERVO_PIN_FLBR, DRIVETRAIN_SERVO_PIN_FRBL,
                     CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y,
                     0, 0, 0, 0);
+
+    // Encoders (Don't have any encoders)
+    //encoders[0] = new Encoder(ENCODER_PIN0);
+    //encoders[1] = new Encoder(ENCODER_PIN1);
+    //encoders[2] = new Encoder(ENCODER_PIN2);
+    //encoders[3] = new Encoder(ENCODER_PIN3);
 
     printf("Done!\n");
 
