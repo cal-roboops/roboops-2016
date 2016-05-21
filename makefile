@@ -1,5 +1,5 @@
 RoverComputer:
-	g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c GPIO_RaspPi/RoboClaw.cpp GPIO_RaspPi/Encoder.cpp Networking/Server.cpp RoverComputer.cpp -o RoverComputer.exe -lwiringPi
+	g++ -Wall -Wno-long-long wiringPi/wiringPi/softServo.c GPIO_RaspPi/RoboClaw.cpp Networking/Server.cpp RoverComputer.cpp -o RoverComputer.exe -lwiringPi
 	
 CommandComputer:
 	g++ -Wall -Wno-long-long Networking/Client.cpp CommandComputer.cpp -o CommandComputer.exe -lws2_32 -lwsock32
@@ -20,6 +20,7 @@ PiSSH:
 	ssh pi@2601:644:102:7600::xxxx (wifi)
 	ssh pi@192.168.137.xxx (ethernet - last number changes find with "ping raspberrypi.local")
 	ssh pi@ (ethernet - last number changes find with "ping raspberrypi.local")
+	25.83.200.132
 
 UART:
         RPi 2: UART=>'ttyAMA0'
