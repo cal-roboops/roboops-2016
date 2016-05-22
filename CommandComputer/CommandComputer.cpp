@@ -13,7 +13,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 SaitekJoystick* sJoy;							// Global Joystick Object
 Client* cc;										// Global Client Object
-int mode;										// Mode state variable (only changes if buttons pressed)
+int mode = -1;										// Mode state variable (only changes if buttons pressed)
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -109,26 +109,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
    mode = MODE0;
    // Create the Joystick for control input
    sJoy = new SaitekJoystick(hWnd);
+   sJoy->UpdateInputState();
 
    // Create the client for communication
    cc = new Client(ipv4, port);
    // Send Setup Command to RaspPi
    cc->client_send("Setup!");
-   ZeroMemory(cc->recvbuf, sizeof(cc->recvbuf));
-   while (strstr(cc->recvbuf, "Setup complete!") == NULL) {
-	   cc->client_receive();
-   }
    // Send Unfold Command to RaspPi
    cc->client_send("Unfold!");
-   ZeroMemory(cc->recvbuf, sizeof(cc->recvbuf));
-   while (strstr(cc->recvbuf, "Unfolding Complete!") == NULL) {
-	   cc->client_receive();
-   }
-   // Wait for Rover Ready
-   ZeroMemory(cc->recvbuf, sizeof(cc->recvbuf));
-   while (strstr(cc->recvbuf, "Rover Ready!") == NULL) {
-	   cc->client_receive();
-   }
 
    // Set a timer to go off 3 times a second. At every timer message
    // the input device will be read
@@ -230,12 +218,16 @@ void send_command() {
 	// Map button pushes from 0 and 128 (0x80) to 0 and 1
 	byte b00 = sJoy->js.rgbButtons[0] && 0x80;
 	byte b01 = sJoy->js.rgbButtons[1] && 0x80;
+	byte b02 = sJoy->js.rgbButtons[2] && 0x80;
+	byte b03 = sJoy->js.rgbButtons[3] && 0x80;
 	byte b04 = sJoy->js.rgbButtons[4] && 0x80;
 	byte b14 = sJoy->js.rgbButtons[14] && 0x80;
 	byte b15 = sJoy->js.rgbButtons[15] && 0x80;
 	byte b16 = sJoy->js.rgbButtons[16] && 0x80;
 	byte b17 = sJoy->js.rgbButtons[17] && 0x80;
 	byte b18 = sJoy->js.rgbButtons[18] && 0x80;
+	byte b19 = sJoy->js.rgbButtons[19] && 0x80;
+	byte b21 = sJoy->js.rgbButtons[21] && 0x80;
 	byte b23 = sJoy->js.rgbButtons[23] && 0x80;
 	byte b24 = sJoy->js.rgbButtons[24] && 0x80;
 	byte b25 = sJoy->js.rgbButtons[25] && 0x80;
@@ -271,9 +263,9 @@ void send_command() {
 	}
 
 	// Update the mode
-	if (b23 || b24) {
+	if (b02 || b23 || b24) {
 		mode = MODE0;
-	} else if (b25) {
+	} else if (b03 || b25) {
 		mode = MODE2;
 	}
 
@@ -336,16 +328,16 @@ void send_command() {
 		}
 
 		// Elbow Spin
-		if (b15) {
+		if (b19) {
 			mc_2 = 1;
-		} else if (b17) {
+		} else if (b21) {
 			mc_2 = -1;
 		}
 
 		// Forearm Extend
 		if (pov0 == 0) {
 			mc_3 = 1;
-		} else if (pov0 == 1800) {
+		} else if (pov0 == 18000) {
 			mc_3 = -1;
 		}
 
