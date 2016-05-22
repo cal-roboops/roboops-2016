@@ -18,7 +18,7 @@ bool stop_roboclaws() {
     bool arm_extend = roboclaw->CombinedForward(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     // Make sure all roboclaws are working otherwise there'll be an error
     return true; //(drive & arm_base & arm_extend);
-}   
+}
 
 // Set Servos Straight
 bool reset_chassis_servos() {
@@ -30,8 +30,8 @@ bool reset_chassis_servos() {
 
 // Make Camera Level
 bool level_camera() {
-    softServoWrite(CAMERA_SERVO_PIN_X, SERVO_CENTER);
-    softServoWrite(CAMERA_SERVO_PIN_Y, SERVO_CENTER);
+//    softServoWrite(CAMERA_SERVO_PIN_X, SERVO_CENTER);
+//    softServoWrite(CAMERA_SERVO_PIN_Y, SERVO_CENTER);
     return true;
 }
 
@@ -39,11 +39,11 @@ bool level_camera() {
 bool unfold() {
     // Raise Camera Mast
     // Start Motor
-    digitalwrite(CAMERA_MAST_PIN_P, HIGH);
+    digitalWrite(CAMERA_MAST_PIN_P, HIGH);
     // Wait for it to reach full
-    delay(10000);
+//    delay(10000);
     // Stop Motor
-    digitalwrite(CAMERA_MAST_PIN_P, LOW);
+    digitalWrite(CAMERA_MAST_PIN_P, LOW);
 
     // Level the camera
     bool level = level_camera();
@@ -58,11 +58,11 @@ bool fold() {
 
     // Lower Camera Mast
     // Start Motor
-    digitalwrite(CAMERA_MAST_PIN_N, HIGH);
+    digitalWrite(CAMERA_MAST_PIN_N, HIGH);
     // Wait for it to lower all the way
-    delay(10000);
+//    delay(10000);
     // Stop Motor
-    digitalwrite(CAMERA_MAST_PIN_N, LOW);
+    digitalWrite(CAMERA_MAST_PIN_N, LOW);
 
     return level;
 }
@@ -92,7 +92,7 @@ bool drive(char* action[]) {
     int servo_val1 = strtol(action[8], NULL, 10);
     int servo_val2 = strtol(action[9], NULL, 10);
     if (servo_val1 != prev_servo_val) {
-	    stop_roboclaws();
+        stop_roboclaws();
         softServoWrite(DRIVETRAIN_SERVO_PIN_FRBL, servo_val1);
         softServoWrite(DRIVETRAIN_SERVO_PIN_FLBR, servo_val2);
 
@@ -130,8 +130,8 @@ bool drive(char* action[]) {
         }
 
         // Move Mast Camera
-        softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
-        softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
+//        softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
+//        softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
 
         // Make sure all roboclaws are working otherwise there'll be an error
     }
@@ -192,16 +192,16 @@ bool arm(char* action[]) {
     curr = strtol(action[4], NULL, 10);
     if (curr > 0) {
         // Open
-        digitalwrite(CLAW_PIN_N, LOW);
-        digitalwrite(CLAW_PIN_P, HIGH);
+        digitalWrite(CLAW_PIN_N, LOW);
+        digitalWrite(CLAW_PIN_P, HIGH);
     } else if (curr < 0) {
         // Close
-        digitalwrite(CLAW_PIN_P, LOW);
-        digitalwrite(CLAW_PIN_N, HIGH);
+        digitalWrite(CLAW_PIN_P, LOW);
+        digitalWrite(CLAW_PIN_N, HIGH);
     } else {
         // Stop
-        digitalwrite(CLAW_PIN_P, LOW);
-        digitalwrite(CLAW_PIN_N, LOW);
+        digitalWrite(CLAW_PIN_P, LOW);
+        digitalWrite(CLAW_PIN_N, LOW);
     }
 
     return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2);
@@ -234,8 +234,8 @@ bool stop(bool done) {
     }
 
     // Stop Claw
-    digitalwrite(CLAW_PIN_P, LOW);
-    digitalwrite(CLAW_PIN_N, LOW);
+    digitalWrite(CLAW_PIN_P, LOW);
+    digitalWrite(CLAW_PIN_N, LOW);
 
     // If done running
     if (done) {
@@ -309,8 +309,8 @@ int main(int argc, char **argv) {
 
     // Servos
     softServoSetup(DRIVETRAIN_SERVO_PIN_FRBL, DRIVETRAIN_SERVO_PIN_FLBR,
-                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, CLAW_PIN,
-                    -1, -1, -1);
+                    CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y,
+                    -1, -1, -1, -1);
 
     // Encoders (Don't have any encoders)
     //encoders[0] = new Encoder(ENCODER_PIN0);
@@ -320,15 +320,15 @@ int main(int argc, char **argv) {
 
     // Digital Pin Output to open/close Claw
     pinMode(CLAW_PIN_P, OUTPUT);
-    digitalwrite(CLAW_PIN_P, LOW);
+    digitalWrite(CLAW_PIN_P, LOW);
     pinMode(CLAW_PIN_N, OUTPUT);
-    digitalwrite(CLAW_PIN_N, LOW);
+    digitalWrite(CLAW_PIN_N, LOW);
 
     // Digital Pin Ouput to raise/lower Camera Mast
     pinMode(CAMERA_MAST_PIN_P, OUTPUT);
-    digitalwrite(CAMERA_MAST_PIN_P, LOW);
+    digitalWrite(CAMERA_MAST_PIN_P, LOW);
     pinMode(CAMERA_MAST_PIN_N, OUTPUT);
-    digitalwrite(CAMERA_MAST_PIN_N, OUTPUT);
+    digitalWrite(CAMERA_MAST_PIN_N, OUTPUT);
 
     printf("Done!\n");
 
