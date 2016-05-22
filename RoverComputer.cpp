@@ -13,12 +13,12 @@
 
 // Stop RoboClaw
 bool stop_roboclaws() {
-    bool drive = roboclaw->CombinedForwardBackward(DRIVE_ROBOCLAW, RC_COMBINEDFB_ZERO);
-    bool arm_base = roboclaw->CombinedForwardBackward(ARM_BASE_ROBOCLAW, RC_COMBINEDFB_ZERO);
-    bool arm_extend = roboclaw->CombinedForwardBackward(ARM_EXTEND_ROBOCLAW, RC_COMBINEDFB_ZERO);
+    bool drive = roboclaw->CombinedForward(DRIVE_ROBOCLAW, RC_FB_ZERO);
+    bool arm_base = roboclaw->CombinedForward(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
+    bool arm_extend = roboclaw->CombinedForward(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     // Make sure all roboclaws are working otherwise there'll be an error
     return true; //(drive & arm_base & arm_extend);
-}
+}   
 
 // Set Servos Straight
 bool reset_chassis_servos() {
@@ -38,12 +38,33 @@ bool level_camera() {
 // Unfold the Rover
 bool unfold() {
     // Raise Camera Mast
-    return true;
+    // Start Motor
+    digitalwrite(CAMERA_MAST_PIN_P, HIGH);
+    // Wait for it to reach full
+    delay(10000);
+    // Stop Motor
+    digitalwrite(CAMERA_MAST_PIN_P, LOW);
+
+    // Level the camera
+    bool level = level_camera();
+
+    return level;
 }
 
 // Refold the rover (Doesn't do anything currently)
 bool fold() {
-    return true;
+    // Level the camera
+    bool level = level_camera();
+
+    // Lower Camera Mast
+    // Start Motor
+    digitalwrite(CAMERA_MAST_PIN_N, HIGH);
+    // Wait for it to lower all the way
+    delay(10000);
+    // Stop Motor
+    digitalwrite(CAMERA_MAST_PIN_N, LOW);
+
+    return level;
 }
 
 // ---------- INITIALIZE -----------
@@ -52,14 +73,12 @@ bool fold() {
 bool initialize() {
     // Unfold the rover
     bool setup = unfold();
-    // Level the camera
-    bool level = level_camera();
     // Stop all roboclaws
     bool robo = stop_roboclaws();
     // Set straighten wheel servos
     bool servo = reset_chassis_servos();
 
-    return (setup &level & robo & servo);
+    return (setup & robo & servo);
 }
 
 // ---------- ACTION MODES -----------
@@ -133,42 +152,59 @@ bool arm(char* action[]) {
     curr = strtol(action[0], NULL, 10);
     if (curr > 0) {
         arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
+    } else if (curr < 0) {
         arm_baseM1 = roboclaw->BackwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+    } else {
+        arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
     }
 
     // Raise the shoulder
     curr = strtol(action[1], NULL, 10);
     if (curr > 0) {
         arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
+    } else if (curr < 0) {
         arm_baseM2 = roboclaw->BackwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+    } else {
+        arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
     }
 
     // Spin the elbow
     curr = strtol(action[2], NULL, 10);
     if (curr > 0) {
         arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
+    } else if (curr < 0) {
         arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+    } else {
+        arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     }
 
     // Extend the forearm
     curr = strtol(action[3], NULL, 10);
     if (curr > 0) {
         arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
-    } else {
+    } else if (curr < 0) {
         arm_extendM2 = roboclaw->BackwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+    } else {
+        arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     }
 
     // Close the claw
     curr = strtol(action[4], NULL, 10);
     if (curr > 0) {
-        ;
+        // Open
+        digitalwrite(CLAW_PIN_N, LOW);
+        digitalwrite(CLAW_PIN_P, HIGH);
+    } else if (curr < 0) {
+        // Close
+        digitalwrite(CLAW_PIN_P, LOW);
+        digitalwrite(CLAW_PIN_N, HIGH);
     } else {
-        ;
+        // Stop
+        digitalwrite(CLAW_PIN_P, LOW);
+        digitalwrite(CLAW_PIN_N, LOW);
     }
-    return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2 & claw);
+
+    return true;//(arm_baseM1 & arm_baseM2 & arm_extendM1 & arm_extendM2);
 }
 
 // ---------- ACTION SELECTOR -----------
@@ -196,6 +232,10 @@ bool stop(bool done) {
     if (!reset_chassis_servos()) {
         return false;
     }
+
+    // Stop Claw
+    digitalwrite(CLAW_PIN_P, LOW);
+    digitalwrite(CLAW_PIN_N, LOW);
 
     // If done running
     if (done) {
@@ -270,13 +310,25 @@ int main(int argc, char **argv) {
     // Servos
     softServoSetup(DRIVETRAIN_SERVO_PIN_FRBL, DRIVETRAIN_SERVO_PIN_FLBR,
                     CAMERA_SERVO_PIN_X, CAMERA_SERVO_PIN_Y, CLAW_PIN,
-                    0, 0, 0);
+                    -1, -1, -1);
 
     // Encoders (Don't have any encoders)
     //encoders[0] = new Encoder(ENCODER_PIN0);
     //encoders[1] = new Encoder(ENCODER_PIN1);
     //encoders[2] = new Encoder(ENCODER_PIN2);
     //encoders[3] = new Encoder(ENCODER_PIN3);
+
+    // Digital Pin Output to open/close Claw
+    pinMode(CLAW_PIN_P, OUTPUT);
+    digitalwrite(CLAW_PIN_P, LOW);
+    pinMode(CLAW_PIN_N, OUTPUT);
+    digitalwrite(CLAW_PIN_N, LOW);
+
+    // Digital Pin Ouput to raise/lower Camera Mast
+    pinMode(CAMERA_MAST_PIN_P, OUTPUT);
+    digitalwrite(CAMERA_MAST_PIN_P, LOW);
+    pinMode(CAMERA_MAST_PIN_N, OUTPUT);
+    digitalwrite(CAMERA_MAST_PIN_N, OUTPUT);
 
     printf("Done!\n");
 

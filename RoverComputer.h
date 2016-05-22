@@ -22,9 +22,12 @@
 #define CAMERA_SERVO_PIN_X 2
 #define CAMERA_SERVO_PIN_Y 3
 
-#define CLAW_PIN 4
+#define CAMERA_MAST_PIN_P 4
+#define CAMERA_MAST_PIN_N 5
 
-#define ARM_MAX_SPEED 5
+#define CLAW_PIN_P 6
+#define CLAW_PIN_N 7
+
 
 #include <stdio.h>
 #include <string.h>

@@ -8,9 +8,14 @@
 //
 
 #define DEFAULT_BUFLEN 512
+
 #define RC_COMBINEDFB_ZERO 64
+
 #define RC_FB_ZERO 0
 #define RC_FB_MAX 127
+
+#define ARM_MAX_SPEED 5
+
 #define SERVO_CENTER 500
 #define SERVO_45_Degrees 315
 #define SERVO_90_Degrees 105
