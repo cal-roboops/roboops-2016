@@ -30,8 +30,8 @@ bool reset_chassis_servos() {
 
 // Make Camera Level
 bool level_camera() {
-    softServoWrite(CAMERA_SERVO_PIN_X, SERVO_CENTER);
-    softServoWrite(CAMERA_SERVO_PIN_Y, SERVO_CENTER);
+//    softServoWrite(CAMERA_SERVO_PIN_X, SERVO_CENTER);
+//    softServoWrite(CAMERA_SERVO_PIN_Y, SERVO_CENTER);
     return true;
 }
 
@@ -41,7 +41,7 @@ bool unfold() {
     // Start Motor
     digitalWrite(CAMERA_MAST_PIN_P, HIGH);
     // Wait for it to reach full
-    delay(10000);
+//    delay(10000);
     // Stop Motor
     digitalWrite(CAMERA_MAST_PIN_P, LOW);
 
@@ -60,7 +60,7 @@ bool fold() {
     // Start Motor
     digitalWrite(CAMERA_MAST_PIN_N, HIGH);
     // Wait for it to lower all the way
-    delay(10000);
+//    delay(10000);
     // Stop Motor
     digitalWrite(CAMERA_MAST_PIN_N, LOW);
 
@@ -130,8 +130,8 @@ bool drive(char* action[]) {
         }
 
         // Move Mast Camera
-        softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
-        softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
+//        softServoWrite(CAMERA_SERVO_PIN_X, strtol(action[10], NULL, 10));
+//        softServoWrite(CAMERA_SERVO_PIN_Y, strtol(action[11], NULL, 10));
 
         // Make sure all roboclaws are working otherwise there'll be an error
     }

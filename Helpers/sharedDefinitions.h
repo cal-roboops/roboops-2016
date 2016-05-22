@@ -14,7 +14,7 @@
 #define RC_FB_ZERO 0
 #define RC_FB_MAX 127
 
-#define ARM_MAX_SPEED 5
+#define ARM_MAX_SPEED 50
 
 #define SERVO_CENTER 500
 #define SERVO_45_Degrees 315
