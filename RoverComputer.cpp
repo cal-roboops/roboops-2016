@@ -151,9 +151,9 @@ bool arm(char* action[]) {
     // Swivel the base
     curr = strtol(action[0], NULL, 10);
     if (curr > 0) {
-        arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+        arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, SWIVEL_MAX_SPEED);
     } else if (curr < 0) {
-        arm_baseM1 = roboclaw->BackwardM1(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+        arm_baseM1 = roboclaw->BackwardM1(ARM_BASE_ROBOCLAW, SWIVEL_MAX_SPEED);
     } else {
         arm_baseM1 = roboclaw->ForwardM1(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
     }
@@ -161,9 +161,9 @@ bool arm(char* action[]) {
     // Raise the shoulder
     curr = strtol(action[1], NULL, 10);
     if (curr > 0) {
-        arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+        arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, SHOULDER_MAX_SPEED);
     } else if (curr < 0) {
-        arm_baseM2 = roboclaw->BackwardM2(ARM_BASE_ROBOCLAW, ARM_MAX_SPEED);
+        arm_baseM2 = roboclaw->BackwardM2(ARM_BASE_ROBOCLAW, SHOULDER_MAX_SPEED);
     } else {
         arm_baseM2 = roboclaw->ForwardM2(ARM_BASE_ROBOCLAW, RC_FB_ZERO);
     }
@@ -171,9 +171,9 @@ bool arm(char* action[]) {
     // Spin the elbow
     curr = strtol(action[2], NULL, 10);
     if (curr > 0) {
-        arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+        arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, ELBOW_MAX_SPEED);
     } else if (curr < 0) {
-        arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+        arm_extendM1 = roboclaw->BackwardM1(ARM_EXTEND_ROBOCLAW, ELBOW_MAX_SPEED);
     } else {
         arm_extendM1 = roboclaw->ForwardM1(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     }
@@ -181,9 +181,9 @@ bool arm(char* action[]) {
     // Extend the forearm
     curr = strtol(action[3], NULL, 10);
     if (curr > 0) {
-        arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+        arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, FOREARM_MAX_SPEED);
     } else if (curr < 0) {
-        arm_extendM2 = roboclaw->BackwardM2(ARM_EXTEND_ROBOCLAW, ARM_MAX_SPEED);
+        arm_extendM2 = roboclaw->BackwardM2(ARM_EXTEND_ROBOCLAW, FOREARM_MAX_SPEED);
     } else {
         arm_extendM2 = roboclaw->ForwardM2(ARM_EXTEND_ROBOCLAW, RC_FB_ZERO);
     }
